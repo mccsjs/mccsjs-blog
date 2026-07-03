@@ -372,7 +372,22 @@ html.is-rendering .transition-swup-leaving {
   }
 }
 
-/* 全局兜底：约束内容区域不超出视口（排除固定/绝对定位元素） */
+  /* ===== 评论区链接高亮 ===== */
+  #tcomment a,
+  #twikoo a {
+    color: rgb(var(--primary));
+    text-decoration: none;
+    border-bottom: 1px solid rgb(var(--primary) / 0.4);
+    transition: color 0.15s, border-color 0.15s;
+    word-break: break-all;
+  }
+  #tcomment a:hover,
+  #twikoo a:hover {
+    color: rgb(var(--primary) / 0.8);
+    border-bottom-color: transparent;
+  }
+
+  /* 全局兜底：约束内容区域不超出视口（排除固定/绝对定位元素） */
 article, section, .post-content, #tcomment,
 #tcomment *, .post-article > * {
   max-width: 100%;

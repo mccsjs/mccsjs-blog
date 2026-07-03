@@ -1,0 +1,1031 @@
+---
+import type { MenuItem } from '../types';
+import MenuIcon from './MenuIcon.astro';
+
+interface Props {
+  siteTitle?: string;
+  siteLogo?: string;
+  favicon?: string;
+  menus?: MenuItem[];
+  aggregateMenus?: MenuItem[];
+}
+
+const { siteTitle = 'My Blog', siteLogo = '', favicon = '', menus = [], aggregateMenus = [] } = Astro.props;
+
+const visibleMenus = menus.filter((m) => m.visible);
+const visibleAggregateMenus = aggregateMenus.filter((m) => m.visible && m.children?.length);
+---
+
+<div id="nav-top-row">
+  <div id="nav-pill-wrapper">
+    <div id="nav-pill">
+      <!-- 毛玻璃层（滚动后显示） -->
+      <div id="nav-glass-layer"></div>
+
+      <div id="nav-inner">
+        <!-- Logo + 聚合菜单 -->
+        <div id="nav-logo-wrapper" class="relative flex items-center gap-2">
+          {favicon && visibleAggregateMenus.length > 0 && (
+            <button id="nav-aggregate-trigger" class="flex shrink-0 items-center justify-center" aria-label="打开聚合菜单">
+              <img src={favicon} alt={siteTitle} class="nav-logo-icon" />
+            </button>
+          )}
+          {favicon && visibleAggregateMenus.length === 0 && (
+            <img src={favicon} alt={siteTitle} class="nav-logo-icon" />
+          )}
+          <a id="nav-logo" href="/">
+            <span class="nav-logo-text">{siteTitle}</span>
+          </a>
+
+          {visibleAggregateMenus.length > 0 && (
+            <div id="nav-aggregate-dropdown" class="nav-aggregate-dropdown">
+              {visibleAggregateMenus.map((group) => (
+                <div class="aggregate-group">
+                  <div class="aggregate-title">{group.label}</div>
+                  <div class="aggregate-grid">
+                    {group.children
+                      ?.filter((child) => child.visible)
+                      .map((child) => (
+                        <a
+                          href={child.href || '#'}
+                          target={child.target || undefined}
+                          class="aggregate-item"
+                        >
+                          {child.icon && <MenuIcon icon={child.icon} class="aggregate-icon" />}
+                          <span>{child.label}</span>
+                        </a>
+                      ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <!-- 居中导航菜单 -->
+        <div id="nav-center" class="nav-desktop-menu">
+          <div id="nav-hover-border"></div>
+
+          {visibleMenus.length > 0 ? (
+            visibleMenus.map((menu) => {
+              const visibleChildren = menu.children?.filter((c) => c.visible) ?? [];
+              return visibleChildren.length > 0 ? (
+                <div class="nav-dropdown-wrapper">
+                  <button class="nav-item nav-has-children" data-dropdown-trigger>
+                    {menu.icon && <MenuIcon icon={menu.icon} class="nav-icon" />}
+                    <span>{menu.label}</span>
+                    <svg class="nav-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                  </button>
+                  <div class="nav-dropdown-panel">
+                    {visibleChildren.map((child) => (
+                      <a href={child.href || '#'} target={child.target || undefined} class="nav-dropdown-item">
+                        {child.icon && <MenuIcon icon={child.icon} class="nav-icon" />}
+                        <span>{child.label}</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <a href={menu.href || '#'} target={menu.target || undefined} class="nav-item nav-link-item" data-nav-link>
+                  {menu.icon && <MenuIcon icon={menu.icon} class="nav-icon" />}
+                  <span>{menu.label}</span>
+                </a>
+              );
+            })
+          ) : (
+            <>
+              <a href="/" class="nav-item nav-link-item" data-nav-link><span>首页</span></a>
+              <a href="/posts" class="nav-item nav-link-item" data-nav-link><span>文章</span></a>
+              <a href="/archive" class="nav-item nav-link-item" data-nav-link><span>归档</span></a>
+              <a href="/link" class="nav-item nav-link-item" data-nav-link><span>友链</span></a>
+            </>
+          )}
+        </div>
+
+        <!-- 右侧工具栏 -->
+        <div id="nav-right">
+          <!-- 主题切换 -->
+          <button id="theme-toggle" class="nav-theme-btn" aria-label="切换主题">
+            <iconify-icon icon="line-md:moon" class="theme-icon theme-icon-dark" width="18" height="18"></iconify-icon>
+            <iconify-icon icon="solar:sun-broken" class="theme-icon theme-icon-light" width="18" height="18"></iconify-icon>
+          </button>
+          <!-- 移动端菜单开关 -->
+          <button id="nav-mobile-toggle" class="nav-desktop-hide" aria-label="菜单">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <line x1="4" y1="6" x2="20" y2="6" />
+              <line x1="4" y1="12" x2="20" y2="12" />
+              <line x1="4" y1="18" x2="20" y2="18" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 移动端抽屉 ========== -->
+<div id="nav-mobile-overlay"></div>
+<nav id="nav-mobile-drawer">
+  <div id="nav-mobile-header">
+    <span class="nav-mobile-title">导航</span>
+    <button id="nav-mobile-close" aria-label="关闭">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+      </svg>
+    </button>
+  </div>
+  <div id="nav-mobile-body">
+    {visibleMenus.length > 0 ? (
+      visibleMenus.map((menu, i) => {
+        const visibleChildren = menu.children?.filter((c) => c.visible) ?? [];
+        return (
+          <div class="nav-mobile-group" style={`--stagger: ${i}`}>
+            {visibleChildren.length > 0 ? (
+              <>
+                <div class="nav-mobile-parent">
+                  {menu.icon && <MenuIcon icon={menu.icon} class="nav-icon" />}
+                  <span>{menu.label}</span>
+                </div>
+                <div class="nav-mobile-children">
+                  {visibleChildren.map((child) => (
+                    <a href={child.href || '#'} target={child.target || undefined} class="nav-mobile-link">
+                      {child.icon && <MenuIcon icon={child.icon} class="nav-icon" />}
+                      <span>{child.label}</span>
+                    </a>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <a href={menu.href || '#'} target={menu.target || undefined} class="nav-mobile-link nav-mobile-parent-link">
+                {menu.icon && <MenuIcon icon={menu.icon} class="nav-icon" />}
+                <span>{menu.label}</span>
+              </a>
+            )}
+          </div>
+        );
+      })
+    ) : (
+      <>
+        <a href="/" class="nav-mobile-link nav-mobile-parent-link"><span>首页</span></a>
+        <a href="/posts" class="nav-mobile-link nav-mobile-parent-link"><span>文章</span></a>
+        <a href="/archive" class="nav-mobile-link nav-mobile-parent-link"><span>归档</span></a>
+        <a href="/link" class="nav-mobile-link nav-mobile-parent-link"><span>友链</span></a>
+      </>
+    )}
+  </div>
+</nav>
+
+<style>
+  /* ============================================= */
+  /*  浮动胶囊导航栏                                 */
+  /* ============================================= */
+
+  #nav-top-row {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    padding: 20px 16px 0;
+    transition: padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  #nav-top-row.scrolled {
+    padding-top: 8px;
+  }
+
+  #nav-pill-wrapper {
+    margin: 0 auto;
+    width: min(94%, 1100px);
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  #nav-top-row.scrolled #nav-pill-wrapper {
+    width: min(80%, 860px);
+  }
+
+  #nav-pill {
+    position: relative;
+    border-radius: 50px;
+    background: oklch(1 0 0 / 0.72);
+    border: 1px solid oklch(0 0 0 / 0.06);
+    box-shadow: 0 1px 3px oklch(0 0 0 / 0.04);
+    transition: border-radius 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 0;
+  }
+  :global(.dark) #nav-pill {
+    background: oklch(0.15 0 0 / 0.72);
+    border-color: oklch(1 0 0 / 0.06);
+  }
+
+  /* 毛玻璃层 */
+  #nav-glass-layer {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    overflow: hidden;
+    background: oklch(1 0 0 / 0.15);
+    backdrop-filter: blur(12px) saturate(1.8);
+    -webkit-backdrop-filter: blur(12px) saturate(1.8);
+    opacity: 0;
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+  :global(.dark) #nav-glass-layer {
+    background: oklch(0.1 0 0 / 0.3);
+  }
+  #nav-top-row.scrolled #nav-glass-layer {
+    opacity: 1;
+  }
+
+  #nav-inner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+    padding: 0 20px;
+    transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  #nav-top-row.scrolled #nav-inner {
+    height: 44px;
+    padding: 0 14px;
+  }
+
+  /* Logo */
+  #nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    flex-shrink: 0;
+    z-index: 2;
+  }
+  .nav-logo-text {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: oklch(0.2 0 0);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  :global(.dark) .nav-logo-text {
+    color: oklch(0.9 0 0);
+  }
+  .nav-logo-icon {
+    height: 28px;
+    width: 28px;
+    object-fit: contain;
+    flex-shrink: 0;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  #nav-aggregate-trigger {
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    line-height: 0;
+  }
+  #nav-aggregate-trigger:hover .nav-logo-icon,
+  #nav-logo:hover .nav-logo-icon {
+    transform: scale(1.08) rotate(-4deg);
+  }
+  .nav-logo-img {
+    height: 28px;
+    width: auto;
+    object-fit: contain;
+    transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  #nav-top-row.scrolled .nav-logo-img {
+    height: 24px;
+  }
+
+  /* 聚合菜单下拉 */
+  #nav-logo-wrapper {
+    flex-shrink: 0;
+    z-index: 2;
+  }
+  .nav-aggregate-dropdown {
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 0;
+    width: 280px;
+    padding: 14px;
+    border-radius: 16px;
+    background: oklch(1 0 0 / 0.92);
+    backdrop-filter: blur(20px) saturate(1.8);
+    -webkit-backdrop-filter: blur(20px) saturate(1.8);
+    border: 1px solid oklch(0 0 0 / 0.08);
+    box-shadow: 0 12px 40px oklch(0 0 0 / 0.10);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s;
+    pointer-events: none;
+    z-index: 50;
+  }
+  .nav-aggregate-dropdown.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  :global(.dark) .nav-aggregate-dropdown {
+    background: oklch(0.14 0 0 / 0.88);
+    border-color: oklch(1 0 0 / 0.06);
+    box-shadow: 0 8px 32px oklch(0 0 0 / 0.3);
+  }
+  .aggregate-group:not(:last-child) {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid oklch(0 0 0 / 0.04);
+  }
+  :global(.dark) .aggregate-group:not(:last-child) {
+    border-color: oklch(1 0 0 / 0.05);
+  }
+  .aggregate-title {
+    padding: 0 6px 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: oklch(0.35 0 0 / 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  :global(.dark) .aggregate-title {
+    color: oklch(0.65 0 0 / 0.6);
+  }
+  .aggregate-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4px;
+  }
+  .aggregate-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: oklch(0.35 0 0);
+    text-decoration: none;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .aggregate-item:hover {
+    background: oklch(0 0 0 / 0.04);
+    color: oklch(0.1 0 0);
+  }
+  :global(.dark) .aggregate-item {
+    color: oklch(0.65 0 0);
+  }
+  :global(.dark) .aggregate-item:hover {
+    background: oklch(1 0 0 / 0.06);
+    color: oklch(0.95 0 0);
+  }
+  .aggregate-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+  .aggregate-icon :global(img),
+  .aggregate-icon :global(svg),
+  .aggregate-icon :global(iconify-icon) {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* 居中菜单 */
+  #nav-center {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    z-index: 1;
+  }
+
+  /* hover 滑动边框（纯边框，复刻 ming：无背景填充） */
+  #nav-hover-border {
+    position: absolute;
+    height: 2.5rem;
+    border-radius: 9999px;
+    border: 1.5px solid oklch(0.35 0 0);
+    background: transparent;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 0;
+    transition: left 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                width 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                height 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                top 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                opacity 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                border-color 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  :global(.dark) #nav-hover-border {
+    border-color: oklch(0.6 0 0);
+  }
+
+  /* hover 时才显示边框 */
+  #nav-center:hover #nav-hover-border,
+  #nav-center.nav-has-active #nav-hover-border {
+    opacity: 1;
+  }
+
+  /* 禁用导航项自身的悬停背景 */
+  .nav-item:hover {
+    background: none !important;
+  }
+  .nav-item:active::before,
+  .nav-item:hover::before,
+  .nav-item::before {
+    background: transparent !important;
+  }
+
+  /* 导航项 */
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 500;
+    color: oklch(0.35 0 0);
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.15s ease, background 0.15s ease;
+    font-family: inherit;
+    line-height: 1;
+  }
+  :global(.dark) .nav-item {
+    color: oklch(0.65 0 0);
+  }
+  .nav-item:hover {
+    color: oklch(0.1 0 0);
+  }
+  :global(.dark) .nav-item:hover {
+    color: oklch(0.95 0 0);
+  }
+
+  .nav-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+  .nav-icon :global(img),
+  .nav-icon :global(svg) {
+    width: 16px;
+    height: 16px;
+  }
+
+  .nav-chevron {
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+  }
+  .nav-dropdown-wrapper.open .nav-chevron {
+    transform: rotate(180deg);
+  }
+
+  /* 下拉面板 */
+  .nav-dropdown-wrapper {
+    position: relative;
+  }
+  .nav-dropdown-panel {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(-8px);
+    min-width: 160px;
+    padding: 6px;
+    border-radius: 16px;
+    background: oklch(1 0 0 / 0.85);
+    backdrop-filter: blur(16px) saturate(1.8);
+    -webkit-backdrop-filter: blur(16px) saturate(1.8);
+    border: 1px solid oklch(0 0 0 / 0.06);
+    box-shadow: 0 8px 32px oklch(0 0 0 / 0.08);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease-out, transform 0.2s ease-out, visibility 0.2s;
+    z-index: 10;
+  }
+  :global(.dark) .nav-dropdown-panel {
+    background: oklch(0.12 0 0 / 0.85);
+    border-color: oklch(1 0 0 / 0.06);
+    box-shadow: 0 8px 32px oklch(0 0 0 / 0.3);
+  }
+  .nav-dropdown-wrapper.open .nav-dropdown-panel {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .nav-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: oklch(0.35 0 0);
+    text-decoration: none;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  :global(.dark) .nav-dropdown-item {
+    color: oklch(0.65 0 0);
+  }
+  .nav-dropdown-item:hover {
+    background: oklch(0 0 0 / 0.04);
+    color: oklch(0.1 0 0);
+  }
+  :global(.dark) .nav-dropdown-item:hover {
+    background: oklch(1 0 0 / 0.06);
+    color: oklch(0.95 0 0);
+  }
+
+  /* 右侧工具栏 */
+  #nav-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    z-index: 2;
+  }
+
+  #nav-mobile-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: none;
+    color: oklch(0.35 0 0);
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  :global(.dark) #nav-mobile-toggle {
+    color: oklch(0.65 0 0);
+  }
+  #nav-mobile-toggle:hover {
+    background: oklch(0 0 0 / 0.06);
+  }
+
+  /* 主题切换按钮 */
+  #theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: none;
+    color: oklch(0.35 0 0);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  :global(.dark) #theme-toggle {
+    color: oklch(0.65 0 0);
+  }
+  #theme-toggle:hover {
+    background: oklch(0 0 0 / 0.06);
+  }
+  .theme-icon {
+    position: absolute;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+  }
+  .theme-icon-dark {
+    /* 亮色模式显示月亮 → 暗色模式隐藏 */
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+  :global(.dark) .theme-icon-dark {
+    opacity: 0;
+    transform: scale(0.5) rotate(90deg);
+    pointer-events: none;
+  }
+  .theme-icon-light {
+    /* 亮色模式隐藏太阳 → 暗色模式显示 */
+    opacity: 0;
+    transform: scale(0.5) rotate(-90deg);
+    pointer-events: none;
+  }
+  :global(.dark) .theme-icon-light {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+    pointer-events: auto;
+  }
+
+  /* ============================================= */
+  /*  移动端抽屉                                    */
+  /* ============================================= */
+
+  #nav-mobile-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    background: oklch(0 0 0 / 0.3);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s;
+  }
+  #nav-mobile-overlay.open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  #nav-mobile-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 70;
+    width: min(320px, 85vw);
+    background: oklch(1 0 0);
+    border-left: 1px solid oklch(0 0 0 / 0.06);
+    box-shadow: -8px 0 32px oklch(0 0 0 / 0.08);
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    display: flex;
+    flex-direction: column;
+  }
+  :global(.dark) #nav-mobile-drawer {
+    background: oklch(0.12 0 0);
+    border-color: oklch(1 0 0 / 0.06);
+  }
+  #nav-mobile-drawer.open {
+    transform: translateX(0);
+  }
+
+  #nav-mobile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid oklch(0 0 0 / 0.06);
+  }
+  :global(.dark) #nav-mobile-header {
+    border-color: oklch(1 0 0 / 0.06);
+  }
+  .nav-mobile-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: oklch(0.2 0 0);
+  }
+  :global(.dark) .nav-mobile-title {
+    color: oklch(0.9 0 0);
+  }
+  #nav-mobile-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: none;
+    color: oklch(0.35 0 0);
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  #nav-mobile-close:hover {
+    background: oklch(0 0 0 / 0.06);
+  }
+
+  #nav-mobile-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .nav-mobile-group {
+    animation: mobile-stagger-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(var(--stagger, 0) * 50ms + 0.1s);
+  }
+
+  @keyframes mobile-stagger-in {
+    from {
+      opacity: 0;
+      transform: translateX(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .nav-mobile-parent {
+    font-size: 14px;
+    font-weight: 600;
+    color: oklch(0.3 0 0);
+    padding: 10px 12px 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  :global(.dark) .nav-mobile-parent {
+    color: oklch(0.8 0 0);
+  }
+
+  .nav-mobile-children {
+    display: flex;
+    flex-direction: column;
+    padding-left: 12px;
+  }
+
+  .nav-mobile-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    color: oklch(0.35 0 0);
+    text-decoration: none;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  :global(.dark) .nav-mobile-link {
+    color: oklch(0.65 0 0);
+  }
+  .nav-mobile-link:hover {
+    background: oklch(0 0 0 / 0.04);
+    color: oklch(0.1 0 0);
+  }
+  :global(.dark) .nav-mobile-link:hover {
+    background: oklch(1 0 0 / 0.06);
+    color: oklch(0.95 0 0);
+  }
+
+  .nav-mobile-parent-link {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  /* 响应式 */
+  @media (min-width: 1024px) {
+    .nav-desktop-hide {
+      display: none !important;
+    }
+  }
+  @media (max-width: 1023px) {
+    .nav-desktop-menu {
+      display: none !important;
+    }
+    #nav-mobile-toggle {
+      display: flex;
+    }
+    #nav-top-row {
+      padding: 12px 12px 0;
+    }
+    #nav-pill-wrapper {
+      width: 100%;
+    }
+    #nav-top-row.scrolled #nav-pill-wrapper {
+      width: 100%;
+    }
+    #nav-inner {
+      height: 48px;
+      padding: 0 14px;
+    }
+    #nav-top-row.scrolled #nav-inner {
+      height: 44px;
+      padding: 0 12px;
+    }
+    .nav-logo-text {
+      font-size: 13px;
+    }
+  }
+</style>
+
+<script>
+  function initNav() {
+    const topRow = document.getElementById('nav-top-row');
+    const hoverBorder = document.getElementById('nav-hover-border');
+    const navCenter = document.getElementById('nav-center');
+    const mobileToggle = document.getElementById('nav-mobile-toggle');
+    const mobileOverlay = document.getElementById('nav-mobile-overlay');
+    const mobileDrawer = document.getElementById('nav-mobile-drawer');
+    const mobileClose = document.getElementById('nav-mobile-close');
+
+    if (!topRow) return;
+
+    // ========== 1. 滚动收缩 ==========
+    const SCROLL_IN = 80;
+    const SCROLL_OUT = 40;
+    let scrolled = false;
+
+    function onScroll() {
+      const y = window.scrollY;
+      if (!scrolled && y > SCROLL_IN) {
+        scrolled = true;
+        topRow.classList.add('scrolled');
+      } else if (scrolled && y < SCROLL_OUT) {
+        scrolled = false;
+        topRow.classList.remove('scrolled');
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // ========== 2. hover 滑动边框（复刻 ming） ==========
+    let _hoverAbort = null;
+
+    function cleanupHover() {
+      if (_hoverAbort) { _hoverAbort.abort(); _hoverAbort = null; }
+    }
+
+    function initHover() {
+      cleanupHover();
+      if (!hoverBorder || !navCenter) return;
+
+      _hoverAbort = new AbortController();
+      const signal = _hoverAbort.signal;
+
+      // 收集所有导航项（dropdown-wrapper 或直接链接）
+      const navItems = navCenter.querySelectorAll(':scope > .nav-dropdown-wrapper, :scope > .nav-link-item');
+
+      // 定位边框到指定项
+      function positionBorder(item) {
+        const rect = item.getBoundingClientRect();
+        const cRect = navCenter.getBoundingClientRect();
+        hoverBorder.style.width = `${rect.width}px`;
+        hoverBorder.style.height = `${rect.height}px`;
+        hoverBorder.style.left = `${rect.left - cRect.left}px`;
+        hoverBorder.style.top = `${(cRect.height - rect.height) / 2}px`;
+      }
+
+      // 检测当前页面对应的活动项
+      function detectActive() {
+        const path = window.location.pathname.replace(/\/$/, '') || '/';
+        let hasActive = false;
+        navItems.forEach((item) => {
+          const link = item.querySelector('a, button[data-dropdown-trigger]');
+          if (!link) return;
+          const href = (link.getAttribute('href') || '').replace(/\/$/, '') || '/';
+          if (href === path || (path !== '/' && href !== '/' && path.startsWith(href))) {
+            item.classList.add('nav-item-active');
+            hasActive = true;
+            positionBorder(item);
+          } else {
+            item.classList.remove('nav-item-active');
+          }
+        });
+        if (hasActive) {
+          navCenter.classList.add('nav-has-active');
+        } else {
+          navCenter.classList.remove('nav-has-active');
+        }
+      }
+
+      // mouseenter 每个项 → 定位边框
+      navItems.forEach((item) => {
+        item.addEventListener('mouseenter', () => positionBorder(item), { signal });
+      });
+
+      // 鼠标离开 nav → 吸附回活动项 或 隐藏
+      navCenter.addEventListener('mouseleave', () => {
+        const active = navCenter.querySelector('.nav-item-active');
+        if (active) {
+          positionBorder(active);
+        } else {
+          hoverBorder.style.opacity = '0';
+        }
+      }, { signal });
+
+      // 鼠标进入 nav → 显示边框（CSS hover 规则也会触发，但 JS 确保即使快进也能显示）
+      navCenter.addEventListener('mouseenter', () => {
+        hoverBorder.style.opacity = '1';
+      }, { signal });
+
+      detectActive();
+      document.addEventListener('astro:page-load', detectActive, { signal });
+    }
+
+    initHover();
+
+    // ========== 3. 下拉菜单 ==========
+    let openDropdown = null;
+
+    document.querySelectorAll('[data-dropdown-trigger]').forEach((btn) => {
+      const wrapper = btn.closest('.nav-dropdown-wrapper');
+
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (openDropdown && openDropdown !== wrapper) {
+          openDropdown.classList.remove('open');
+        }
+
+        if (wrapper.classList.contains('open')) {
+          wrapper.classList.remove('open');
+          openDropdown = null;
+        } else {
+          wrapper.classList.add('open');
+          openDropdown = wrapper;
+        }
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.nav-dropdown-wrapper')) {
+        if (openDropdown) {
+          openDropdown.classList.remove('open');
+          openDropdown = null;
+        }
+      }
+    });
+
+    // ========== 4. 移动端抽屉 ==========
+    function openDrawer() {
+      mobileOverlay?.classList.add('open');
+      mobileDrawer?.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDrawer() {
+      mobileOverlay?.classList.remove('open');
+      mobileDrawer?.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    mobileToggle?.addEventListener('click', openDrawer);
+    mobileClose?.addEventListener('click', closeDrawer);
+    mobileOverlay?.addEventListener('click', closeDrawer);
+
+    // ESC 关闭
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeDrawer();
+    });
+
+    // ========== 5. 聚合菜单下拉 ==========
+    const aggTrigger = document.getElementById('nav-aggregate-trigger');
+    const aggDropdown = document.getElementById('nav-aggregate-dropdown');
+    if (aggTrigger && aggDropdown) {
+      let aggTimer = 0;
+
+      function openAggDropdown() {
+        clearTimeout(aggTimer);
+        aggDropdown.classList.add('open');
+      }
+
+      function closeAggDropdown() {
+        aggTimer = window.setTimeout(() => {
+          aggDropdown.classList.remove('open');
+        }, 150);
+      }
+
+      // 鼠标悬浮触发
+      aggTrigger.addEventListener('mouseenter', openAggDropdown);
+      aggTrigger.addEventListener('mouseleave', closeAggDropdown);
+      aggDropdown.addEventListener('mouseenter', openAggDropdown);
+      aggDropdown.addEventListener('mouseleave', closeAggDropdown);
+
+      // 点击触发（切换）
+      aggTrigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (aggDropdown.classList.contains('open')) {
+          aggDropdown.classList.remove('open');
+        } else {
+          aggDropdown.classList.add('open');
+        }
+      });
+
+      // 点击页面其他地方关闭
+      document.addEventListener('click', (e) => {
+        if (!aggTrigger.contains(e.target) && !aggDropdown.contains(e.target)) {
+          aggDropdown.classList.remove('open');
+        }
+      });
+    }
+  }
+
+  initNav();
+  document.addEventListener('astro:page-load', initNav);
+
+  // ========== 主题切换 ==========
+  import('iconify-icon');
+  const themeToggle = document.getElementById('theme-toggle');
+  themeToggle?.addEventListener('click', () => {
+    const isDark = document.documentElement.classList.contains('dark');
+    if (isDark) {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    } else {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    }
+  });
+</script>

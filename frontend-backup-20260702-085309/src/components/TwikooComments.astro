@@ -1,0 +1,30 @@
+---
+const API_URL = 'http://localhost:4000';
+const DEFAULT_ENV_ID = 'https://twikoo.seln.cn';
+
+let envId = DEFAULT_ENV_ID;
+try {
+  const res = await fetch(`${API_URL}/api/settings`);
+  if (res.ok) {
+    const data = await res.json();
+    envId = data.twikooEnvId || DEFAULT_ENV_ID;
+  }
+} catch {
+  // 网络异常时使用默认 envId
+}
+---
+
+<div id="tcomment"></div>
+<script is:inline src="https://s4.zstatic.net/npm/twikoo@1.7.13/dist/twikoo.min.js"></script>
+<script is:inline define:vars={{ envId }}>
+  window.addEventListener('load', function () {
+    if (typeof twikoo !== 'undefined') {
+      twikoo.init({
+        envId: envId,
+        el: '#tcomment',
+        path: location.pathname,
+        lang: 'zh-CN',
+      });
+    }
+  });
+</script>

@@ -1,0 +1,86 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import type { Post } from '../types';
+
+const API_URL = 'http://localhost:4000';
+
+let posts: Post[] = [];
+let error: string | null = null;
+
+try {
+  const response = await fetch(`${API_URL}/api/posts`);
+  if (!response.ok) {
+    throw new Error(`无法加载文章：${response.status}`);
+  }
+  posts = await response.json();
+} catch (err) {
+  error = err instanceof Error ? err.message : '未知错误';
+}
+
+const latestPosts = posts.slice(0, 6);
+---
+
+<BaseLayout title="首页 | mccsjs">
+  <section class="relative overflow-hidden rounded-3xl text-center sm:py-24">
+    <img
+      src="/hero.jpg"
+      alt="Hero"
+      class="absolute inset-0 h-full w-full object-cover"
+    />
+    <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/60"></div>
+    <div class="relative px-6 py-16">
+      <h1 class="text-4xl font-extrabold tracking-tight text-white drop-shadow-lg sm:text-5xl">
+        探索技术、设计与创意
+      </h1>
+      <p class="mx-auto mt-4 max-w-2xl text-lg text-white/85">
+        一个分享想法、教程与经验的现代博客。简洁、快速、响应式。
+      </p>
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+        <a
+          href="/posts"
+          class="rounded-full bg-white px-6 py-3 font-semibold shadow transition hover:bg-white/90 text-gray-900"
+        >
+          浏览全部文章
+        </a>
+        <a
+          href="/posts"
+          class="rounded-full border border-white/25 px-6 py-3 font-semibold text-white backdrop-blur-sm transition hover:bg-white/15"
+        >
+          开始阅读
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-16">
+    <div class="mb-8 flex items-end justify-between">
+      <div>
+        <h2 class="text-2xl font-bold">最新文章</h2>
+        <p class="mt-1 text-[rgb(var(--fg-soft))]">看看最近发布了什么</p>
+      </div>
+      <a href="/posts" class="text-sm font-medium text-[rgb(var(--primary))] hover:brightness-110">
+        查看全部 →
+      </a>
+    </div>
+
+    {
+      error ? (
+        <div class="rounded-xl border border-red-100 bg-red-50 p-6 text-center text-red-700">
+          <p class="font-medium">加载文章失败</p>
+          <p class="mt-1 text-sm">{error}</p>
+        </div>
+      ) : latestPosts.length === 0 ? (
+        <div class="rounded-xl border p-12 text-center text-[rgb(var(--fg-soft))]" style="border-color: rgb(var(--border) / 0.4); background: rgb(var(--surface));">
+          暂无文章，稍后再来吧
+        </div>
+      ) : (
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {latestPosts.map((post) => (
+            <PostCard post={post} />
+          ))}
+        </div>
+      )
+    }
+  </section>
+</BaseLayout>

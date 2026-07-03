@@ -1,0 +1,202 @@
+---
+interface Props {
+  showComment?: boolean;
+}
+
+const { showComment = false } = Astro.props;
+---
+
+<div id="floating-bar">
+  <button
+    id="float-theme"
+    class="float-btn visible"
+    title="切换主题"
+    aria-label="切换主题"
+  >
+    <iconify-icon icon="line-md:moon" id="float-theme-dark" width={18} height={18} />
+    <iconify-icon icon="solar:sun-broken" id="float-theme-light" width={18} height={18} />
+  </button>
+  {showComment && (
+    <button
+      id="float-comment"
+      class="float-btn"
+      title="查看评论"
+      aria-label="查看评论"
+      data-float-btn
+    >
+      <iconify-icon icon="lucide:message-circle" width={18} height={18} />
+    </button>
+  )}
+  <button
+    id="float-top"
+    class="float-btn"
+    title="回到顶部"
+    aria-label="回到顶部"
+    data-float-btn
+  >
+    <iconify-icon icon="lucide:arrow-up" width={18} height={18} />
+  </button>
+</div>
+
+<style>
+  #floating-bar {
+    position: fixed;
+    right: 24px;
+    bottom: 40px;
+    z-index: 45;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+  }
+
+  .float-btn {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    border: 1.5px solid oklch(0.7 0 0 / 0.2);
+    background: oklch(1 0 0 / 0.85);
+    backdrop-filter: blur(12px) saturate(1.6);
+    -webkit-backdrop-filter: blur(12px) saturate(1.6);
+    color: oklch(0.35 0 0);
+    box-shadow: 0 2px 12px oklch(0 0 0 / 0.06);
+    cursor: pointer;
+    transition:
+      transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+      opacity 0.25s ease,
+      border-color 0.15s ease,
+      color 0.15s ease,
+      background 0.15s ease;
+    opacity: 0;
+    transform: translateY(8px) scale(0.92);
+  }
+
+  .float-btn.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .float-btn:hover {
+    transform: translateY(-1px) scale(1.06);
+    border-color: oklch(0.5 0 0 / 0.35);
+    color: oklch(0.15 0 0);
+    background: oklch(1 0 0 / 0.95);
+  }
+
+  :global(.dark) .float-btn {
+    background: oklch(0.18 0 0 / 0.75);
+    border-color: oklch(0.9 0 0 / 0.1);
+    color: oklch(0.65 0 0);
+  }
+  :global(.dark) .float-btn:hover {
+    background: oklch(0.22 0 0 / 0.9);
+    border-color: oklch(0.9 0 0 / 0.2);
+    color: oklch(0.95 0 0);
+  }
+
+  @media (max-width: 639px) {
+    #floating-bar {
+      right: 16px;
+      bottom: 28px;
+    }
+    .float-btn {
+      width: 38px;
+      height: 38px;
+    }
+  }
+
+  /* 主题切换按钮图标切换 */
+  #float-theme {
+    position: relative;
+    overflow: hidden;
+  }
+  #float-theme-dark,
+  #float-theme-light {
+    position: absolute;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+  }
+  #float-theme-dark {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+  :global(.dark) #float-theme-dark {
+    opacity: 0;
+    transform: scale(0.5) rotate(90deg);
+    pointer-events: none;
+  }
+  #float-theme-light {
+    opacity: 0;
+    transform: scale(0.5) rotate(-90deg);
+    pointer-events: none;
+  }
+  :global(.dark) #float-theme-light {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+    pointer-events: auto;
+  }
+</style>
+
+<script>
+  function initFloating() {
+    const topBtn = document.getElementById('float-top');
+    const commentBtn = document.getElementById('float-comment');
+    const themeBtn = document.getElementById('float-theme');
+
+    // 主题切换
+    themeBtn?.addEventListener('click', () => {
+      const isDark = document.documentElement.classList.contains('dark');
+      if (isDark) {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    });
+
+    if (topBtn) {
+      const SHOW_AT = 200;
+      let shown = false;
+
+      function checkScroll() {
+        const y = window.scrollY;
+        if (!shown && y > SHOW_AT) {
+          shown = true;
+          topBtn.classList.add('visible');
+        } else if (shown && y <= SHOW_AT) {
+          shown = false;
+          topBtn.classList.remove('visible');
+        }
+      }
+
+      window.addEventListener('scroll', checkScroll, { passive: true });
+      checkScroll();
+
+      topBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+
+    if (commentBtn) {
+      // 默认显示（文章页始终可见）
+      commentBtn.classList.add('visible');
+
+      commentBtn.addEventListener('click', () => {
+        const el = document.querySelector('#comments, [id*="comment"], #twikoo') as HTMLElement | null;
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          // 兜底：跳到页面底部
+          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+      });
+    }
+  }
+
+  initFloating();
+  document.addEventListener('astro:page-load', initFloating);
+</script>

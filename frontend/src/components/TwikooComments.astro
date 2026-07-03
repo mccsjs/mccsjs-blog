@@ -1,0 +1,272 @@
+---
+const API_URL = 'http://localhost:4000';
+const DEFAULT_ENV_ID = 'https://twikoo.seln.cn';
+
+let envId = DEFAULT_ENV_ID;
+try {
+  const res = await fetch(`${API_URL}/api/settings`);
+  if (res.ok) {
+    const data = await res.json();
+    envId = data.twikooEnvId || DEFAULT_ENV_ID;
+  }
+} catch {
+  // 网络异常时使用默认 envId
+}
+---
+
+<div id="tcomment" class="twikoo-custom"></div>
+<style is:global>
+  /* ======================== twikoo 美化 ======================= */
+  #twikoo .tk-comments .tk-submit .tk-avatar.tk-has-avatar {
+    display: none !important;
+  }
+
+  #twikoo .tk-comments .tk-submit .tk-row.actions {
+    margin-bottom: 0 !important;
+    margin-left: 0 !important;
+  }
+
+  .tk-main .tk-submit .tk-col .tk-meta-input,
+  #twikoo .tk-comments .tk-submit .tk-col .tk-meta-input {
+    margin-bottom: 16px !important;
+  }
+
+  .tk-row.actions button.el-button {
+    height: 32px !important;
+  }
+
+  .tk-main .tk-content img {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  .tk-meta-input input {
+    border-top-right-radius: 12px !important;
+    border-bottom-right-radius: 12px !important;
+  }
+
+  .tk-meta-input div {
+    border-top-left-radius: 12px !important;
+    border-bottom-left-radius: 12px !important;
+  }
+
+  .tk-input.el-textarea textarea {
+    border-radius: 12px !important;
+    min-height: 150px !important;
+    height: auto !important;
+  }
+
+  @media screen and (max-width: 420px) {
+    .tk-main .tk-submit .tk-row.actions button.el-button.tk-preview.el-button--default.el-button--small {
+      display: none !important;
+    }
+  }
+
+  /* 评论区卡片 - 强制覆盖 */
+  .twikoo .tk-comments-container > .tk-comment,
+  .twikoo .tk-comments .tk-submit {
+    padding: 20px !important;
+    margin-top: 0 !important;
+    margin-bottom: 20px !important;
+    border-radius: 12px !important;
+    background: #fdfcf9 !important;
+    border: 1px solid #e8e3da !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04), 0 8px 24px -4px rgba(0, 0, 0, 0.06) !important;
+    transition: all 0.3s ease !important;
+  }
+
+  .dark .twikoo .tk-comments-container > .tk-comment,
+  .dark .twikoo .tk-comments .tk-submit {
+    background: #2a2a35 !important;
+    border: 1px solid #42444a !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2), 0 8px 24px -4px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  .twikoo .tk-comments-container > .tk-comment:hover {
+    box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 12px 32px -8px rgba(0, 0, 0, 0.10) !important;
+    transform: translateY(-2px) !important;
+  }
+
+  /* 设备信息栏 */
+  .twikoo .tk-extra {
+    border-radius: 12px !important;
+    background: #fdfcf9 !important;
+    padding: 0.4rem !important;
+    margin-bottom: 1rem !important;
+    border: 1px solid #e8e3da !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04) !important;
+    transition: all 0.3s ease !important;
+  }
+
+  .dark .twikoo .tk-extra {
+    background: #2a2a35 !important;
+    border: 1px solid #42444a !important;
+  }
+
+  .twikoo .tk-extra:hover {
+    box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.08) !important;
+  }
+
+  /* 查看更多按钮 */
+  .twikoo .tk-expand-wrap {
+    padding: 4px 0 12px 0 !important;
+    text-align: center !important;
+  }
+
+  .twikoo .tk-expand {
+    display: inline-block !important;
+    min-width: 140px !important;
+    padding: 10px 20px !important;
+    border-radius: 12px !important;
+    background: #fdfcf9 !important;
+    border: 1px solid #e8e3da !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04), 0 8px 24px -4px rgba(0, 0, 0, 0.06) !important;
+    color: #5c5a56 !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    text-align: center !important;
+  }
+
+  .dark .twikoo .tk-expand {
+    background: #2a2a35 !important;
+    border: 1px solid #42444a !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2), 0 8px 24px -4px rgba(0, 0, 0, 0.3) !important;
+    color: #b8b5ad !important;
+  }
+
+  .twikoo .tk-expand:hover {
+    box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 12px 32px -8px rgba(0, 0, 0, 0.10) !important;
+    transform: translateY(-2px) !important;
+    background-color: rgba(220, 150, 100, 0.08) !important;
+    border-color: rgba(220, 150, 100, 0.25) !important;
+  }
+
+  .dark .twikoo .tk-expand:hover {
+    background-color: rgba(255, 182, 147, 0.12) !important;
+    border-color: rgba(255, 182, 147, 0.35) !important;
+  }
+
+  /* 移动端隐藏设备信息 */
+  @media screen and (max-width: 570px) {
+    .tk-main .tk-extras {
+      display: none !important;
+    }
+  }
+
+  /* 移动端评论表单防溢出 */
+  @media screen and (max-width: 640px) {
+    #tcomment,
+    #tcomment .twikoo,
+    #tcomment .tk-main,
+    #tcomment .tk-submit,
+    #tcomment .tk-row,
+    #tcomment .tk-col {
+      max-width: 100% !important;
+      overflow-x: hidden !important;
+    }
+
+    #tcomment .twikoo {
+      width: 100% !important;
+    }
+
+    #tcomment .tk-meta-input {
+      flex-direction: column !important;
+      gap: 8px !important;
+      width: 100% !important;
+    }
+
+    #tcomment .tk-meta-input > div {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+
+    #tcomment .tk-meta-input input {
+      width: 100% !important;
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+    }
+
+    #tcomment .tk-row.actions {
+      flex-wrap: wrap !important;
+      gap: 8px !important;
+      width: 100% !important;
+    }
+
+    #tcomment .tk-row.actions button {
+      width: auto !important;
+      max-width: 100% !important;
+    }
+
+    #tcomment .tk-input.el-textarea textarea {
+      width: 100% !important;
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+    }
+
+    #tcomment .tk-expand {
+      min-width: unset !important;
+      width: auto !important;
+    }
+  }
+
+  /* 按钮圆角 */
+  .tk-row.actions button.el-button {
+    border-radius: 12px !important;
+  }
+
+  /* 加载圆圈居中 */
+  #tcomment .circular,
+  #twikoo .circular {
+    display: block;
+    margin: 2rem auto;
+  }
+</style>
+<script is:inline src="https://s4.zstatic.net/npm/twikoo@1.7.13/dist/twikoo.min.js"></script>
+<script is:inline define:vars={{ envId }}>
+  function initTwikoo() {
+    if (typeof twikoo === 'undefined') return;
+    // 销毁旧实例（swup 切换后重新初始化）
+    try { twikoo.destroy(); } catch {}
+    twikoo.init({
+      envId: envId,
+      el: '#tcomment',
+      path: location.pathname,
+      lang: 'zh-CN',
+    });
+  }
+
+  // 立即初始化（脚本可能已缓存加载完成）
+  if (typeof twikoo !== 'undefined') {
+    initTwikoo();
+  } else {
+    // 脚本还在加载，等加载完成后初始化
+    window.addEventListener('load', initTwikoo, { once: true });
+  }
+
+  // swup 页面切换后重新初始化
+  function hookTwikoo() {
+    if (!window.swup || !window.swup.hooks) return;
+    if (window.__twikooSwupHook && window.__twikooSwupHook === window.swup) return;
+    window.swup.hooks.on('page:view', () => {
+      setTimeout(initTwikoo, 0);
+    });
+    window.swup.hooks.on('visit:end', () => {
+      setTimeout(initTwikoo, 0);
+    });
+    window.__twikooSwupHook = window.swup;
+  }
+  hookTwikoo();
+  if (!window.swup || !window.swup.hooks) {
+    var twikooTimer = setInterval(function () {
+      if (window.swup && window.swup.hooks) {
+        clearInterval(twikooTimer);
+        hookTwikoo();
+      }
+    }, 50);
+  }
+  // Astro 原生导航兼容
+  document.addEventListener('astro:page-load', () => {
+    setTimeout(initTwikoo, 0);
+  });
+</script>

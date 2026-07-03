@@ -1,0 +1,85 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import TwikooComments from '../components/TwikooComments.astro';
+
+const API_URL = 'http://localhost:4000';
+
+interface FriendItem {
+  id: string;
+  name: string;
+  url: string;
+  description: string;
+  avatar: string;
+}
+
+interface FriendGroup {
+  type_name: string;
+  friends: FriendItem[];
+}
+
+let groups: FriendGroup[] = [];
+
+try {
+  const res = await fetch(`${API_URL}/api/friends`);
+  if (res.ok) {
+    const data = await res.json();
+    groups = data.groups || [];
+  }
+} catch {}
+---
+
+<BaseLayout title="友链 | My Blog">
+  <section class="mb-10 text-center">
+    <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">友情链接</h1>
+    <p class="mt-3 text-gray-600 dark:text-gray-400">有趣的人与站点，欢迎交换友链</p>
+  </section>
+
+  {
+    groups.length === 0 ? (
+      <div class="rounded-xl border border-gray-200 bg-white p-12 text-center text-gray-500 dark:border-gray-800 dark:bg-[#111] dark:text-gray-400">
+        暂无友链，稍后再来吧
+      </div>
+    ) : (
+      groups.map((group) => (
+        <section class="mb-12">
+          <h2 class="mb-5 text-lg font-bold text-gray-900 dark:text-gray-100">
+            {group.type_name}
+          </h2>
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {group.friends.map((friend) => (
+              <a
+                href={friend.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="group flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800 dark:bg-[#111]"
+              >
+                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gray-100 text-lg dark:bg-gray-800">
+                  {friend.avatar ? (
+                    <img src={friend.avatar} alt={friend.name} class="h-full w-full rounded-full object-cover" />
+                  ) : (
+                    <span class="font-bold text-gray-400">{friend.name.charAt(0)}</span>
+                  )}
+                </div>
+                <div class="min-w-0 flex-1">
+                  <h3 class="truncate text-sm font-semibold text-gray-900 group-hover:text-yellow-600 dark:text-gray-100 dark:group-hover:text-yellow-400">
+                    {friend.name}
+                  </h3>
+                  <p class="truncate text-xs text-gray-500 dark:text-gray-400">
+                    {friend.description || friend.url}
+                  </p>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      ))
+    )
+  }
+
+  <section class="mt-14">
+    <h2 class="text-2xl font-bold">评论</h2>
+    <div class="mt-6">
+      <TwikooComments />
+    </div>
+  </section>
+</BaseLayout>

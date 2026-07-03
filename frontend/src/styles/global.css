@@ -377,3 +377,67 @@ article, section, .post-content, #tcomment,
   max-width: 100%;
   box-sizing: border-box;
 }
+
+/* ===== 强力防溢出 ===== */
+
+/* 核心容器 */
+#swup-container,
+.post-article {
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+/* 版权卡片 */
+.copyright-card-wrapper {
+  overflow-x: hidden;
+}
+.copyright-card-wrapper a {
+  word-break: break-all;
+  display: inline-block;
+  max-width: 100%;
+}
+
+/* Twikoo 评论区 */
+#tcomment,
+.twikoo-container,
+.tk-comments-container,
+.tk-submit-area,
+.tk-input {
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  word-break: break-word !important;
+}
+
+/* 所有表单元素 */
+input[type="text"],
+input[type="email"],
+input[type="url"],
+textarea {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* ===== 手机端强力防溢出（max-width: 768px）===== */
+@media (max-width: 767px) {
+  #swup-container {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+    overflow-x: clip;
+    width: 100vw;
+    max-width: 100vw;
+  }
+
+  .post-article,
+  .grid,
+  article > * {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+
+  /* 版权卡片按钮不超出 */
+  .copyright-card-wrapper {
+    position: relative;
+    overflow: hidden;
+  }
+}

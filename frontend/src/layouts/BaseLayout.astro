@@ -130,9 +130,9 @@ const effectiveFontFamily = fontFamily
     {isHome && settings.backgroundImage && (
       <div class="fixed inset-0 bg-black/30 -z-10 md:hidden"></div>
     )}
-    <div class="relative z-10 flex min-h-screen flex-col overflow-x-clip">
+    <div class="relative z-10 flex min-h-screen flex-col">
       <Header siteTitle={settings.siteTitle} siteLogo={settings.siteLogo} favicon={settings.favicon} menus={navMenus} aggregateMenus={aggregateMenus} />
-      <main id="swup-container" class="transition-swup-main mx-auto w-full flex-1 px-4 py-12 md:px-6" class:list={["max-w-5xl", wide && "max-w-6xl"]}>
+      <main id="swup-container" class="transition-swup-main mx-auto w-full flex-1 px-4 py-12 md:px-6 overflow-x-clip" class:list={["max-w-5xl", wide && "max-w-6xl"]}>
         <Breadcrumb title={pageTitle} postSlug={postSlug} postCategory={postCategory} />
         <slot />
       </main>
@@ -145,6 +145,19 @@ const effectiveFontFamily = fontFamily
     </div>
     <FloatingBar showComment={!!postSlug} />
     <div id="progress-bar"></div>
+    <script is:inline>
+      (function() {
+        function resetScrollAndNav() {
+          window.scrollTo(0, 0);
+          var nav = document.querySelector('nav');
+          if (nav) nav.classList.remove('scrolled');
+        }
+        if (window.swup && window.swup.hooks) {
+          window.swup.hooks.on('visit:start', resetScrollAndNav);
+        }
+        document.addEventListener('astro:page-load', resetScrollAndNav);
+      })();
+    </script>
   </body>
 </html>
 

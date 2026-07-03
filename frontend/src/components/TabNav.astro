@@ -124,6 +124,7 @@ const slug = Astro.url.pathname.replace(/\/$/, '') || '/';
       if (!window.swup || !window.swup.hooks) return;
       if (window.__tabNavSwupHook && window.__tabNavSwupHook === window.swup) return;
       window.swup.hooks.on('visit:end', handleSwupEnd);
+      window.swup.hooks.on('page:view', handleSwupEnd);
       window.__tabNavSwupHook = window.swup;
     }
     hookTabNav();

@@ -203,8 +203,10 @@ const visibleAggregateMenus = aggregateMenus.filter((m) => m.visible && m.childr
   /* ============================================= */
 
   #nav-top-row {
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     z-index: 50;
     padding: 20px 16px 0;
     transition: padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);

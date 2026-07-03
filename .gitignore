@@ -4,3 +4,6 @@ dist
 .vercel
 .netlify
 uploads
+.backup/
+frontend-backup-*/
+nul

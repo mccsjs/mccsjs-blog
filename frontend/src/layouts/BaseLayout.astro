@@ -171,12 +171,20 @@ const effectiveFontFamily = fontFamily
           });
         }
 
-        // 代码块复制按钮
+        // 代码块复制按钮（放在 .code-tool-bar 里）
         function initCodeCopyButtons() {
           var containers = ['.post-content pre', '#link-markdown-section pre'];
           containers.forEach(function(selector) {
             document.querySelectorAll(selector).forEach(function(pre) {
-              if (pre.querySelector('.code-copy-btn')) return;
+              // 找或创建 tool-bar
+              var bar = pre.querySelector('.code-tool-bar');
+              if (!bar) {
+                bar = document.createElement('div');
+                bar.className = 'code-tool-bar';
+                // 插入到 pre 的最前面
+                pre.insertBefore(bar, pre.firstChild);
+              }
+              if (bar.querySelector('.code-copy-btn')) return;
               if (!pre.querySelector('code')) return;
 
               var btn = document.createElement('button');
@@ -197,7 +205,6 @@ const effectiveFontFamily = fontFamily
                     btn.innerHTML = '<iconify-icon icon="ci:copy" width="14" height="14"></iconify-icon><span>复制</span>';
                   }, 2000);
                 }).catch(function() {
-                  // fallback
                   var ta = document.createElement('textarea');
                   ta.value = text;
                   ta.style.position = 'fixed';
@@ -215,8 +222,7 @@ const effectiveFontFamily = fontFamily
                 });
               });
 
-              pre.style.position = 'relative';
-              pre.appendChild(btn);
+              bar.appendChild(btn);
             });
           });
         }
@@ -264,7 +270,7 @@ const effectiveFontFamily = fontFamily
           });
         }
 
-        // 代码块语言标签（左上角）
+        // 代码块语言标签（放在 .code-tool-bar 里）
         function initCodeLangLabels() {
           var langMap = {
             js: 'JavaScript', ts: 'TypeScript', jsx: 'JSX', tsx: 'TSX',
@@ -281,10 +287,9 @@ const effectiveFontFamily = fontFamily
             txt: 'Text', text: 'Text',
           };
           var selectors = ['.post-content pre', '#link-markdown-section pre'];
-          var added = 0;
           selectors.forEach(function(sel) {
             document.querySelectorAll(sel).forEach(function(pre) {
-              if (pre.querySelector('.code-lang-label')) return;
+              if (pre.querySelector('.code-lang')) return;
               var code = pre.querySelector('code');
               if (!code) return;
 
@@ -296,11 +301,18 @@ const effectiveFontFamily = fontFamily
               });
               if (!lang) return;
 
+              // 找或创建 tool-bar
+              var bar = pre.querySelector('.code-tool-bar');
+              if (!bar) {
+                bar = document.createElement('div');
+                bar.className = 'code-tool-bar';
+                pre.insertBefore(bar, pre.firstChild);
+              }
+
               var label = document.createElement('span');
-              label.className = 'code-lang-label';
+              label.className = 'code-lang';
               label.textContent = langMap[lang] || lang.toUpperCase();
-              pre.appendChild(label);
-              added++;
+              bar.insertBefore(label, bar.firstChild);
             });
           });
         }

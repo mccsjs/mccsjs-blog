@@ -404,21 +404,25 @@ html.is-rendering .transition-swup-leaving {
     border-color: rgb(var(--glass-border) / 0.35);
   }
 
-  /* ===== 黑夜模式字体清晰度修复 ===== */
-  /* 作用于所有元素，防止被 Tailwind preflight 或 prose 覆盖 */
-  html.dark,
-  html.dark * {
-    -webkit-font-smoothing: antialiased !important;
-    -moz-osx-font-smoothing: grayscale !important;
-    text-rendering: optimizeLegibility;
+  /* ===== 黑夜模式字体清晰度 + 颜色修复 ===== */
+  html.dark {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-  /* prose 代码块单独加强（暗色背景必须抗锯齿） */
-  html.dark .prose code,
-  html.dark .prose pre,
-  html.dark .prose *,
-  html.dark #link-markdown-section * {
+  /* 强制 prose 区域 dark 模式文字颜色（覆盖 Tailwind prose 默认值） */
+  html.dark #link-markdown-section,
+  html.dark #link-markdown-section *,
+  html.dark .prose:where(:not(.light *)) {
+    color: rgb(var(--fg)) !important;
     -webkit-font-smoothing: antialiased !important;
     -moz-osx-font-smoothing: grayscale !important;
+  }
+  /* code 块在 dark 下用更亮的颜色 */
+  html.dark #link-markdown-section code,
+  html.dark #link-markdown-section pre,
+  html.dark #link-markdown-section pre code {
+    color: #e4e4e7 !important;
+    background: rgb(var(--bg-soft)) !important;
   }
 
   /* ===== 手机端防溢出 ===== */

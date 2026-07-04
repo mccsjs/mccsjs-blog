@@ -229,10 +229,12 @@ const effectiveFontFamily = fontFamily
               var code = pre.querySelector('code');
               if (!code || code.classList.contains('has-line-numbers')) return;
 
-              var text = (code.textContent || '').trimEnd();
-              if (!text.includes('\n') || text.split('\n').length < 2) return;
+              var rawText = (code.textContent || '').replace(/\r\n/g, '\n').trimEnd();
+              if (!rawText.includes('\n') || rawText.split('\n').length < 2) return;
 
-              var lines = text.split('\n');
+              var lines = rawText.split('\n');
+
+              // 行号列
               var lineNumDiv = document.createElement('div');
               lineNumDiv.className = 'code-line-numbers';
               for (var i = 1; i <= lines.length; i++) {
@@ -241,19 +243,23 @@ const effectiveFontFamily = fontFamily
                 lineNumDiv.appendChild(numSpan);
               }
 
-              var htmlLines = code.innerHTML.replace(/\n$/, '').split('\n');
+              // 代码内容列：每行一个 span，纯文本
               var codeContent = document.createElement('span');
               codeContent.className = 'code-content';
-              codeContent.innerHTML = htmlLines.map(function(line, idx) {
-                return '<span class="code-line">' + line + '</span>';
-              }).join('\n');
+              for (var j = 0; j < lines.length; j++) {
+                var lineSpan = document.createElement('span');
+                lineSpan.className = 'code-line';
+                // 保留行首空白（缩进）
+                lineSpan.textContent = lines[j] || '\u00A0'; // 空行用不间断空格占位
+                codeContent.appendChild(lineSpan);
+              }
 
               code.innerHTML = '';
               code.classList.add('has-line-numbers');
               code.appendChild(lineNumDiv);
               code.appendChild(codeContent);
 
-              code.setAttribute('data-raw', text);
+              code.setAttribute('data-raw', rawText);
             });
           });
         }

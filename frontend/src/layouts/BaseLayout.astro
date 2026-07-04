@@ -96,6 +96,8 @@ const effectiveFontFamily = fontFamily
         const saved = localStorage.getItem(STORAGE_KEY);
         const isDark = saved === 'dark' || (!saved && systemDark.matches);
         document.documentElement.classList.toggle('dark', isDark);
+        // 强制重绘，确保字体渲染生效
+        void document.documentElement.offsetHeight;
       })();
     </script>
     {settings.favicon && <link rel="icon" href={settings.favicon} />}

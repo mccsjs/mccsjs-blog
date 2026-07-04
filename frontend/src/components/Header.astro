@@ -1366,6 +1366,8 @@ const visibleAggregateMenus = aggregateMenus.filter((m) => m.visible && m.childr
       document.documentElement.classList.add('dark');
       localStorage.setItem('theme', 'dark');
     }
+    // 强制重绘，确保字体渲染更新
+    void document.documentElement.offsetHeight;
   });
 
   // ========= 搜索 =========

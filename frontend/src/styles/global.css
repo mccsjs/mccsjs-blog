@@ -300,6 +300,65 @@ html.is-rendering .transition-swup-leaving {
     opacity: 1 !important;
   }
 
+  /* ===== 代码块行号 ===== */
+  .post-content pre code.has-line-numbers {
+    display: table;
+    padding-left: 0;
+  }
+  .post-content pre .code-line-numbers {
+    display: table-cell;
+    text-align: right;
+    user-select: none;
+    color: rgb(var(--fg-soft) / 0.4);
+    padding-right: 1rem;
+    border-right: 1px solid rgb(var(--border-light));
+    vertical-align: top;
+    font-size: inherit;
+    line-height: inherit;
+    min-width: 2em;
+  }
+  .post-content pre .code-line-numbers span {
+    display: block;
+  }
+  .post-content pre .code-line-numbers + span {
+    display: table-cell;
+    vertical-align: top;
+  }
+  /* 空行也要占位 */
+  .post-content pre .code-line {
+    display: block;
+    min-height: 1em;
+  }
+
+  /* 友链页代码块行号 */
+  #link-markdown-section pre code.has-line-numbers {
+    display: table;
+    padding-left: 0;
+  }
+  #link-markdown-section pre .code-line-numbers {
+    display: table-cell;
+    text-align: right;
+    user-select: none;
+    color: rgb(var(--fg-soft) / 0.4);
+    padding-right: 1rem;
+    border-right: 1px solid rgb(var(--border-light));
+    vertical-align: top;
+    font-size: inherit;
+    line-height: inherit;
+    min-width: 2em;
+  }
+  #link-markdown-section pre .code-line-numbers span {
+    display: block;
+  }
+  #link-markdown-section pre .code-line-numbers + span {
+    display: table-cell;
+    vertical-align: top;
+  }
+  #link-markdown-section pre .code-line {
+    display: block;
+    min-height: 1em;
+  }
+
   .post-content code {
     border-radius: 4px;
     background: rgb(var(--bg-soft));

@@ -188,7 +188,7 @@ const effectiveFontFamily = fontFamily
                 e.preventDefault();
                 e.stopPropagation();
                 var code = pre.querySelector('code');
-                var text = code ? (code.textContent || '') : '';
+                var text = (code && code.getAttribute('data-raw')) || (code ? (code.textContent || '') : '');
                 navigator.clipboard.writeText(text).then(function() {
                   btn.classList.add('copied');
                   btn.innerHTML = '<iconify-icon icon="ci:check" width="14" height="14" style="color:#22c55e"></iconify-icon><span style="color:#22c55e">已复制</span>';
@@ -217,6 +217,43 @@ const effectiveFontFamily = fontFamily
 
               pre.style.position = 'relative';
               pre.appendChild(btn);
+            });
+          });
+        }
+
+        // 代码块行号
+        function initCodeLineNumbers() {
+          var containers = ['.post-content pre', '#link-markdown-section pre'];
+          containers.forEach(function(selector) {
+            document.querySelectorAll(selector).forEach(function(pre) {
+              var code = pre.querySelector('code');
+              if (!code || code.classList.contains('has-line-numbers')) return;
+
+              var text = (code.textContent || '').trimEnd();
+              if (!text.includes('\n') || text.split('\n').length < 2) return;
+
+              var lines = text.split('\n');
+              var lineNumDiv = document.createElement('div');
+              lineNumDiv.className = 'code-line-numbers';
+              for (var i = 1; i <= lines.length; i++) {
+                var numSpan = document.createElement('span');
+                numSpan.textContent = i;
+                lineNumDiv.appendChild(numSpan);
+              }
+
+              var htmlLines = code.innerHTML.replace(/\n$/, '').split('\n');
+              var codeContent = document.createElement('span');
+              codeContent.className = 'code-content';
+              codeContent.innerHTML = htmlLines.map(function(line, idx) {
+                return '<span class="code-line">' + line + '</span>';
+              }).join('\n');
+
+              code.innerHTML = '';
+              code.classList.add('has-line-numbers');
+              code.appendChild(lineNumDiv);
+              code.appendChild(codeContent);
+
+              code.setAttribute('data-raw', text);
             });
           });
         }
@@ -261,6 +298,7 @@ const effectiveFontFamily = fontFamily
           window.swup.hooks.on('page:view', function() {
             wrapTables();
             initCodeCopyButtons();
+            initCodeLineNumbers();
             document.dispatchEvent(new CustomEvent('swup:page-view'));
           });
         }
@@ -274,6 +312,7 @@ const effectiveFontFamily = fontFamily
         // 首次执行
         wrapTables();
         initCodeCopyButtons();
+        initCodeLineNumbers();
 
         if (window.swup && window.swup.hooks) {
           setup();
@@ -285,6 +324,7 @@ const effectiveFontFamily = fontFamily
           resetScrollAndNav();
           wrapTables();
           initCodeCopyButtons();
+          initCodeLineNumbers();
         });
       })();
     </script>

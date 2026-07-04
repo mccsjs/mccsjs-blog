@@ -414,12 +414,14 @@ html.is-rendering .transition-swup-leaving {
   }
 
   /* ===== 黑夜模式：友链说明区（替代 prose-invert） ===== */
-  html.dark {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  html.dark #link-markdown-section,
+  html.dark #link-markdown-section * {
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+    text-rendering: optimizeLegibility !important;
   }
   html.dark #link-markdown-section {
-    color: rgb(var(--fg));
+    color: rgb(var(--fg)) !important;
   }
   html.dark #link-markdown-section h1,
   html.dark #link-markdown-section h2,
@@ -427,27 +429,36 @@ html.is-rendering .transition-swup-leaving {
   html.dark #link-markdown-section h4,
   html.dark #link-markdown-section strong,
   html.dark #link-markdown-section b {
-    color: rgb(var(--fg));
+    color: rgb(var(--fg)) !important;
+  }
+  html.dark #link-markdown-section p,
+  html.dark #link-markdown-section li,
+  html.dark #link-markdown-section td,
+  html.dark #link-markdown-section th,
+  html.dark #link-markdown-section span {
+    color: rgb(var(--fg)) !important;
   }
   html.dark #link-markdown-section a {
-    color: rgb(var(--primary));
+    color: rgb(var(--primary)) !important;
   }
   html.dark #link-markdown-section code {
-    color: #e4e4e7;
-    background: rgb(var(--bg-soft));
+    color: #e4e4e7 !important;
+    background: rgb(var(--bg-soft)) !important;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+    text-shadow: none !important;
   }
   html.dark #link-markdown-section pre {
-    background: rgb(var(--bg-soft));
-    color: #e4e4e7;
+    background: rgb(var(--bg-soft)) !important;
+    color: #e4e4e7 !important;
+    text-shadow: none !important;
   }
   html.dark #link-markdown-section pre code {
-    background: transparent;
-    color: inherit;
+    background: transparent !important;
+    color: inherit !important;
   }
   html.dark #link-markdown-section blockquote {
-    border-color: rgb(var(--border-light));
-    color: rgb(var(--fg-soft));
+    border-color: rgb(var(--border-light)) !important;
+    color: rgb(var(--fg-soft)) !important;
   }
 
   /* ===== 手机端防溢出 ===== */

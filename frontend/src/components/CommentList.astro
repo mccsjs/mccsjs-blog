@@ -22,12 +22,12 @@ const avatarUrl = (email: string) => {
 };
 
 const badgeClass =
-  'inline-flex items-center gap-1 rounded-full border border-gray-100 bg-gray-50 px-2.5 py-1 text-xs text-gray-500';
+  'inline-flex items-center gap-1 rounded-full border border-[rgb(var(--border-light))] bg-[rgb(var(--bg-soft))] px-2.5 py-1 text-xs text-[rgb(var(--fg-muted))]';
 ---
 
 <div class="mt-6 space-y-5">
   {comments.length === 0 ? (
-    <p class="text-gray-500">暂无评论，快来抢沙发吧！</p>
+    <p class="text-[rgb(var(--fg-muted))]">暂无评论，快来抢沙发吧！</p>
   ) : (
     comments.map((comment) => {
       const avatar = avatarUrl(comment.email);
@@ -36,15 +36,15 @@ const badgeClass =
           href={comment.website}
           target="_blank"
           rel="noopener noreferrer"
-          class="font-semibold text-gray-900 hover:text-yellow-600 hover:underline"
+          class="font-semibold text-[rgb(var(--fg))] hover:text-yellow-600 hover:underline"
         >
           {comment.author}
         </a>
       ) : (
-        <span class="font-semibold text-gray-900">{comment.author}</span>
+        <span class="font-semibold text-[rgb(var(--fg))]">{comment.author}</span>
       );
       return (
-        <div class="flex gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+        <div class="flex gap-4 rounded-2xl border border-[rgb(var(--border-light))] bg-[rgb(var(--card-bg))] p-5 shadow-sm">
           <a
             href={comment.website || '#'}
             target={comment.website ? '_blank' : undefined}
@@ -62,11 +62,11 @@ const badgeClass =
           <div class="min-w-0 flex-1">
             <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
               {nameEl}
-              <time class="text-xs text-gray-400" datetime={comment.createdAt}>
+              <time class="text-xs text-[rgb(var(--fg-muted))]" datetime={comment.createdAt}>
                 {formatDate(comment.createdAt)}
               </time>
             </div>
-            <p class="mt-2.5 whitespace-pre-wrap text-sm leading-relaxed text-gray-700">
+            <p class="mt-2.5 whitespace-pre-wrap text-sm leading-relaxed text-[rgb(var(--fg-soft))]">
               {comment.content}
             </p>
             {(comment.region || comment.os || comment.browser) && (

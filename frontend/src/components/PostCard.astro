@@ -15,7 +15,7 @@ const formatDate = (date: string) =>
   });
 ---
 
-<article class="group flex flex-col overflow-hidden rounded-2xl border border-[rgb(var(--border)/0.4)] bg-white/60 shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:bg-white/5 dark:border-white/10">
+<article class="group flex flex-col overflow-hidden rounded-2xl border border-[rgb(var(--card-border)/0.4)] bg-[rgb(var(--card-bg)/0.6)] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:bg-[rgb(var(--card-bg)/0.5)] dark:border-[rgb(var(--card-border)/0.5)]">
   {
     post.coverImage && (
       <a href={`/posts/${post.slug}`} class="relative block overflow-hidden rounded-2xl">

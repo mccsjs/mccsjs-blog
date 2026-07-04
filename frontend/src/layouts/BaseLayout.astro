@@ -132,7 +132,7 @@ const effectiveFontFamily = fontFamily
     )}
     <div class="relative z-10 flex min-h-screen flex-col">
       <Header siteTitle={settings.siteTitle} siteLogo={settings.siteLogo} favicon={settings.favicon} menus={navMenus} aggregateMenus={aggregateMenus} />
-      <main id="swup-container" class="transition-swup-main mx-auto w-full flex-1 px-4 pt-24 md:pt-28 md:px-6 overflow-x-clip" class:list={["max-w-5xl", wide && "max-w-6xl"]}>
+      <main id="swup-container" class="transition-swup-main mx-auto w-full flex-1 px-4 pt-24 pb-12 md:pt-28 md:px-6 md:pb-16 overflow-x-clip" class:list={["max-w-5xl", wide && "max-w-6xl"]}>
         <Breadcrumb title={pageTitle} postSlug={postSlug} postCategory={postCategory} />
         <slot />
       </main>
@@ -143,35 +143,95 @@ const effectiveFontFamily = fontFamily
         menus={footerMenus}
       />
     </div>
-    <FloatingBar showComment={!!postSlug} />
+    <FloatingBar />
     <div id="progress-bar"></div>
+
     <script is:inline>
       (function() {
+        let progressTimeout1 = null;
+        let progressTimeout2 = null;
+        let transitionTimeout = null;
+
+        function clearAllTransitionTimeouts() {
+          if (progressTimeout1) { clearTimeout(progressTimeout1); progressTimeout1 = null; }
+          if (progressTimeout2) { clearTimeout(progressTimeout2); progressTimeout2 = null; }
+          if (transitionTimeout) { clearTimeout(transitionTimeout); transitionTimeout = null; }
+        }
+
+        // 文章表格横向滚动包裹
+        function wrapTables() {
+          document.querySelectorAll('.post-content table').forEach((table) => {
+            if (table.parentElement?.classList.contains('post-table-wrap')) return;
+            const wrap = document.createElement('div');
+            wrap.className = 'post-table-wrap';
+            table.parentElement?.insertBefore(wrap, table);
+            wrap.appendChild(table);
+          });
+        }
+
+        function setup() {
+          if (!window.swup || !window.swup.hooks) return;
+
+          window.swup.hooks.on('link:click', function() {
+            document.documentElement.classList.add('is-page-transitioning');
+          });
+
+          window.swup.hooks.on('visit:start', function() {
+            clearAllTransitionTimeouts();
+            document.documentElement.classList.add('is-page-transitioning');
+            var progressBar = document.getElementById('progress-bar');
+            if (progressBar) {
+              progressBar.classList.remove('finishing', 'done');
+              void progressBar.offsetWidth;
+              progressBar.classList.add('loading');
+            }
+            window.scrollTo({ top: 0, behavior: 'auto' });
+            var topRow = document.getElementById('nav-top-row');
+            if (topRow) topRow.classList.remove('scrolled');
+          });
+
+          window.swup.hooks.on('visit:end', function() {
+            var progressBar = document.getElementById('progress-bar');
+            if (progressBar) {
+              progressBar.classList.remove('loading');
+              progressBar.classList.add('finishing');
+              progressTimeout1 = setTimeout(function() {
+                progressBar.classList.remove('finishing');
+                progressBar.classList.add('done');
+                progressTimeout2 = setTimeout(function() { progressBar.classList.remove('done'); }, 300);
+              }, 200);
+            }
+            transitionTimeout = setTimeout(function() {
+              document.documentElement.classList.remove('is-page-transitioning');
+            }, 400);
+          });
+
+          window.swup.hooks.on('page:view', function() {
+            wrapTables();
+            document.dispatchEvent(new CustomEvent('swup:page-view'));
+          });
+        }
+
         function resetScrollAndNav() {
           window.scrollTo(0, 0);
-          var nav = document.querySelector('nav');
+          var nav = document.getElementById('nav-top-row');
           if (nav) nav.classList.remove('scrolled');
         }
+
+        // 首次执行
+        wrapTables();
+
         if (window.swup && window.swup.hooks) {
-          window.swup.hooks.on('visit:start', resetScrollAndNav);
+          setup();
+        } else {
+          document.addEventListener('swup:enable', setup);
         }
-        document.addEventListener('astro:page-load', resetScrollAndNav);
+
+        document.addEventListener('astro:page-load', function() {
+          resetScrollAndNav();
+          wrapTables();
+        });
       })();
     </script>
   </body>
 </html>
-
-<script>
-  // 文章表格横向滚动包裹
-  function wrapTables() {
-    document.querySelectorAll('.post-content table').forEach((table) => {
-      if (table.parentElement?.classList.contains('post-table-wrap')) return;
-      const wrap = document.createElement('div');
-      wrap.className = 'post-table-wrap';
-      table.parentElement?.insertBefore(wrap, table);
-      wrap.appendChild(table);
-    });
-  }
-  wrapTables();
-  document.addEventListener('astro:page-load', wrapTables);
-</script>

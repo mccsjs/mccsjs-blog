@@ -20,12 +20,12 @@ const {
 } = Astro.props;
 ---
 
-<div class="copyright-card-wrapper relative mt-10 overflow-hidden rounded-2xl border border-yellow-100 bg-[#FFFDF5] p-6 py-5 shadow-sm dark:border-yellow-900/30 dark:bg-yellow-950/20">
+<div class="copyright-card-wrapper relative mt-10 overflow-hidden rounded-2xl border border-[rgb(var(--card-border))] bg-[rgb(var(--card-bg))] p-6 py-5 shadow-sm dark:border-[rgb(var(--border-light))] dark:bg-[rgb(var(--surface-variant)/0.2)]">
   <!-- 复制链接按钮（右上角） -->
   <button
     id="copy-link-btn"
     title="复制链接"
-    class="absolute right-3 top-3 flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs text-gray-500 transition-colors hover:border-yellow-300 hover:text-yellow-600 dark:border-gray-700 dark:bg-[#1a1a1a] dark:text-gray-400 dark:hover:border-yellow-500 dark:hover:text-yellow-400"
+    class="absolute right-3 top-3 flex items-center gap-1 rounded-lg border border-[rgb(var(--card-border))] bg-[rgb(var(--card-bg))] px-2.5 py-1.5 text-xs text-[rgb(var(--fg-muted))] transition-colors hover:border-yellow-300 hover:text-yellow-600 dark:border-[rgb(var(--card-border))] dark:bg-[#1a1a1a] dark:text-[rgb(var(--fg-muted))] dark:hover:border-yellow-500 dark:hover:text-yellow-400"
   >
     <span>🔗</span>
     <span id="copy-link-label">复制链接</span>

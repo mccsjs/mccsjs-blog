@@ -236,7 +236,7 @@ const tocHtmlStr = tocTree.length > 0 ? '<ol class="toc-list">' + renderTocOl(to
       <div class="w-full">
         <a
           href="/posts"
-          class="mb-6 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-yellow-600 dark:text-gray-400 dark:hover:text-yellow-400 transition-colors"
+          class="mb-6 inline-flex items-center gap-1 text-sm text-[rgb(var(--fg-muted))] hover:text-yellow-600 dark:text-[rgb(var(--fg-muted))] dark:hover:text-yellow-400 transition-colors"
         >
           <span>←</span>
           返回博客列表
@@ -245,7 +245,7 @@ const tocHtmlStr = tocTree.length > 0 ? '<ol class="toc-list">' + renderTocOl(to
         <div class="grid gap-8 lg:grid-cols-[2fr_280px] lg:gap-12">
           <article class="post-article">
             <header class="mb-8">
-              <div class="flex flex-wrap items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+              <div class="flex flex-wrap items-center gap-2 text-sm text-[rgb(var(--fg-muted))] dark:text-[rgb(var(--fg-muted))]">
                 <span class="rounded-full bg-yellow-50 px-2.5 py-1 font-medium text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">
                   {post.category.name}
                 </span>
@@ -258,7 +258,7 @@ const tocHtmlStr = tocTree.length > 0 ? '<ol class="toc-list">' + renderTocOl(to
               </div>
               <h1 class="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">{post.title}</h1>
               {post.excerpt && (
-                <p class="mt-4 text-lg text-gray-600 leading-relaxed dark:text-gray-400">{post.excerpt}</p>
+                <p class="mt-4 text-lg text-[rgb(var(--fg-soft))] leading-relaxed dark:text-[rgb(var(--fg-muted))]">{post.excerpt}</p>
               )}
             </header>
 
@@ -266,10 +266,10 @@ const tocHtmlStr = tocTree.length > 0 ? '<ol class="toc-list">' + renderTocOl(to
 
             {
               post.tags.length > 0 && (
-                <div class="mt-10 flex flex-wrap items-center gap-2 border-t pt-6 dark:border-gray-800">
-                  <span class="text-sm font-medium text-gray-700 dark:text-gray-300">标签：</span>
+                <div class="mt-10 flex flex-wrap items-center gap-2 border-t pt-6 dark:border-[rgb(var(--card-border))]">
+                  <span class="text-sm font-medium text-[rgb(var(--fg-soft))] dark:text-[rgb(var(--fg-muted))]">标签：</span>
                   {post.tags.map((tag) => (
-                    <span class="rounded-full border border-gray-200 px-3 py-1 text-sm text-gray-600 dark:border-gray-700 dark:text-gray-400">#{tag.name}</span>
+                    <span class="rounded-full border border-[rgb(var(--card-border))] px-3 py-1 text-sm text-[rgb(var(--fg-soft))] dark:border-[rgb(var(--card-border))] dark:text-[rgb(var(--fg-muted))]">#{tag.name}</span>
                   ))}
                 </div>
               )
@@ -280,10 +280,10 @@ const tocHtmlStr = tocTree.length > 0 ? '<ol class="toc-list">' + renderTocOl(to
               {prev && (
                 <a
                   href={`/posts/${prev.slug}`}
-                  class="group rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800 dark:bg-[#111]"
+                  class="group rounded-xl border border-[rgb(var(--card-border))] bg-[rgb(var(--card-bg))] p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-[rgb(var(--card-border))] dark:bg-[rgb(var(--card-bg))]"
                 >
-                  <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">← 上一篇</div>
-                  <div class="font-medium text-gray-900 group-hover:text-yellow-600 dark:text-gray-100 dark:group-hover:text-yellow-400 line-clamp-2">
+                  <div class="text-xs text-[rgb(var(--fg-muted))] dark:text-[rgb(var(--fg-muted))] mb-1">← 上一篇</div>
+                  <div class="font-medium text-[rgb(var(--fg))] group-hover:text-yellow-600 dark:text-[rgb(var(--fg))] dark:group-hover:text-yellow-400 line-clamp-2">
                     {prev.title}
                   </div>
                 </a>
@@ -291,10 +291,10 @@ const tocHtmlStr = tocTree.length > 0 ? '<ol class="toc-list">' + renderTocOl(to
               {next && (
                 <a
                   href={`/posts/${next.slug}`}
-                  class={`group rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800 dark:bg-[#111] text-right ${!prev ? 'sm:col-start-2' : ''}`}
+                  class={`group rounded-xl border border-[rgb(var(--card-border))] bg-[rgb(var(--card-bg))] p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-[rgb(var(--card-border))] dark:bg-[rgb(var(--card-bg))] text-right ${!prev ? 'sm:col-start-2' : ''}`}
                 >
-                  <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">下一篇 →</div>
-                  <div class="font-medium text-gray-900 group-hover:text-yellow-600 dark:text-gray-100 dark:group-hover:text-yellow-400 line-clamp-2">
+                  <div class="text-xs text-[rgb(var(--fg-muted))] dark:text-[rgb(var(--fg-muted))] mb-1">下一篇 →</div>
+                  <div class="font-medium text-[rgb(var(--fg))] group-hover:text-yellow-600 dark:text-[rgb(var(--fg))] dark:group-hover:text-yellow-400 line-clamp-2">
                     {next.title}
                   </div>
                 </a>
@@ -323,7 +323,7 @@ const tocHtmlStr = tocTree.length > 0 ? '<ol class="toc-list">' + renderTocOl(to
           {/* 文章目录 */}
           {tocTree.length > 0 && (
             <aside id="post-toc" class="hidden lg:block">
-              <div class="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-[#111]">
+              <div id="post-toc-inner" class="mt-20 w-[260px] max-h-[calc(100vh-10rem)] overflow-y-auto rounded-xl border border-[rgb(var(--card-border))] bg-[rgb(var(--card-bg))] p-5 shadow-sm dark:border-[rgb(var(--card-border))] dark:bg-[rgb(var(--card-bg))]">
                 <h4 class="mb-3 text-xs font-semibold uppercase tracking-wider text-yellow-600 dark:text-yellow-400">
                   目录
                 </h4>
@@ -469,6 +469,66 @@ const tocHtmlStr = tocTree.length > 0 ? '<ol class="toc-list">' + renderTocOl(to
         }
       };
       tocNav.addEventListener('click', window._tocClickHandler);
+
+      // 目录固定定位：CSS sticky 在 grid 布局中不可靠，用 JS 控制
+      (function initFixedToc() {
+        const tocInner = document.getElementById('post-toc-inner');
+        if (!tocInner) return;
+
+        // 占位元素，防止目录切换为 fixed 后父容器高度塌陷
+        const placeholder = document.createElement('div');
+        placeholder.style.display = 'none';
+        tocInner.parentElement.appendChild(placeholder);
+
+        // 固定后的 top 值（导航栏高度 + 余量）
+        const FIXED_TOP = 100;
+        let isFixed = false;
+
+        function update() {
+          const scrollY = window.scrollY || document.documentElement.scrollTop;
+          const rect = tocInner.getBoundingClientRect();
+
+          // 目录初始应该出现的滚动位置
+          // 当文章标题滚过 FIXED_TOP 时，开始固定
+          const triggerY = tocInner.parentElement.getBoundingClientRect().top + scrollY - FIXED_TOP;
+
+          if (scrollY >= triggerY && !isFixed) {
+            // 切换到 fixed
+            isFixed = true;
+            const w = tocInner.offsetWidth;
+            tocInner.style.position = 'fixed';
+            tocInner.style.top = FIXED_TOP + 'px';
+            tocInner.style.width = w + 'px';
+            placeholder.style.width = w + 'px';
+            placeholder.style.height = tocInner.offsetHeight + 'px';
+            placeholder.style.display = 'block';
+          } else if (scrollY < triggerY && isFixed) {
+            // 切回文档流
+            isFixed = false;
+            tocInner.style.position = '';
+            tocInner.style.top = '';
+            tocInner.style.width = '';
+            placeholder.style.display = 'none';
+          }
+        }
+
+        // 用 requestAnimationFrame 节流
+        let ticking = false;
+        function onScroll() {
+          if (!ticking) {
+            requestAnimationFrame(function() {
+              update();
+              ticking = false;
+            });
+            ticking = true;
+          }
+        }
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onScroll, { passive: true });
+        // 立即执行一次
+        update();
+      })();
     }
 
     // 初始加载 & swup / astro 客户端导航后重新执行

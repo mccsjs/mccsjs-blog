@@ -48,10 +48,10 @@ export default function CommentForm({ postId }: CommentFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-xl border bg-white p-5 shadow-sm">
+    <form onSubmit={handleSubmit} className="rounded-xl border bg-[rgb(var(--card-bg))] p-5 shadow-sm">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div>
-          <label htmlFor="author" className="mb-1.5 block text-sm font-medium text-gray-700">
+          <label htmlFor="author" className="mb-1.5 block text-sm font-medium text-[rgb(var(--fg-soft))]">
             昵称 <span className="text-red-500">*</span>
           </label>
           <input
@@ -60,12 +60,12 @@ export default function CommentForm({ postId }: CommentFormProps) {
             required
             value={author}
             onChange={(e) => setAuthor(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-yellow-400 focus:outline-none focus:ring-1 focus:ring-yellow-400"
+            className="w-full rounded-lg border border-[rgb(var(--card-border))] bg-[rgb(var(--card-bg))] px-3 py-2 text-sm text-[rgb(var(--fg))] placeholder:text-[rgb(var(--fg-muted))] focus:border-yellow-400 focus:outline-none focus:ring-1 focus:ring-yellow-400"
             placeholder="你的名字"
           />
         </div>
         <div>
-          <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-gray-700">
+          <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-[rgb(var(--fg-soft))]">
             邮箱 <span className="text-red-500">*</span>
           </label>
           <input
@@ -74,12 +74,12 @@ export default function CommentForm({ postId }: CommentFormProps) {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-yellow-400 focus:outline-none focus:ring-1 focus:ring-yellow-400"
+            className="w-full rounded-lg border border-[rgb(var(--card-border))] bg-[rgb(var(--card-bg))] px-3 py-2 text-sm text-[rgb(var(--fg))] placeholder:text-[rgb(var(--fg-muted))] focus:border-yellow-400 focus:outline-none focus:ring-1 focus:ring-yellow-400"
             placeholder="you@example.com"
           />
         </div>
         <div>
-          <label htmlFor="website" className="mb-1.5 block text-sm font-medium text-gray-700">
+          <label htmlFor="website" className="mb-1.5 block text-sm font-medium text-[rgb(var(--fg-soft))]">
             网址
           </label>
           <input
@@ -87,7 +87,7 @@ export default function CommentForm({ postId }: CommentFormProps) {
             type="text"
             value={website}
             onChange={(e) => setWebsite(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-yellow-400 focus:outline-none focus:ring-1 focus:ring-yellow-400"
+            className="w-full rounded-lg border border-[rgb(var(--card-border))] bg-[rgb(var(--card-bg))] px-3 py-2 text-sm text-[rgb(var(--fg))] placeholder:text-[rgb(var(--fg-muted))] focus:border-yellow-400 focus:outline-none focus:ring-1 focus:ring-yellow-400"
             placeholder="example.com"
           />
         </div>
@@ -100,7 +100,7 @@ export default function CommentForm({ postId }: CommentFormProps) {
           rows={4}
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className="w-full resize-none rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:border-yellow-400 focus:outline-none focus:ring-1 focus:ring-yellow-400"
+          className="w-full resize-none rounded-lg border border-[rgb(var(--card-border))] bg-[rgb(var(--card-bg))] px-3 py-2.5 text-sm text-[rgb(var(--fg))] placeholder:text-[rgb(var(--fg-muted))] focus:border-yellow-400 focus:outline-none focus:ring-1 focus:ring-yellow-400"
           placeholder="写下你的评论...支持 Markdown 语法"
         />
       </div>
@@ -109,7 +109,7 @@ export default function CommentForm({ postId }: CommentFormProps) {
         <button
           type="submit"
           disabled={status === 'submitting'}
-          className="rounded-lg bg-yellow-400 px-5 py-2 text-sm font-medium text-gray-900 shadow-sm hover:bg-yellow-500 disabled:opacity-60"
+          className="rounded-lg bg-yellow-400 px-5 py-2 text-sm font-medium text-[rgb(var(--fg))] shadow-sm hover:bg-yellow-500 disabled:opacity-60"
         >
           {status === 'submitting' ? '提交中...' : '发表评论'}
         </button>

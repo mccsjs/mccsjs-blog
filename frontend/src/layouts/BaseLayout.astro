@@ -171,6 +171,56 @@ const effectiveFontFamily = fontFamily
           });
         }
 
+        // 代码块复制按钮
+        function initCodeCopyButtons() {
+          var containers = ['.post-content pre', '#link-markdown-section pre'];
+          containers.forEach(function(selector) {
+            document.querySelectorAll(selector).forEach(function(pre) {
+              if (pre.querySelector('.code-copy-btn')) return;
+              if (!pre.querySelector('code')) return;
+
+              var btn = document.createElement('button');
+              btn.className = 'code-copy-btn';
+              btn.type = 'button';
+              btn.innerHTML = '<iconify-icon icon="lucide:copy" width="14" height="14"></iconify-icon><span>复制</span>';
+
+              btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var code = pre.querySelector('code');
+                var text = code ? (code.textContent || '') : '';
+                navigator.clipboard.writeText(text).then(function() {
+                  btn.classList.add('copied');
+                  btn.innerHTML = '<iconify-icon icon="lucide:check" width="14" height="14" style="color:#22c55e"></iconify-icon><span style="color:#22c55e">已复制</span>';
+                  setTimeout(function() {
+                    btn.classList.remove('copied');
+                    btn.innerHTML = '<iconify-icon icon="lucide:copy" width="14" height="14"></iconify-icon><span>复制</span>';
+                  }, 2000);
+                }).catch(function() {
+                  // fallback
+                  var ta = document.createElement('textarea');
+                  ta.value = text;
+                  ta.style.position = 'fixed';
+                  ta.style.opacity = '0';
+                  document.body.appendChild(ta);
+                  ta.select();
+                  try { document.execCommand('copy'); } catch(_) {}
+                  document.body.removeChild(ta);
+                  btn.classList.add('copied');
+                  btn.innerHTML = '<iconify-icon icon="lucide:check" width="14" height="14" style="color:#22c55e"></iconify-icon><span style="color:#22c55e">已复制</span>';
+                  setTimeout(function() {
+                    btn.classList.remove('copied');
+                    btn.innerHTML = '<iconify-icon icon="lucide:copy" width="14" height="14"></iconify-icon><span>复制</span>';
+                  }, 2000);
+                });
+              });
+
+              pre.style.position = 'relative';
+              pre.appendChild(btn);
+            });
+          });
+        }
+
         function setup() {
           if (!window.swup || !window.swup.hooks) return;
 
@@ -210,6 +260,7 @@ const effectiveFontFamily = fontFamily
 
           window.swup.hooks.on('page:view', function() {
             wrapTables();
+            initCodeCopyButtons();
             document.dispatchEvent(new CustomEvent('swup:page-view'));
           });
         }
@@ -222,6 +273,7 @@ const effectiveFontFamily = fontFamily
 
         // 首次执行
         wrapTables();
+        initCodeCopyButtons();
 
         if (window.swup && window.swup.hooks) {
           setup();
@@ -232,6 +284,7 @@ const effectiveFontFamily = fontFamily
         document.addEventListener('astro:page-load', function() {
           resetScrollAndNav();
           wrapTables();
+          initCodeCopyButtons();
         });
       })();
     </script>

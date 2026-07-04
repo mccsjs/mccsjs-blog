@@ -265,6 +265,42 @@ html.is-rendering .transition-swup-leaving {
     padding: 1.25rem;
     font-size: 0.875rem;
     color: rgb(var(--fg));
+    position: relative;
+  }
+
+  /* ===== 代码块复制按钮 ===== */
+  .post-content pre .code-copy-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border: none;
+    border-radius: 6px;
+    background: rgb(var(--bg) / 0.7);
+    color: rgb(var(--fg-soft));
+    font-size: 12px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s, color 0.2s, background 0.2s;
+    z-index: 10;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    line-height: 1.4;
+    user-select: none;
+  }
+  .post-content pre:hover .code-copy-btn {
+    opacity: 1;
+  }
+  .post-content pre .code-copy-btn:hover {
+    background: rgb(var(--bg) / 0.9);
+    color: rgb(var(--primary));
+  }
+  .post-content pre .code-copy-btn.copied {
+    color: #22c55e;
+    opacity: 1;
   }
 
   .post-content code {
@@ -451,6 +487,41 @@ html.is-rendering .transition-swup-leaving {
     background: rgb(var(--bg-soft)) !important;
     color: #e4e4e7 !important;
     text-shadow: none !important;
+    position: relative !important;
+  }
+  /* 友链页代码块复制按钮 */
+  #link-markdown-section pre .code-copy-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border: none;
+    border-radius: 6px;
+    background: rgb(var(--bg) / 0.7);
+    color: rgb(var(--fg-soft));
+    font-size: 12px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s, color 0.2s, background 0.2s;
+    z-index: 10;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    line-height: 1.4;
+    user-select: none;
+  }
+  #link-markdown-section pre:hover .code-copy-btn {
+    opacity: 1;
+  }
+  #link-markdown-section pre .code-copy-btn:hover {
+    background: rgb(var(--bg) / 0.9);
+    color: rgb(var(--primary));
+  }
+  #link-markdown-section pre .code-copy-btn.copied {
+    color: #22c55e !important;
+    opacity: 1 !important;
   }
   html.dark #link-markdown-section pre code {
     background: transparent !important;

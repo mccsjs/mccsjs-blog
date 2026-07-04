@@ -413,25 +413,41 @@ html.is-rendering .transition-swup-leaving {
     border-color: rgb(var(--glass-border) / 0.35);
   }
 
-  /* ===== 黑夜模式字体清晰度 + 颜色修复 ===== */
+  /* ===== 黑夜模式：友链说明区（替代 prose-invert） ===== */
   html.dark {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  /* 强制 prose 区域 dark 模式文字颜色（覆盖 Tailwind prose 默认值） */
-  html.dark #link-markdown-section,
-  html.dark #link-markdown-section *,
-  html.dark .prose:where(:not(.light *)) {
-    color: rgb(var(--fg)) !important;
-    -webkit-font-smoothing: antialiased !important;
-    -moz-osx-font-smoothing: grayscale !important;
+  html.dark #link-markdown-section {
+    color: rgb(var(--fg));
   }
-  /* code 块在 dark 下用更亮的颜色 */
-  html.dark #link-markdown-section code,
-  html.dark #link-markdown-section pre,
+  html.dark #link-markdown-section h1,
+  html.dark #link-markdown-section h2,
+  html.dark #link-markdown-section h3,
+  html.dark #link-markdown-section h4,
+  html.dark #link-markdown-section strong,
+  html.dark #link-markdown-section b {
+    color: rgb(var(--fg));
+  }
+  html.dark #link-markdown-section a {
+    color: rgb(var(--primary));
+  }
+  html.dark #link-markdown-section code {
+    color: #e4e4e7;
+    background: rgb(var(--bg-soft));
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+  }
+  html.dark #link-markdown-section pre {
+    background: rgb(var(--bg-soft));
+    color: #e4e4e7;
+  }
   html.dark #link-markdown-section pre code {
-    color: #e4e4e7 !important;
-    background: rgb(var(--bg-soft)) !important;
+    background: transparent;
+    color: inherit;
+  }
+  html.dark #link-markdown-section blockquote {
+    border-color: rgb(var(--border-light));
+    color: rgb(var(--fg-soft));
   }
 
   /* ===== 手机端防溢出 ===== */

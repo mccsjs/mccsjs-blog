@@ -264,6 +264,47 @@ const effectiveFontFamily = fontFamily
           });
         }
 
+        // 代码块语言标签（左上角）
+        function initCodeLangLabels() {
+          var langMap = {
+            js: 'JavaScript', ts: 'TypeScript', jsx: 'JSX', tsx: 'TSX',
+            html: 'HTML', css: 'CSS', scss: 'SCSS', sass: 'Sass', less: 'Less',
+            json: 'JSON', yml: 'YAML', yaml: 'YAML', toml: 'TOML', xml: 'XML',
+            sql: 'SQL', bash: 'Bash', shell: 'Shell', sh: 'Shell', zsh: 'Zsh',
+            py: 'Python', python: 'Python', rb: 'Ruby', java: 'Java', kt: 'Kotlin',
+            go: 'Go', rs: 'Rust', c: 'C', cpp: 'C++', cs: 'C#',
+            php: 'PHP', rb: 'Ruby', swift: 'Swift', dart: 'Dart',
+            lua: 'Lua', r: 'R', m: 'MATLAB',
+            md: 'Markdown', mdx: 'MDX', tex: 'LaTeX',
+            dockerfile: 'Dockerfile', docker: 'Docker', nginx: 'Nginx',
+            git: 'Git', diff: 'Diff', patch: 'Patch',
+            txt: 'Text', text: 'Text',
+          };
+          var selectors = ['.post-content pre', '#link-markdown-section pre'];
+          var added = 0;
+          selectors.forEach(function(sel) {
+            document.querySelectorAll(sel).forEach(function(pre) {
+              if (pre.querySelector('.code-lang-label')) return;
+              var code = pre.querySelector('code');
+              if (!code) return;
+
+              // 从 class 里找 language-xxx
+              var lang = '';
+              (code.className || '').split(/\s+/).forEach(function(cls) {
+                var m = cls.match(/^language-(.+)$/);
+                if (m) lang = m[1].toLowerCase();
+              });
+              if (!lang) return;
+
+              var label = document.createElement('span');
+              label.className = 'code-lang-label';
+              label.textContent = langMap[lang] || lang.toUpperCase();
+              pre.appendChild(label);
+              added++;
+            });
+          });
+        }
+
         function setup() {
           if (!window.swup || !window.swup.hooks) return;
 
@@ -305,6 +346,7 @@ const effectiveFontFamily = fontFamily
             wrapTables();
             initCodeCopyButtons();
             initCodeLineNumbers();
+            initCodeLangLabels();
             document.dispatchEvent(new CustomEvent('swup:page-view'));
           });
         }
@@ -319,6 +361,7 @@ const effectiveFontFamily = fontFamily
         wrapTables();
         initCodeCopyButtons();
         initCodeLineNumbers();
+        initCodeLangLabels();
 
         if (window.swup && window.swup.hooks) {
           setup();
@@ -331,6 +374,7 @@ const effectiveFontFamily = fontFamily
           wrapTables();
           initCodeCopyButtons();
           initCodeLineNumbers();
+          initCodeLangLabels();
         });
       })();
     </script>

@@ -329,6 +329,21 @@ html.is-rendering .transition-swup-leaving {
     display: block;
     min-height: 1em;
   }
+  /* ===== 代码块语言标签（左上角） ===== */
+  .post-content pre .code-lang-label {
+    position: absolute;
+    top: 6px;
+    left: 8px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: rgb(var(--fg-soft) / 0.45);
+    pointer-events: none;
+    user-select: none;
+    z-index: 5;
+    text-transform: uppercase;
+    font-family: inherit;
+  }
 
   /* 友链页代码块行号 */
   #link-markdown-section pre code.has-line-numbers {
@@ -357,6 +372,21 @@ html.is-rendering .transition-swup-leaving {
   #link-markdown-section pre .code-line {
     display: block;
     min-height: 1em;
+  }
+  /* 友链页代码块语言标签 */
+  #link-markdown-section pre .code-lang-label {
+    position: absolute;
+    top: 6px;
+    left: 8px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: rgb(var(--fg-soft) / 0.45);
+    pointer-events: none;
+    user-select: none;
+    z-index: 5;
+    text-transform: uppercase;
+    font-family: inherit;
   }
 
   .post-content code {

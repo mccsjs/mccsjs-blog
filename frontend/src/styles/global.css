@@ -189,6 +189,15 @@ html.is-rendering .transition-swup-leaving {
     word-break: break-all;
     overflow-wrap: anywhere;
   }
+  /* 代码块使用默认等宽字体，不继承自定义字体 */
+  .post-content code,
+  .post-content pre,
+  .post-content pre code,
+  #link-markdown-section code,
+  #link-markdown-section pre,
+  #link-markdown-section pre code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+  }
 
   .post-content h1 {
     font-size: 1.75rem;

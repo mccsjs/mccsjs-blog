@@ -279,28 +279,25 @@ html.is-rendering .transition-swup-leaving {
     padding: 4px 10px;
     border: none;
     border-radius: 6px;
-    background: rgb(var(--bg) / 0.7);
+    background: rgb(var(--bg) / 0.85);
     color: rgb(var(--fg-soft));
     font-size: 12px;
     cursor: pointer;
-    opacity: 0;
-    transition: opacity 0.2s, color 0.2s, background 0.2s;
+    opacity: 1;
+    transition: color 0.2s, background 0.2s;
     z-index: 10;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     line-height: 1.4;
     user-select: none;
   }
-  .post-content pre:hover .code-copy-btn {
-    opacity: 1;
-  }
   .post-content pre .code-copy-btn:hover {
-    background: rgb(var(--bg) / 0.9);
+    background: rgb(var(--bg) / 0.95);
     color: rgb(var(--primary));
   }
   .post-content pre .code-copy-btn.copied {
-    color: #22c55e;
-    opacity: 1;
+    color: #22c55e !important;
+    opacity: 1 !important;
   }
 
   .post-content code {
@@ -493,30 +490,20 @@ html.is-rendering .transition-swup-leaving {
   #link-markdown-section pre .code-copy-btn {
     position: absolute;
     top: 8px;
-    right: 8px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 10px;
-    border: none;
-    border-radius: 6px;
-    background: rgb(var(--bg) / 0.7);
+    background: rgb(var(--bg) / 0.85);
     color: rgb(var(--fg-soft));
     font-size: 12px;
     cursor: pointer;
-    opacity: 0;
-    transition: opacity 0.2s, color 0.2s, background 0.2s;
+    opacity: 1;
+    transition: color 0.2s, background 0.2s;
     z-index: 10;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     line-height: 1.4;
     user-select: none;
   }
-  #link-markdown-section pre:hover .code-copy-btn {
-    opacity: 1;
-  }
   #link-markdown-section pre .code-copy-btn:hover {
-    background: rgb(var(--bg) / 0.9);
+    background: rgb(var(--bg) / 0.95);
     color: rgb(var(--primary));
   }
   #link-markdown-section pre .code-copy-btn.copied {

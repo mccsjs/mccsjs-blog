@@ -14,9 +14,12 @@ interface Props {
   wide?: boolean;
   postSlug?: string;
   postCategory?: string;
+  // SEO
+  ogType?: string;
+  ogImage?: string;
 }
 
-const { title: rawTitle, description: rawDescription, wide = false, postSlug, postCategory } = Astro.props;
+const { title: rawTitle, description: rawDescription, wide = false, postSlug, postCategory, ogType = 'website', ogImage } = Astro.props;
 const isHome = Astro.url.pathname === '/';
 
 const defaultSettings: SiteSettings = {
@@ -43,9 +46,14 @@ try {
   // 网络异常时使用默认设置
 }
 
-const pageTitle = rawTitle ? rawTitle.replace(/\s*\|\s*My Blog\s*$/, '').trim() : '';
-const title = pageTitle ? `${pageTitle} | ${settings.siteTitle}` : settings.siteTitle;
+const title = rawTitle ? `${rawTitle} | ${settings.siteTitle}` : settings.siteTitle;
 const description = rawDescription || settings.siteDescription;
+
+// OG 图片：优先使用页面指定的 ogImage，否则用站点 Logo
+const ogImageUrl = ogImage
+  ? (ogImage.startsWith('http') ? ogImage : new URL(ogImage, Astro.url.origin).href)
+  : (settings.siteLogo ? (settings.siteLogo.startsWith('http') ? settings.siteLogo : new URL(settings.siteLogo, Astro.url.origin).href) : undefined);
+const pageUrl = Astro.url.href;
 
 async function fetchMenus(type: string): Promise<MenuItem[]> {
   try {
@@ -84,6 +92,23 @@ const effectiveFontFamily = fontFamily
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    <link rel="canonical" href={pageUrl} />
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content={settings.siteTitle} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:locale" content="zh_CN" />
+    {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {ogImageUrl && <meta name="twitter:image" content={ogImageUrl} />}
+
     <meta name="generator" content={Astro.generator} />
     <link rel="sitemap" href="/sitemap.xml" />
     <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.xml" />

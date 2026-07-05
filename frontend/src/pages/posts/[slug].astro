@@ -261,13 +261,23 @@ const tocHtmlStr = tocTree.length > 0 ? '<ol class="toc-list">' + renderTocOl(to
 ---
 
 <BaseLayout
-  title={post ? `${post.title} | mccsjs` : '文章详情 | mccsjs'}
+  title={post?.title || '文章详情'}
   wide={true}
   postSlug={slug}
   postCategory={post?.category?.name}
   showToc={tocTree.length > 0}
+  ogType="article"
+  ogImage={post?.coverImage}
 >
   {jsonLd && <Fragment slot="head"><script type="application/ld+json" set:html={JSON.stringify(jsonLd)} /></Fragment>}
+  {post && (
+    <Fragment slot="head">
+      <meta property="article:published_time" content={post.createdAt} />
+      <meta property="article:modified_time" content={post.updatedAt || post.createdAt} />
+      {post.category?.name && <meta property="article:section" content={post.category.name} />}
+      {post.tags?.map(tag => <meta property="article:tag" content={tag.name} />)}
+    </Fragment>
+  )}
   {/* 阅读进度条 */}
   <div class="reading-progress fixed left-0 top-0 z-50 h-1 bg-yellow-400" style="width: 0%;"></div>
 

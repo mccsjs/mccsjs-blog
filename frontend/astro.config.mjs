@@ -1,6 +1,7 @@
 // @ts-check
 import swup from "@swup/astro";
 import react from "@astrojs/react";
+import lenis from "astro-lenis";
 import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 
@@ -18,10 +19,12 @@ export default defineConfig({
       updateHead: false,
       updateBodyClass: false,
       globalInstance: true,
+      reloadScripts: { optin: true },
       resolveUrl: (url) => url,
       animateHistoryBrowsing: false,
     }),
     react(),
+    lenis(),
   ],
   vite: {
     plugins: [tailwindcss()],

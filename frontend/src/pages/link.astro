@@ -3,6 +3,14 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import TwikooComments from '../components/TwikooComments.astro';
 import MarkdownIt from 'markdown-it';
 
+// 动态导入 highlight.js，避免 ESM/CJS 兼容问题
+let hljsModule: any;
+try {
+  hljsModule = await import('highlight.js');
+} catch (_) {
+  console.warn('highlight.js not available');
+}
+
 const API_URL = 'http://localhost:4000';
 
 interface FriendItem {
@@ -40,15 +48,38 @@ try {
   if (settingsRes.ok) {
     const settings = await settingsRes.json();
     const raw = settings.linkMarkdown || '';
-    if (raw) {
-      const md = new MarkdownIt({ html: true, linkify: true, typographer: true, breaks: true });
+      if (raw) {
+        const hl = hljsModule?.default || hljsModule;
+        const md = new MarkdownIt({
+          html: true,
+          linkify: true,
+          typographer: true,
+          breaks: true,
+          highlight: function (str: string, lang: string) {
+            if (hl && lang && hl.getLanguage(lang)) {
+              try { return hl.highlight(str, { language: lang }).value; } catch (_) {}
+            }
+            if (hl) {
+              try { return hl.highlightAuto(str).value; } catch (_) {}
+            }
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          },
+        });
+        md.use((await import('markdown-it-mark')).default);
+        // 图片加 lazy loading
+        md.renderer.rules.image = (tokens, idx) => {
+          const token = tokens[idx];
+          const src = token.attrGet('src') || '';
+          const alt = token.content;
+          return `<img src="${src}" alt="${alt}" loading="lazy" class="max-w-full rounded-lg" />`;
+        };
       linkMarkdownHtml = md.render(raw);
     }
   }
 } catch {}
 ---
 
-<BaseLayout title="友链 | mccsjs" wide showComment={true}>
+<BaseLayout title="友链" wide showComment={true}>
   <section class="mb-10 text-center">
     <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">友情链接</h1>
     <p class="mt-3 text-[rgb(var(--fg-soft))] dark:text-[rgb(var(--fg-muted))]">有趣的人与站点，欢迎交换友链</p>

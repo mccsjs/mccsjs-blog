@@ -36,7 +36,7 @@ if (posts.length > 0) {
 }
 ---
 
-<BaseLayout title={tagName ? `#${tagName} | mccsjs` : '标签 | mccsjs'}>
+<BaseLayout title={tagName ? `#${tagName}` : '标签'}>
   <section class="mb-10 text-center">
     <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">#{tagName || '标签'}</h1>
     <p class="mt-3 text-[rgb(var(--fg-soft))] dark:text-[rgb(var(--fg-muted))]">共 {posts.length} 篇文章</p>

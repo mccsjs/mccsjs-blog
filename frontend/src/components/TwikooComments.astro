@@ -9,57 +9,8 @@ try {
     const data = await res.json();
     envId = data.twikooEnvId || DEFAULT_ENV_ID;
   }
-} catch {
-  // 网络异常时使用默认 envId
-}
+} catch {}
 ---
 
-<div id="tcomment"></div>
-<script is:inline src="https://s4.zstatic.net/npm/twikoo@1.7.13/dist/twikoo.min.js"></script>
-<script is:inline define:vars={{ envId }}>
-  function initTwikoo() {
-    if (typeof twikoo === 'undefined') return;
-    // 销毁旧实例（swup 切换后重新初始化）
-    try { twikoo.destroy(); } catch {}
-    twikoo.init({
-      envId: envId,
-      el: '#tcomment',
-      path: location.pathname,
-      lang: 'zh-CN',
-    });
-  }
-
-  // 立即初始化（脚本可能已缓存加载完成）
-  if (typeof twikoo !== 'undefined') {
-    initTwikoo();
-  } else {
-    // 脚本还在加载，等加载完成后初始化
-    window.addEventListener('load', initTwikoo, { once: true });
-  }
-
-  // swup 页面切换后重新初始化
-  function hookTwikoo() {
-    if (!window.swup || !window.swup.hooks) return;
-    if (window.__twikooSwupHook && window.__twikooSwupHook === window.swup) return;
-    window.swup.hooks.on('page:view', () => {
-      setTimeout(initTwikoo, 0);
-    });
-    window.swup.hooks.on('visit:end', () => {
-      setTimeout(initTwikoo, 0);
-    });
-    window.__twikooSwupHook = window.swup;
-  }
-  hookTwikoo();
-  if (!window.swup || !window.swup.hooks) {
-    var twikooTimer = setInterval(function () {
-      if (window.swup && window.swup.hooks) {
-        clearInterval(twikooTimer);
-        hookTwikoo();
-      }
-    }, 50);
-  }
-  // Astro 原生导航兼容
-  document.addEventListener('astro:page-load', () => {
-    setTimeout(initTwikoo, 0);
-  });
-</script>
+<!-- 仅渲染容器，初始化逻辑在 BaseLayout 全局脚本中 -->
+<div id="tcomment" data-twikoo-env-id={envId}></div>

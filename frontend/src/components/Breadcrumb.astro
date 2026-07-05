@@ -1,0 +1,79 @@
+---
+interface Props {
+  title?: string;
+  postSlug?: string;
+  postCategory?: string;
+}
+
+const { title, postSlug, postCategory } = Astro.props;
+const pathname = Astro.url.pathname;
+
+// 构建面包屑导航
+const breadcrumbs = [];
+
+// 首页
+breadcrumbs.push({ label: '首页', href: '/', icon: 'material-symbols:home-outline-rounded' });
+
+// 根据路径判断当前页面
+if (pathname.startsWith('/posts/') && postSlug) {
+  // 文章页
+  if (postCategory) {
+    breadcrumbs.push({ label: postCategory, href: `/categories/${postCategory}`, icon: 'material-symbols:folder-outline-rounded' });
+  }
+  breadcrumbs.push({ label: title || '文章详情', href: `/posts/${postSlug}`, icon: 'solar:book-linear', current: true });
+} else if (pathname.startsWith('/posts')) {
+  // 文章列表
+  breadcrumbs.push({ label: '文章', href: '/posts', icon: 'solar:book-linear', current: true });
+} else if (pathname.startsWith('/categories/')) {
+  // 分类页
+  breadcrumbs.push({ label: '分类', href: '/categories', icon: 'material-symbols:folder-outline-rounded' });
+  breadcrumbs.push({ label: title || '分类', href: pathname, icon: 'material-symbols:folder-outline-rounded', current: true });
+} else if (pathname.startsWith('/categories')) {
+  // 分类列表
+  breadcrumbs.push({ label: '分类', href: '/categories', icon: 'material-symbols:folder-outline-rounded', current: true });
+} else if (pathname.startsWith('/tags/')) {
+  // 标签页
+  breadcrumbs.push({ label: '标签', href: '/tags', icon: 'material-symbols:label-outline-rounded' });
+  breadcrumbs.push({ label: title || '标签', href: pathname, icon: 'material-symbols:label-outline-rounded', current: true });
+} else if (pathname.startsWith('/tags')) {
+  // 标签列表
+  breadcrumbs.push({ label: '标签', href: '/tags', icon: 'material-symbols:label-outline-rounded', current: true });
+} else if (pathname.startsWith('/archive')) {
+  // 归档页
+  breadcrumbs.push({ label: '归档', href: '/archive', icon: 'material-symbols:inventory-2-outline-rounded', current: true });
+} else if (pathname.startsWith('/link')) {
+  // 友链页
+  breadcrumbs.push({ label: '友链', href: '/link', icon: 'ci:link', current: true });
+} else if (pathname.startsWith('/comments')) {
+  // 留言板
+  breadcrumbs.push({ label: '留言板', href: '/comments', icon: 'humbleicons:chat', current: true });
+} else if (pathname.startsWith('/about')) {
+  // 关于页
+  breadcrumbs.push({ label: '关于', href: '/about', icon: 'mdi:about-circle-outline', current: true });
+} else if (pathname === '/') {
+  // 首页不显示面包屑
+  breadcrumbs.length = 0;
+}
+---
+
+{breadcrumbs.length > 0 && (
+  <nav class="breadcrumb-nav mb-6 text-sm" aria-label="面包屑导航">
+    <ol class="flex items-center gap-2 flex-wrap">
+      {breadcrumbs.map((item, index) => (
+        <li class="flex items-center gap-1.5">
+          {index > 0 && <span class="text-[rgb(var(--fg-muted))] mx-1">/</span>}
+          <span class="flex items-center gap-1.5">
+            <iconify-icon icon={item.icon} width="16" height="16"></iconify-icon>
+            {item.current ? (
+              <span class="text-[rgb(var(--fg-soft))] font-medium" aria-current="page">{item.label}</span>
+            ) : (
+              <a href={item.href} class="text-[rgb(var(--fg-muted))] hover:text-yellow-600 dark:hover:text-yellow-400 transition-colors">
+                {item.label}
+              </a>
+            )}
+          </span>
+        </li>
+      ))}
+    </ol>
+  </nav>
+)}

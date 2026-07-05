@@ -5,6 +5,9 @@ import CopyrightCard from '../../components/CopyrightCard.astro';
 import MarkdownIt from 'markdown-it';
 import type { Post } from '../../types';
 
+// 导入 highlight.js 用于服务端代码高亮
+import hljs from 'highlight.js';
+
 const API_URL = 'http://localhost:4000';
 const DEFAULT_TWIKOO_ENV_ID = 'https://twikoo.seln.cn';
 
@@ -92,6 +95,14 @@ const md = new MarkdownIt({
   linkify: true,
   typographer: true,
   breaks: true,
+  highlight(code, lang) {
+    if (lang && hljs.getLanguage(lang)) {
+      try { return hljs.highlight(code, { language: lang }).value; } catch {}
+    }
+    // 语言未识别时，使用自动检测回退
+    try { return hljs.highlightAuto(code).value; } catch {}
+    return '';
+  },
 });
 
 md.renderer.rules.image = (tokens, idx) => {
@@ -162,6 +173,42 @@ const withFancybox = (html) => {
 
 const contentHtmlReady = withFancybox(contentHtml);
 
+// JSON-LD 结构化数据
+const cleanDescription = (raw: string) =>
+  (raw || '')
+    .replace(/<[^>]+>/g, '')      // 去掉 HTML 标签
+    .replace(/\{%.*?%\}/g, '')    // 去掉 Jekyll 标签 {% ... %}
+    .replace(/`{1,3}[^`]*`{1,3}/g, '') // 去掉行内代码
+    .replace(/[#*_~\[\]()>|]/g, '')    // 去掉 Markdown 语法字符
+    .replace(/\n+/g, ' ')         // 换行转空格
+    .replace(/\s+/g, ' ')         // 压缩空白
+    .trim()
+    .slice(0, 200);
+const postUrl = post ? `${Astro.url.origin}/posts/${post.slug}` : '';
+const jsonLd = post ? {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.title,
+  description: cleanDescription(post.excerpt || post.content),
+  image: post.coverImage || undefined,
+  datePublished: post.createdAt,
+  dateModified: post.updatedAt,
+  author: {
+    '@type': 'Person',
+    name: post.author?.name || siteTitle,
+    url: Astro.url.origin,
+  },
+  publisher: {
+    '@type': 'Person',
+    name: post.author?.name || siteTitle,
+  },
+  keywords: post.tags?.map(t => t.name) || [],
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': postUrl,
+  },
+} : null;
+
 
 // 提取目录（h1/h2/h3）并构建 Butterfly 风格嵌套 ol/li 结构
 interface TocItem {
@@ -220,6 +267,7 @@ const tocHtmlStr = tocTree.length > 0 ? '<ol class="toc-list">' + renderTocOl(to
   postCategory={post?.category?.name}
   showToc={tocTree.length > 0}
 >
+  {jsonLd && <Fragment slot="head"><script type="application/ld+json" set:html={JSON.stringify(jsonLd)} /></Fragment>}
   {/* 阅读进度条 */}
   <div class="reading-progress fixed left-0 top-0 z-50 h-1 bg-yellow-400" style="width: 0%;"></div>
 
@@ -229,7 +277,7 @@ const tocHtmlStr = tocTree.length > 0 ? '<ol class="toc-list">' + renderTocOl(to
         <h1 class="text-xl font-bold">文章加载失败</h1>
         <p class="mt-2 text-sm">{error || '未找到该文章'}</p>
         <a href="/posts" class="mt-4 inline-block text-sm font-medium text-yellow-600 hover:underline">
-          返回博客列表
+          返回文章列表
         </a>
       </div>
     ) : (
@@ -239,10 +287,10 @@ const tocHtmlStr = tocTree.length > 0 ? '<ol class="toc-list">' + renderTocOl(to
           class="mb-6 inline-flex items-center gap-1 text-sm text-[rgb(var(--fg-muted))] hover:text-yellow-600 dark:text-[rgb(var(--fg-muted))] dark:hover:text-yellow-400 transition-colors"
         >
           <span>←</span>
-          返回博客列表
+          返回文章列表
         </a>
 
-        <div class="grid gap-8 lg:grid-cols-[2fr_280px] lg:gap-12">
+        <div class={tocTree.length > 0 ? 'grid gap-8 lg:grid-cols-[2fr_280px] lg:gap-12' : 'mx-auto max-w-3xl'}>
           <article class="post-article">
             <header class="mb-8">
               <div class="flex flex-wrap items-center gap-2 text-sm text-[rgb(var(--fg-muted))] dark:text-[rgb(var(--fg-muted))]">
@@ -345,11 +393,135 @@ const tocHtmlStr = tocTree.length > 0 ? '<ol class="toc-list">' + renderTocOl(to
     let _progressInitialized = false;
 
     function initPageScripts() {
-      // Fancybox
+      // ===== 代码块工具栏（语言标签 + 复制按钮 + 行号）=====
+      document.querySelectorAll('.post-content pre').forEach((pre) => {
+        // 已处理过就跳过
+        if (pre.dataset.codeProcessed) return;
+        pre.dataset.codeProcessed = '1';
+
+        const code = pre.querySelector('code');
+        if (!code) return;
+
+        // 1) 语言标签
+        const langMatch = code.className.match(/language-(\w+)/);
+        const langLabel = langMatch ? langMatch[1] : '';
+        const langMap = { js:'JavaScript',ts:'TypeScript',py:'Python',sh:'Bash',bash:'Bash',md:'Markdown',yaml:'YAML',yml:'YAML',json:'JSON',sql:'SQL',html:'HTML',css:'CSS',scss:'SCSS',vue:'Vue',jsx:'JSX',tsx:'TSX',go:'Go',rust:'Rust',java:'Java',c:'C','cpp':'C++',csharp:'C#',php:'PHP',ruby:'Ruby',swift:'Swift',kotlin:'Kotlin',dart:'Dart',xml:'XML',toml:'TOML',ini:'INI',dockerfile:'Docker',plaintext:'Text' };
+        const displayLang = langMap[langLabel?.toLowerCase()] || (langLabel || '');
+
+        // 2) 构建工具栏
+        const toolbar = document.createElement('div');
+        toolbar.className = 'code-tool-bar';
+        if (displayLang) {
+          const labelSpan = document.createElement('span');
+          labelSpan.className = 'code-lang';
+          labelSpan.textContent = displayLang;
+          toolbar.appendChild(labelSpan);
+        }
+        // 复制按钮
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'code-copy-btn';
+        copyBtn.innerHTML = '<svg style="width:14px;height:14px;vertical-align:middle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path></svg> 复制';
+        copyBtn.addEventListener('click', () => {
+          const codeContent = code.querySelector('.code-line-content');
+          const text = codeContent
+            ? (codeContent.innerText || codeContent.textContent || '')
+            : (code.innerText || code.textContent || '');
+          navigator.clipboard.writeText(text).then(() => {
+            copyBtn.innerHTML = '<svg style="width:14px;height:14px;vertical-align:middle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> 已复制';
+            copyBtn.classList.add('copied');
+            setTimeout(() => {
+              copyBtn.innerHTML = '<svg style="width:14px;height:14px;vertical-align:middle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path></svg> 复制';
+              copyBtn.classList.remove('copied');
+            }, 2000);
+          });
+        });
+        toolbar.appendChild(copyBtn);
+        pre.insertBefore(toolbar, pre.firstChild);
+
+        // 3) 行号
+        const lines = code.innerHTML.split('\n');
+        // 移除末尾空行
+        while (lines.length > 0 && lines[lines.length - 1].trim() === '') lines.pop();
+        if (lines.length > 1) {
+          code.className += ' has-line-numbers';
+          const lineNums = document.createElement('span');
+          lineNums.className = 'code-line-numbers';
+          for (let i = 1; i <= lines.length; i++) {
+            const span = document.createElement('span');
+            span.textContent = i;
+            lineNums.appendChild(span);
+          }
+          code.insertBefore(lineNums, code.firstChild);
+
+          // 给每行包裹 .code-line（保留高亮标签）
+          const codeContent = document.createElement('span');
+          codeContent.className = 'code-line-content';
+          // 将行号之后的内容移入 codeContent
+          const nodesToMove = [];
+          let foundLineNums = false;
+          for (const child of Array.from(code.childNodes)) {
+            if (child === lineNums) { foundLineNums = true; continue; }
+            if (foundLineNums) nodesToMove.push(child);
+          }
+          nodesToMove.forEach(n => codeContent.appendChild(n));
+          code.appendChild(codeContent);
+        }
+
+        // 4) 折叠（超过10行，默认收起，在 <pre> 上加类）
+        if (lines.length > 10 && !pre.querySelector('.code-fold-overlay')) {
+          pre.classList.add('code-collapsed');
+          const overlay = document.createElement('div');
+          overlay.className = 'code-fold-overlay';
+          const expandBtn = document.createElement('button');
+          expandBtn.className = 'code-expand-btn';
+          expandBtn.innerHTML = '<svg style="width:12px;height:12px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>展开';
+          expandBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isExpanded = pre.classList.toggle('code-collapsed');
+            expandBtn.innerHTML = isExpanded
+              ? '<svg style="width:12px;height:12px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>展开'
+              : '<svg style="width:12px;height:12px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>收起';
+          });
+          overlay.appendChild(expandBtn);
+          pre.appendChild(overlay);
+        }
+      });
+
+      // 复制按钮点击事件（事件委托，防止 swup 切换后失效）
+      document.querySelectorAll('.post-content pre .code-copy-btn').forEach((btn) => {
+        if (btn.dataset.bound) return;
+        btn.dataset.bound = '1';
+        btn.addEventListener('click', () => {
+          const pre = btn.closest('pre');
+          const code = pre?.querySelector('code');
+          if (!code) return;
+          // 优先从 .code-line-content 取文本（不含行号），回退到 innerText
+          const codeContent = code.querySelector('.code-line-content');
+          const text = codeContent
+            ? (codeContent.innerText || codeContent.textContent || '')
+            : (code.innerText || code.textContent || '');
+          navigator.clipboard.writeText(text).then(() => {
+            const icon = btn.querySelector('iconify-icon');
+            const span = btn.querySelector('span');
+            if (icon) icon.setAttribute('icon', 'ci:check');
+            if (span) span.textContent = '已复制';
+            btn.classList.add('copied');
+            setTimeout(() => {
+              if (icon) icon.setAttribute('icon', 'ci:copy');
+              if (span) span.textContent = '复制';
+              btn.classList.remove('copied');
+            }, 2000);
+          });
+        });
+      });
+
+      // Fancybox（先销毁旧实例，防止 swup 切换后重复绑定）
       if (typeof Fancybox !== 'undefined') {
-        Fancybox.bind('[data-fancybox="gallery"]', {
-          Carousel: { infinite: false },
-          Toolbar: { display: ['close'] },
+        Fancybox.destroy();
+        requestAnimationFrame(() => {
+          Fancybox.bind('[data-fancybox="gallery"]', {
+            Carousel: { infinite: false },
+          });
         });
       }
 

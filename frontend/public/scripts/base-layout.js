@@ -200,8 +200,7 @@
     var el = document.getElementById('tcomment');
     if (!el) return; // 当前页面没有评论区
     var envId = el.getAttribute('data-twikoo-env-id') || 'https://twikoo.seln.cn';
-    // 如果已经初始化过（有子元素），跳过
-    if (el.children.length > 0 && !el.dataset.twikooFailed) return;
+
     if (typeof twikoo === 'undefined') {
       // 按需加载 twikoo 库，加载完成后自动重试
       loadTwikooScript(function() {
@@ -209,7 +208,12 @@
       });
       return;
     }
+
+    // 先销毁旧实例，再清空容器，避免 Swup 切换后残留 DOM 导致样式错乱
     try { twikoo.destroy(); } catch (e) {}
+    el.innerHTML = '';
+    delete el.dataset.twikooFailed;
+
     twikoo.init({
       envId: envId,
       el: '#tcomment',

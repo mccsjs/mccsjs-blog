@@ -16,7 +16,7 @@ export default defineConfig({
       cache: false,
       preload: true,
       accessibility: true,
-      updateHead: false,
+      updateHead: true,
       updateBodyClass: false,
       globalInstance: true,
       reloadScripts: { optin: true },

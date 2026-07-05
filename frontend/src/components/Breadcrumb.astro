@@ -1,79 +1,128 @@
 ---
+import type { Post } from '../types';
+
+const API_URL = 'http://localhost:4000';
+
+interface BreadcrumbItem {
+  label: string;
+  href?: string;
+  isCurrent?: boolean;
+}
+
 interface Props {
   title?: string;
   postSlug?: string;
   postCategory?: string;
 }
 
-const { title, postSlug, postCategory } = Astro.props;
-const pathname = Astro.url.pathname;
+const { title, postSlug, postCategory } = Astro.props as Props;
 
-// 构建面包屑导航
-const breadcrumbs = [];
+const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isHome = pathname === '/';
+const origin = Astro.url.origin;
 
-// 首页
-breadcrumbs.push({ label: '首页', href: '/', icon: 'material-symbols:home-outline-rounded' });
+// 页面类型判断
+const isPostDetail = pathname.startsWith('/posts/');
+const isArchive = pathname === '/archive';
+const isCategories = pathname === '/categories';
+const isCategoryDetail = pathname.startsWith('/categories/') && !isCategories;
+const isTags = pathname === '/tags';
+const isTagDetail = pathname.startsWith('/tags/') && !isTags;
+const isPosts = pathname === '/posts';
+const isLink = pathname === '/link';
 
-// 根据路径判断当前页面
-if (pathname.startsWith('/posts/') && postSlug) {
-  // 文章页
-  if (postCategory) {
-    breadcrumbs.push({ label: postCategory, href: `/categories/${postCategory}`, icon: 'material-symbols:folder-outline-rounded' });
+const homeItem: BreadcrumbItem = {
+  label: '主页',
+  href: '/',
+};
+
+let items: BreadcrumbItem[] = [];
+
+if (!isHome) {
+  if (isPostDetail) {
+    const categoryLabel = postCategory || '未分类';
+    items = [
+      homeItem,
+      { label: '文章', href: '/posts' },
+      { label: title || categoryLabel, isCurrent: true },
+    ];
+  } else if (isArchive) {
+    items = [
+      homeItem,
+      { label: '归档', isCurrent: true },
+    ];
+  } else if (isCategoryDetail) {
+    const categorySlug = pathname.replace('/categories/', '');
+    items = [
+      homeItem,
+      { label: '分类', href: '/categories' },
+      { label: categorySlug, isCurrent: true },
+    ];
+  } else if (isCategories) {
+    items = [
+      homeItem,
+      { label: '分类', isCurrent: true },
+    ];
+  } else if (isTagDetail) {
+    const tagSlug = pathname.replace('/tags/', '');
+    items = [
+      homeItem,
+      { label: '标签', href: '/tags' },
+      { label: `#${tagSlug}`, isCurrent: true },
+    ];
+  } else if (isTags) {
+    items = [
+      homeItem,
+      { label: '标签', isCurrent: true },
+    ];
+  } else if (isPosts) {
+    items = [
+      homeItem,
+      { label: '文章', isCurrent: true },
+    ];
+  } else if (isLink) {
+    items = [
+      homeItem,
+      { label: '友链', isCurrent: true },
+    ];
+  } else {
+    // 其他独立页面
+    const pageTitle = title || '页面';
+    items = [
+      homeItem,
+      { label: pageTitle, isCurrent: true },
+    ];
   }
-  breadcrumbs.push({ label: title || '文章详情', href: `/posts/${postSlug}`, icon: 'solar:book-linear', current: true });
-} else if (pathname.startsWith('/posts')) {
-  // 文章列表
-  breadcrumbs.push({ label: '文章', href: '/posts', icon: 'solar:book-linear', current: true });
-} else if (pathname.startsWith('/categories/')) {
-  // 分类页
-  breadcrumbs.push({ label: '分类', href: '/categories', icon: 'material-symbols:folder-outline-rounded' });
-  breadcrumbs.push({ label: title || '分类', href: pathname, icon: 'material-symbols:folder-outline-rounded', current: true });
-} else if (pathname.startsWith('/categories')) {
-  // 分类列表
-  breadcrumbs.push({ label: '分类', href: '/categories', icon: 'material-symbols:folder-outline-rounded', current: true });
-} else if (pathname.startsWith('/tags/')) {
-  // 标签页
-  breadcrumbs.push({ label: '标签', href: '/tags', icon: 'material-symbols:label-outline-rounded' });
-  breadcrumbs.push({ label: title || '标签', href: pathname, icon: 'material-symbols:label-outline-rounded', current: true });
-} else if (pathname.startsWith('/tags')) {
-  // 标签列表
-  breadcrumbs.push({ label: '标签', href: '/tags', icon: 'material-symbols:label-outline-rounded', current: true });
-} else if (pathname.startsWith('/archive')) {
-  // 归档页
-  breadcrumbs.push({ label: '归档', href: '/archive', icon: 'material-symbols:inventory-2-outline-rounded', current: true });
-} else if (pathname.startsWith('/link')) {
-  // 友链页
-  breadcrumbs.push({ label: '友链', href: '/link', icon: 'ci:link', current: true });
-} else if (pathname.startsWith('/comments')) {
-  // 留言板
-  breadcrumbs.push({ label: '留言板', href: '/comments', icon: 'humbleicons:chat', current: true });
-} else if (pathname.startsWith('/about')) {
-  // 关于页
-  breadcrumbs.push({ label: '关于', href: '/about', icon: 'mdi:about-circle-outline', current: true });
-} else if (pathname === '/') {
-  // 首页不显示面包屑
-  breadcrumbs.length = 0;
 }
 ---
 
-{breadcrumbs.length > 0 && (
-  <nav class="breadcrumb-nav mb-6 text-sm" aria-label="面包屑导航">
-    <ol class="flex items-center gap-2 flex-wrap">
-      {breadcrumbs.map((item, index) => (
-        <li class="flex items-center gap-1.5">
-          {index > 0 && <span class="text-[rgb(var(--fg-muted))] mx-1">/</span>}
-          <span class="flex items-center gap-1.5">
-            <iconify-icon icon={item.icon} width="16" height="16"></iconify-icon>
-            {item.current ? (
-              <span class="text-[rgb(var(--fg-soft))] font-medium" aria-current="page">{item.label}</span>
-            ) : (
-              <a href={item.href} class="text-[rgb(var(--fg-muted))] hover:text-yellow-600 dark:hover:text-yellow-400 transition-colors">
-                {item.label}
-              </a>
-            )}
-          </span>
+{items.length > 0 && (
+  <nav class="mb-6" aria-label="Breadcrumb">
+    <ol class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-600 dark:text-gray-400">
+      {items.map((item, idx) => (
+        <li class="flex items-center gap-3">
+          {idx > 0 && <span class="text-gray-400 dark:text-gray-600">/</span>}
+          {item.href && !item.isCurrent ? (
+            <a href={item.href} class="text-yellow-600 hover:text-yellow-700 dark:text-yellow-400 dark:hover:text-yellow-300 transition-colors">
+              {item.label}
+            </a>
+          ) : (
+            <span class:list={[item.isCurrent ? 'text-gray-900 dark:text-gray-100 font-medium' : '']}>
+              {item.label}
+            </span>
+          )}
         </li>
       ))}
     </ol>
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: items.map((item, idx) => ({
+        '@type': 'ListItem',
+        position: idx + 1,
+        name: item.label,
+        ...(item.href ? { item: `${origin}${item.href}` } : {}),
+      })),
+    })} />
   </nav>
 )}

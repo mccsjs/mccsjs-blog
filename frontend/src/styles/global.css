@@ -80,10 +80,10 @@
   html {
     scroll-behavior: smooth;
     overflow-x: hidden;
-    overflow-y: scroll;
+    overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: rgb(var(--border)) transparent;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    scrollbar-gutter: stable;
   }
 
   body {
@@ -91,17 +91,18 @@
     color: rgb(var(--fg));
     overflow-x: hidden;
     max-width: 100vw;
-    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
-  /* 主题化滚动条 */
-  ::-webkit-scrollbar { width: 6px; }
+  /* 主题化滚动条（不使用 color-scheme，避免 Windows 走系统原生滚动条） */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb {
     background: rgb(var(--border));
-    border-radius: 3px;
+    border-radius: 5px;
   }
   ::-webkit-scrollbar-thumb:hover { background: rgb(var(--fg-muted)); }
+  ::-webkit-scrollbar-button { display: none; height: 0; width: 0; }
+  ::-webkit-scrollbar-corner { background: transparent; }
   .dark ::-webkit-scrollbar-thumb { background: rgb(var(--border)); }
   .dark ::-webkit-scrollbar-thumb:hover { background: rgb(var(--fg-muted)); }
 
@@ -109,29 +110,6 @@
   img, video, iframe, pre, table, svg {
     max-width: 100%;
     height: auto;
-  }
-
-  /* 明暗切换过渡 */
-  *,
-  *::before,
-  *::after {
-    transition:
-      background-color 0.3s ease,
-      color 0.2s ease,
-      border-color 0.3s ease,
-      box-shadow 0.3s ease,
-      fill 0.3s ease,
-      stroke 0.3s ease;
-  }
-  /* 排除已有自身过渡动画的元素 */
-  .transition-swup-main,
-  .transition-swup-leaving,
-  [style*="animation"],
-  #post-toc,
-  #post-toc *,
-  #toc-list,
-  #toc-list * {
-    transition: none !important;
   }
 }
 

@@ -31,6 +31,9 @@ const msg = funMessages[Math.floor(Math.random() * funMessages.length)];
 ---
 
 <BaseLayout title="404 页面未找到" description="你访问的页面不存在">
+  <Fragment slot="head">
+    <meta name="robots" content="noindex, follow" />
+  </Fragment>
   <section class="flex flex-col items-center justify-center py-16 md:py-24 select-none">
 
     <!-- 404 大字 + 浮动装饰 -->

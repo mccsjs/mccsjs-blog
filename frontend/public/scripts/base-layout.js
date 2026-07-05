@@ -218,58 +218,131 @@
     });
   }
 
-  // ===== TabNav 选框定位 =====
-  var _tabNavTimers = [];
-  function initTabNav() {
-    _tabNavTimers.forEach(function(t) { clearTimeout(t); });
-    _tabNavTimers = [];
-    var nav = document.getElementById('tab-nav');
-    var border = document.getElementById('tab-hover-border');
-    if (!nav || !border) return;
+  // 文章页代码块工具栏（语言标签 + 复制按钮 + 行号 + 展开收起）
+  // 处理 .post-content pre，在 Swup 切页后也能正常初始化
+  function initPostCodeBlocks() {
+    var langMap = {
+      js:'JavaScript',ts:'TypeScript',py:'Python',sh:'Bash',bash:'Bash',md:'Markdown',
+      yaml:'YAML',yml:'YAML',json:'JSON',sql:'SQL',html:'HTML',css:'CSS',scss:'SCSS',
+      vue:'Vue',jsx:'JSX',tsx:'TSX',go:'Go',rust:'Rust',java:'Java',c:'C','cpp':'C++',
+      csharp:'C#',php:'PHP',ruby:'Ruby',swift:'Swift',kotlin:'Kotlin',dart:'Dart',
+      xml:'XML',toml:'TOML',ini:'INI',dockerfile:'Docker',plaintext:'Text'
+    };
 
-    border.style.width = '0px';
-    border.style.left = '0px';
+    document.querySelectorAll('.post-content pre').forEach(function(pre) {
+      if (pre.dataset.codeProcessed) return;
+      pre.dataset.codeProcessed = '1';
 
-    var items = nav.querySelectorAll('.tab-item');
-    items.forEach(function(item) {
-      if (item._tme) { item.removeEventListener('mouseenter', item._tme); }
-    });
+      var code = pre.querySelector('code');
+      if (!code) return;
 
-    function pos(item) {
-      (function tryPos(count) {
-        count = count || 0;
-        requestAnimationFrame(function() {
-          var w = item.offsetWidth;
-          var l = item.offsetLeft;
-          if (w > 0) {
-            border.style.width = w + 'px';
-            border.style.left = l + 'px';
-          } else if (count < 15) {
-            _tabNavTimers.push(setTimeout(function() {
-              tryPos(count + 1);
-            }, 30 + count * 10));
-          }
+      // 1) 语言标签 + 复制按钮 → 工具栏
+      var langMatch = code.className.match(/language-(\w+)/);
+      var langLabel = langMatch ? langMatch[1] : '';
+      var displayLang = langMap[langLabel ? langLabel.toLowerCase() : ''] || (langLabel || '');
+
+      var toolbar = document.createElement('div');
+      toolbar.className = 'code-tool-bar';
+      if (displayLang) {
+        var labelSpan = document.createElement('span');
+        labelSpan.className = 'code-lang';
+        labelSpan.textContent = displayLang;
+        toolbar.appendChild(labelSpan);
+      }
+
+      // 复制按钮
+      var copyBtn = document.createElement('button');
+      copyBtn.className = 'code-copy-btn';
+      copyBtn.type = 'button';
+      copyBtn.innerHTML = '<svg style="width:14px;height:14px;vertical-align:middle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" strokecap="round" strokejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path></svg> 复制';
+      copyBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var codeContent = code.querySelector('.code-line-content');
+        var text = codeContent
+          ? (codeContent.innerText || codeContent.textContent || '')
+          : (code.innerText || code.textContent || '');
+        navigator.clipboard.writeText(text).then(function() {
+          copyBtn.innerHTML = '<svg style="width:14px;height:14px;vertical-align:middle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> 已复制';
+          copyBtn.classList.add('copied');
+          setTimeout(function() {
+            copyBtn.innerHTML = '<svg style="width:14px;height:14px;vertical-align:middle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" strokecap="round" strokejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path></svg> 复制';
+            copyBtn.classList.remove('copied');
+          }, 2000);
         });
-      })();
-    }
+      });
+      toolbar.appendChild(copyBtn);
+      pre.insertBefore(toolbar, pre.firstChild);
 
-    var active = nav.querySelector('.tab-item.active');
-    if (active) {
-      nav.classList.add('has-active');
-      pos(active);
-    } else {
-      nav.classList.remove('has-active');
-    }
+      // 2) 行号
+      var lines = code.innerHTML.split('\n');
+      while (lines.length > 0 && lines[lines.length - 1].trim() === '') lines.pop();
+      if (lines.length > 1) {
+        code.classList.add('has-line-numbers');
+        var lineNums = document.createElement('span');
+        lineNums.className = 'code-line-numbers';
+        for (var i = 1; i <= lines.length; i++) {
+          var span = document.createElement('span');
+          span.textContent = i;
+          lineNums.appendChild(span);
+        }
+        code.insertBefore(lineNums, code.firstChild);
 
-    items.forEach(function(item) {
-      item._tme = function() { pos(item); };
-      item.addEventListener('mouseenter', item._tme);
+        // 给每行包裹 .code-line（保留高亮标签）
+        var codeContent = document.createElement('span');
+        codeContent.className = 'code-line-content';
+        var nodesToMove = [];
+        var foundLineNums = false;
+        for (var ci = 0; ci < code.childNodes.length; ci++) {
+          var child = code.childNodes[ci];
+          if (child === lineNums) { foundLineNums = true; continue; }
+          if (foundLineNums) nodesToMove.push(child);
+        }
+        nodesToMove.forEach(function(n) { codeContent.appendChild(n); });
+        code.appendChild(codeContent);
+      }
+
+      // 3) 展开/收起（超过10行默认收起）
+      if (lines.length > 10 && !pre.querySelector('.code-fold-overlay')) {
+        pre.classList.add('code-collapsed');
+        var overlay = document.createElement('div');
+        overlay.className = 'code-fold-overlay';
+        var expandBtn = document.createElement('button');
+        expandBtn.className = 'code-expand-btn';
+        expandBtn.innerHTML = '<svg style="width:12px;height:12px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" strokecap="round" strokejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>展开';
+        expandBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var isExpanded = pre.classList.toggle('code-collapsed');
+          expandBtn.innerHTML = isExpanded
+            ? '<svg style="width:12px;height:12px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" strokecap="round" strokejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>展开'
+            : '<svg style="width:12px;height:12px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" strokecap="round" strokejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>收起';
+        });
+        overlay.appendChild(expandBtn);
+        pre.appendChild(overlay);
+      }
     });
 
-    nav.addEventListener('mouseleave', function() {
-      var a = document.querySelector('#tab-nav .tab-item.active');
-      var b = document.getElementById('tab-hover-border');
-      if (a && b) pos(a);
+    // 复制按钮事件委托（防止重复绑定）
+    document.querySelectorAll('.post-content pre .code-copy-btn').forEach(function(btn) {
+      if (btn.dataset.bound) return;
+      btn.dataset.bound = '1';
+      btn.addEventListener('click', function() {
+        var pre = btn.closest('pre');
+        var codeEl = pre ? pre.querySelector('code') : null;
+        if (!codeEl) return;
+        var cContent = codeEl.querySelector('.code-line-content');
+        var text = cContent
+          ? (cContent.innerText || cContent.textContent || '')
+          : (codeEl.innerText || codeEl.textContent || '');
+        navigator.clipboard.writeText(text).then(function() {
+          btn.innerHTML = '<svg style="width:14px;height:14px;vertical-align:middle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> 已复制';
+          btn.classList.add('copied');
+          setTimeout(function() {
+            btn.innerHTML = '<svg style="width:14px;height:14px;vertical-align:middle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" strokecap="round" strokejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path></svg> 复制';
+            btn.classList.remove('copied');
+          }, 2000);
+        });
+      });
     });
   }
 
@@ -315,8 +388,8 @@
       initCodeCopyButtons();
       initCodeLineNumbers();
       initCodeLangLabels();
+      initPostCodeBlocks(); // 文章页代码块工具栏/行号/展开收起
       initTwikooComments(); // 评论区
-      initTabNav();        // TabNav 选框
       document.dispatchEvent(new CustomEvent('swup:page-view'));
     });
   }
@@ -332,8 +405,8 @@
   initCodeCopyButtons();
   initCodeLineNumbers();
   initCodeLangLabels();
+  initPostCodeBlocks(); // 文章页代码块
   initTwikooComments(); // 评论区
-  initTabNav();        // TabNav 选框
 
   if (window.swup && window.swup.hooks) {
     setup();
@@ -347,7 +420,7 @@
     initCodeCopyButtons();
     initCodeLineNumbers();
     initCodeLangLabels();
+    initPostCodeBlocks(); // 文章页代码块
     initTwikooComments(); // 评论区
-    initTabNav();        // TabNav 选框
   });
 })();

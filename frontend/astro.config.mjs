@@ -6,7 +6,7 @@ import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  site: "https://blog.seln.cn",
+  site: process.env.SITE_URL || "http://localhost:4321",
   integrations: [
     swup({
       theme: false,
@@ -29,7 +29,7 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
     server: {
-      allowedHosts: ["d.seln.cn"],
+      host: true,
     },
   },
 });

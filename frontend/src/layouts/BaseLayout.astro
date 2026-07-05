@@ -161,7 +161,7 @@ const effectiveFontFamily = fontFamily
     <div class="relative z-10 flex min-h-screen flex-col">
       <Header siteTitle={settings.siteTitle} siteLogo={settings.siteLogo} favicon={settings.favicon} menus={navMenus} aggregateMenus={aggregateMenus} />
       <main id="swup-container" class="transition-swup-main mx-auto w-full flex-1 px-4 pt-24 pb-12 md:pt-28 md:px-6 md:pb-16 overflow-x-clip" class:list={["max-w-5xl", wide && "max-w-6xl"]}>
-        <Breadcrumb title={pageTitle} postSlug={postSlug} postCategory={postCategory} />
+        <Breadcrumb title={rawTitle} postSlug={postSlug} postCategory={postCategory} />
         <slot />
       </main>
       <Footer

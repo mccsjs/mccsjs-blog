@@ -346,7 +346,192 @@
     });
   }
 
-  function setup() {
+  // Fancybox 图片灯箱（先销毁旧实例，防止 swup 切换后重复绑定）
+  function initFancybox() {
+    if (typeof Fancybox === 'undefined') return;
+    try { Fancybox.destroy(); } catch(e) {}
+    requestAnimationFrame(function() {
+      try {
+        Fancybox.bind('[data-fancybox="gallery"]', {
+          Carousel: { infinite: false }
+        });
+      } catch(e) {}
+    });
+  }
+
+  // 阅读进度条
+  function initReadingProgress() {
+    var progress = document.querySelector('.reading-progress');
+    var article = document.querySelector('.post-article');
+    if (!progress || !article) return;
+
+    function updateProgress() {
+      var rect = article.getBoundingClientRect();
+      var total = rect.height - window.innerHeight;
+      var scrolled = -rect.top;
+      var percent = Math.max(0, Math.min(100, (scrolled / total) * 100));
+      progress.style.width = percent + '%';
+    }
+
+    // 移除旧监听器，防止重复绑定
+    if (window._progressScrollHandler) {
+      window.removeEventListener('scroll', window._progressScrollHandler);
+    }
+    window._progressScrollHandler = updateProgress;
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    updateProgress();
+  }
+
+  // 文章目录（TOC）：滚动高亮 + 点击跳转 + 固定定位
+  function initPostToc() {
+    var tocNav = document.getElementById('toc-list');
+    if (!tocNav) return;
+
+    var tocLinks = tocNav.querySelectorAll('.toc-link');
+    var article = document.querySelector('.post-article');
+    if (!article || !tocLinks.length) return;
+
+    var headings = Array.from(article.querySelectorAll('h1,h2,h3')).filter(function(el) { return el.id; });
+    if (!headings.length) return;
+    var lastActiveIndex = -1;
+
+    function findCurrentHeading() {
+      var threshold = 100;
+      var bestIdx = -1;
+      var bestTop = -Infinity;
+      for (var i = 0; i < headings.length; i++) {
+        var rect = headings[i].getBoundingClientRect();
+        if (rect.top <= threshold && rect.top > bestTop) {
+          bestTop = rect.top;
+          bestIdx = i;
+        }
+      }
+      return bestIdx >= 0 ? bestIdx : 0;
+    }
+
+    function updateToc() {
+      var idx = findCurrentHeading();
+      if (idx === lastActiveIndex) return;
+      lastActiveIndex = idx;
+
+      // 移除所有 active
+      tocNav.querySelectorAll('.active').forEach(function(el) { el.classList.remove('active'); });
+
+      // 找到对应的 toc-link
+      var targetId = '#' + headings[idx].id;
+      var targetLink = null;
+      for (var i = 0; i < tocLinks.length; i++) {
+        if (tocLinks[i].getAttribute('href') === targetId) {
+          targetLink = tocLinks[i];
+          break;
+        }
+      }
+      if (!targetLink) return;
+
+      // 高亮当前链接
+      targetLink.classList.add('active');
+
+      // 向上遍历 DOM 树，给所有祖先 li 加 active
+      var parent = targetLink.parentElement;
+      while (parent && parent !== tocNav) {
+        if (parent.classList.contains('toc-item')) {
+          parent.classList.add('active');
+        }
+        parent = parent.parentElement;
+      }
+
+      // 滚动目录让当前项居中
+      var tocAside = tocNav.closest('[id="post-toc"]');
+      var tocContainer = tocAside ? tocAside.querySelector('[class*="overflow"]') : null;
+      if (tocContainer && targetLink.offsetTop > tocContainer.clientHeight * 0.5) {
+        tocContainer.scrollTo({
+          top: targetLink.offsetTop - tocContainer.clientHeight / 3,
+          behavior: 'smooth'
+        });
+      }
+    }
+
+    // 节流滚动监听（先清除旧的）
+    if (window._tocScrollHandler) {
+      window.removeEventListener('scroll', window._tocScrollHandler);
+    }
+    window._tocScrollHandler = function() {
+      if (window._tocScrollTimer) cancelAnimationFrame(window._tocScrollTimer);
+      window._tocScrollTimer = requestAnimationFrame(updateToc);
+    };
+    window.addEventListener('scroll', window._tocScrollHandler, { passive: true });
+
+    // 初始化
+    updateToc();
+
+    // 点击目录链接时平滑滚动（先移除旧监听）
+    if (window._tocClickHandler) {
+      tocNav.removeEventListener('click', window._tocClickHandler);
+    }
+    window._tocClickHandler = function(e) {
+      var target = e.target.closest('.toc-link');
+      if (!target) return;
+      e.preventDefault();
+      var href = target.getAttribute('href');
+      if (!href) return;
+      var dest = document.getElementById(href.slice(1));
+      if (dest) {
+        dest.scrollIntoView({ behavior: 'smooth' });
+      }
+    };
+    tocNav.addEventListener('click', window._tocClickHandler);
+
+    // 目录固定定位：CSS sticky 在 grid 布局中不可靠，用 JS 控制
+    var tocInner = document.getElementById('post-toc-inner');
+    if (tocInner && !tocInner.dataset.tocFixedInit) {
+      tocInner.dataset.tocFixedInit = '1';
+
+      // 占位元素
+      var placeholder = document.createElement('div');
+      placeholder.style.display = 'none';
+      tocInner.parentElement.appendChild(placeholder);
+
+      var FIXED_TOP = 100;
+      var isFixed = false;
+
+      function updateFixed() {
+        var scrollY = window.scrollY || document.documentElement.scrollTop;
+        var triggerY = tocInner.parentElement.getBoundingClientRect().top + scrollY - FIXED_TOP;
+
+        if (scrollY >= triggerY && !isFixed) {
+          isFixed = true;
+          var w = tocInner.offsetWidth;
+          tocInner.style.position = 'fixed';
+          tocInner.style.top = FIXED_TOP + 'px';
+          tocInner.style.width = w + 'px';
+          placeholder.style.width = w + 'px';
+          placeholder.style.height = tocInner.offsetHeight + 'px';
+          placeholder.style.display = 'block';
+        } else if (scrollY < triggerY && isFixed) {
+          isFixed = false;
+          tocInner.style.position = '';
+          tocInner.style.top = '';
+          tocInner.style.width = '';
+          placeholder.style.display = 'none';
+        }
+      }
+
+      var ticking = false;
+      function onScrollFixed() {
+        if (!ticking) {
+          requestAnimationFrame(function() {
+            updateFixed();
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }
+
+      window.addEventListener('scroll', onScrollFixed, { passive: true });
+      window.addEventListener('resize', onScrollFixed, { passive: true });
+      updateFixed();
+    }
+  }
     if (!window.swup || !window.swup.hooks) return;
 
     window.swup.hooks.on('link:click', function() {
@@ -390,6 +575,9 @@
       initCodeLangLabels();
       initPostCodeBlocks(); // 文章页代码块工具栏/行号/展开收起
       initTwikooComments(); // 评论区
+      initFancybox();
+      initReadingProgress();
+      initPostToc();
       document.dispatchEvent(new CustomEvent('swup:page-view'));
     });
   }
@@ -407,6 +595,9 @@
   initCodeLangLabels();
   initPostCodeBlocks(); // 文章页代码块
   initTwikooComments(); // 评论区
+  initFancybox();
+  initReadingProgress();
+  initPostToc();
 
   if (window.swup && window.swup.hooks) {
     setup();
@@ -422,5 +613,7 @@
     initCodeLangLabels();
     initPostCodeBlocks(); // 文章页代码块
     initTwikooComments(); // 评论区
+    initFancybox();
+    initReadingProgress();
+    initPostToc();
   });
-})();

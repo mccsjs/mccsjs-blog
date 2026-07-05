@@ -201,24 +201,29 @@
     if (!el) return; // 当前页面没有评论区
     var envId = el.getAttribute('data-twikoo-env-id') || 'https://twikoo.seln.cn';
 
-    if (typeof twikoo === 'undefined') {
-      // 按需加载 twikoo 库，加载完成后自动重试
-      loadTwikooScript(function() {
-        initTwikooComments();
-      });
-      return;
+    // 清理旧实例和容器
+    if (typeof twikoo !== 'undefined') {
+      try { twikoo.destroy(); } catch (e) {}
     }
-
-    // 先销毁旧实例，再清空容器，避免 Swup 切换后残留 DOM 导致样式错乱
-    try { twikoo.destroy(); } catch (e) {}
     el.innerHTML = '';
     delete el.dataset.twikooFailed;
 
-    twikoo.init({
-      envId: envId,
-      el: '#tcomment',
-      path: location.pathname,
-      lang: 'zh-CN',
+    // 如果 Twikoo 已经加载过，强制重新加载脚本，避免 Swup 切换 head 后 Twikoo 注入的 CSS 丢失
+    if (typeof twikoo !== 'undefined') {
+      delete window.twikoo;
+      var oldScript = document.querySelector('script[src*="twikoo@"]');
+      if (oldScript) oldScript.parentNode.removeChild(oldScript);
+      window.__twikooLoading = false;
+    }
+
+    // 加载脚本并初始化
+    loadTwikooScript(function() {
+      twikoo.init({
+        envId: envId,
+        el: '#tcomment',
+        path: location.pathname,
+        lang: 'zh-CN',
+      });
     });
   }
 

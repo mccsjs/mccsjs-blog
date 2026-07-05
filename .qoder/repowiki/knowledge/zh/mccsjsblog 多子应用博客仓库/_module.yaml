@@ -1,0 +1,12 @@
+schema_version: 1
+module_path: ""
+title: mccsjsblog 多子应用博客仓库
+scope:
+    - README.md
+    - blog-markdown-syntax.md
+    - package.json
+    - package-lock.json
+    - .gitignore
+source_files: []
+depends_on: []
+related_to: []

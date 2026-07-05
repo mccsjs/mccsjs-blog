@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -15,22 +14,20 @@ model User {
   emailVerified Boolean?  @default(false)
   image         String?
   password      String?
-  accounts      Account[]
-  sessions      Session[]
-  posts         Post[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  posts         Post[]
+  accounts      Account[]
+  sessions      Session[]
 
   @@map("user")
 }
 
 model Account {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  id                    String    @id @default(cuid())
+  userId                String
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
   accountId             String
   providerId            String
   accessToken           String?
@@ -39,6 +36,7 @@ model Account {
   accessTokenExpiresAt  DateTime?
   refreshTokenExpiresAt DateTime?
   password              String?
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([accountId, providerId])
   @@index([userId])
@@ -48,13 +46,13 @@ model Account {
 model Session {
   id        String   @id @default(cuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   expiresAt DateTime
   token     String   @unique
   ipAddress String?
   userAgent String?
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("session")
@@ -73,23 +71,22 @@ model Verification {
 }
 
 model Post {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   title      String
-  slug       String   @unique
+  slug       String    @unique
   content    String
   excerpt    String
   coverImage String?
-  published  Boolean  @default(false)
-  views      Int      @default(0)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
+  published  Boolean   @default(false)
+  views      Int       @default(0)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
   authorId   String
   categoryId String
-  author     User      @relation(fields: [authorId], references: [id])
-  category   Category  @relation(fields: [categoryId], references: [id])
-  tags       Tag[]
   comments   Comment[]
+  category   Category  @relation(fields: [categoryId], references: [id])
+  author     User      @relation(fields: [authorId], references: [id])
+  tags       Tag[]     @relation("PostToTag")
 }
 
 model Category {
@@ -103,7 +100,7 @@ model Tag {
   id    String @id @default(cuid())
   name  String @unique
   slug  String @unique
-  posts Post[]
+  posts Post[] @relation("PostToTag")
 }
 
 model Comment {
@@ -119,35 +116,33 @@ model Comment {
   browser   String?
   visible   Boolean  @default(true)
   createdAt DateTime @default(now())
-
-  post Post @relation(fields: [postId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
 }
 
 model SiteSetting {
-  id                String   @id @default(cuid())
-  key               String   @unique
-  value             String
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("site_setting")
 }
 
 model Menu {
-  id          String   @id @default(cuid())
-  label       String
-  href        String?
-  icon        String?
-  type        String
-  parentId    String?
-  sortOrder   Int      @default(0)
-  visible     Boolean  @default(true)
-  target      String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  parent   Menu?  @relation("MenuChildren", fields: [parentId], references: [id], onDelete: Cascade)
-  children Menu[] @relation("MenuChildren")
+  id        String   @id @default(cuid())
+  label     String
+  href      String?
+  icon      String?
+  type      String
+  parentId  String?
+  sortOrder Int      @default(0)
+  visible   Boolean  @default(true)
+  target    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  parent    Menu?    @relation("MenuChildren", fields: [parentId], references: [id], onDelete: Cascade)
+  children  Menu[]   @relation("MenuChildren")
 
   @@index([type])
   @@index([parentId])
@@ -155,32 +150,32 @@ model Menu {
 }
 
 model FriendType {
-  id        String    @id @default(cuid())
+  id        String   @id @default(cuid())
   name      String
-  sort      Int       @default(0)
-  isVisible Boolean   @default(true) @map("is_visible")
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  sort      Int      @default(0)
+  isVisible Boolean  @default(true) @map("is_visible")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   friends   Friend[]
 
   @@map("friend_type")
 }
 
 model Friend {
-  id          String   @id @default(cuid())
+  id          String      @id @default(cuid())
   name        String
   url         String
-  description String   @default("")
-  avatar      String   @default("")
-  screenshot  String   @default("")
-  sort        Int      @default(5)
-  isInvalid   Boolean  @default(false) @map("is_invalid")
-  typeId      String?  @map("type_id")
-  type        FriendType? @relation(fields: [typeId], references: [id], onDelete: SetNull)
-  accessible  Int      @default(0)
-  latency     Int      @default(0) @map("latency")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  description String      @default("")
+  avatar      String      @default("")
+  screenshot  String      @default("")
+  sort        Int         @default(5)
+  isInvalid   Boolean     @default(false) @map("is_invalid")
+  typeId      String?     @map("type_id")
+  accessible  Int         @default(0)
+  latency     Int         @default(0) @map("latency")
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  type        FriendType? @relation(fields: [typeId], references: [id])
 
   @@index([sort])
   @@map("friend")

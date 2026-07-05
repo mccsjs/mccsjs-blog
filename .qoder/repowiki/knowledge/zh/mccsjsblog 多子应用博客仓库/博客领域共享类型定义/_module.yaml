@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: shared_types
+title: 博客领域共享类型定义
+scope:
+    - shared/
+source_files: []
+depends_on: []
+related_to: []

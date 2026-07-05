@@ -1,0 +1,123 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const API_URL = 'http://localhost:4000';
+
+interface Post {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt?: string;
+  coverImage?: string;
+  category?: { name: string; slug: string };
+  createdAt: string;
+}
+
+let recentPosts: Post[] = [];
+try {
+  const res = await fetch(`${API_URL}/api/posts?limit=3`);
+  if (res.ok) {
+    const data = await res.json();
+    recentPosts = (data.posts || data || []).slice(0, 3);
+  }
+} catch {}
+
+const funMessages = [
+  { title: '迷路了？', desc: '这个页面可能被外星人绑架了，或者它从未存在过。' },
+  { title: '404', desc: '你发现了宇宙中的一个空白区域。别担心，我们送你回家。' },
+  { title: '走丢了', desc: '这个页面正在环游世界，还没回来。要不先看看别的？' },
+];
+const msg = funMessages[Math.floor(Math.random() * funMessages.length)];
+---
+
+<BaseLayout title="404 页面未找到" description="你访问的页面不存在">
+  <section class="flex flex-col items-center justify-center py-16 md:py-24 select-none">
+
+    <!-- 404 大字 + 浮动装饰 -->
+    <div class="relative mb-8">
+      <span
+        class="text-[10rem] md:text-[14rem] font-black leading-none tracking-tighter opacity-[0.07] dark:opacity-[0.10] pointer-events-none"
+        aria-hidden="true"
+      >404</span>
+
+      <!-- 浮动图标装饰 -->
+      <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <iconify-icon
+          icon="ph:compass-bold"
+          class="text-6xl md:text-8xl text-[rgb(var(--primary))] animate-[float_3s_ease-in-out_infinite]"
+        />
+      </div>
+
+      <!-- 小装饰圆点 -->
+        <div class="absolute top-4 right-0 w-3 h-3 rounded-full bg-[rgb(var(--primary))] opacity-20 dark:opacity-10 animate-[pulse_2s_ease-in-out_infinite]" />
+        <div class="absolute bottom-6 left-4 w-2 h-2 rounded-full bg-[rgb(var(--primary))] opacity-15 dark:opacity-8 animate-[pulse_2.5s_ease-in-out_infinite_0.5s]" />
+        <div class="absolute top-12 left-2 w-1.5 h-1.5 rounded-full bg-[rgb(var(--primary))] opacity-10 dark:opacity-5 animate-[pulse_3s_ease-in-out_infinite_1s]" />
+    </div>
+
+    <!-- 文案 -->
+    <h1 class="text-2xl md:text-3xl font-bold text-[rgb(var(--fg))] mb-3">{msg.title}</h1>
+    <p class="text-base md:text-lg text-[rgb(var(--fg-soft))] mb-10 text-center max-w-md leading-relaxed">
+      {msg.desc}
+    </p>
+
+    <!-- 按钮组 -->
+    <div class="flex gap-3 mb-16">
+      <a
+        href="/"
+        class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[rgb(var(--primary))] text-white text-sm font-medium hover:opacity-90 transition-all hover:translate-y-[-1px] no-underline dark:text-[rgb(var(--bg))] dark:opacity-80 dark:hover:opacity-100"
+      >
+        <iconify-icon icon="ph:house-bold" class="text-base" />
+        回到首页
+      </a>
+      <button
+        onclick="history.back()"
+        class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-[rgb(var(--border))] text-[rgb(var(--fg-soft))] text-sm font-medium hover:bg-[rgb(var(--bg-soft))] transition-all hover:translate-y-[-1px] cursor-pointer bg-transparent dark:border-[rgb(var(--border-light))] dark:text-[rgb(var(--fg-muted))] dark:hover:bg-[rgb(var(--surface))]"
+      >
+        <iconify-icon icon="ph:arrow-left-bold" class="text-base" />
+        返回上页
+      </button>
+    </div>
+
+    <!-- 最近文章 -->
+    {recentPosts.length > 0 && (
+      <div class="w-full max-w-2xl">
+        <h2 class="text-sm font-semibold text-[rgb(var(--fg-muted))] uppercase tracking-widest mb-6 text-center">
+          或许你想看这些
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {recentPosts.map((post) => (
+            <a
+              href={`/posts/${post.slug}`}
+              class="group liquid-glass rounded-2xl p-5 transition-all duration-300 hover:translate-y-[-4px] hover:shadow-lg no-underline"
+            >
+              <h3 class="text-sm font-semibold text-[rgb(var(--fg))] line-clamp-2 mb-2 group-hover:text-[rgb(var(--primary))] transition-colors">
+                {post.title}
+              </h3>
+              <p class="text-xs text-[rgb(var(--fg-muted))] line-clamp-2 leading-relaxed">
+                {post.excerpt || '暂无摘要'}
+              </p>
+              {post.category && (
+                <span class="inline-block mt-3 text-[10px] px-2 py-0.5 rounded-full bg-[rgb(var(--tag-bg))] border border-[rgb(var(--tag-border))] text-[rgb(var(--fg-muted))]">
+                  {post.category.name}
+                </span>
+              )}
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
+  </section>
+</BaseLayout>
+
+<style>
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-12px) rotate(8deg); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.15; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(1.4); }
+  }
+</style>
+
+

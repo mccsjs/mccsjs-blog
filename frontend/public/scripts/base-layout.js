@@ -532,6 +532,8 @@
       updateFixed();
     }
   }
+
+  function setup() {
     if (!window.swup || !window.swup.hooks) return;
 
     window.swup.hooks.on('link:click', function() {
@@ -617,3 +619,4 @@
     initReadingProgress();
     initPostToc();
   });
+})();

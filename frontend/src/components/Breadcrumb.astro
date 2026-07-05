@@ -7,6 +7,7 @@ interface BreadcrumbItem {
   label: string;
   href?: string;
   isCurrent?: boolean;
+  icon?: string;
 }
 
 interface Props {
@@ -30,10 +31,13 @@ const isTags = pathname === '/tags';
 const isTagDetail = pathname.startsWith('/tags/') && !isTags;
 const isPosts = pathname === '/posts';
 const isLink = pathname === '/link';
+const isAbout = pathname === '/about';
+const isComments = pathname === '/comments';
 
 const homeItem: BreadcrumbItem = {
   label: '主页',
   href: '/',
+  icon: 'mingcute:home-2-line',
 };
 
 let items: BreadcrumbItem[] = [];
@@ -43,47 +47,57 @@ if (!isHome) {
     const categoryLabel = postCategory || '未分类';
     items = [
       homeItem,
-      { label: '文章', href: '/posts' },
-      { label: title || categoryLabel, isCurrent: true },
+      { label: '文章', href: '/posts', icon: 'mingcute:notebook-line' },
+      { label: title || categoryLabel, isCurrent: true, icon: 'mingcute:pen-line' },
     ];
   } else if (isArchive) {
     items = [
       homeItem,
-      { label: '归档', isCurrent: true },
+      { label: '归档', isCurrent: true, icon: 'mingcute:file-info-line' },
     ];
   } else if (isCategoryDetail) {
     const categorySlug = pathname.replace('/categories/', '');
     items = [
       homeItem,
-      { label: '分类', href: '/categories' },
+      { label: '分类', href: '/categories', icon: 'mingcute:grid-line' },
       { label: categorySlug, isCurrent: true },
     ];
   } else if (isCategories) {
     items = [
       homeItem,
-      { label: '分类', isCurrent: true },
+      { label: '分类', isCurrent: true, icon: 'mingcute:grid-line' },
     ];
   } else if (isTagDetail) {
     const tagSlug = pathname.replace('/tags/', '');
     items = [
       homeItem,
-      { label: '标签', href: '/tags' },
+      { label: '标签', href: '/tags', icon: 'mingcute:tag-line' },
       { label: `#${tagSlug}`, isCurrent: true },
     ];
   } else if (isTags) {
     items = [
       homeItem,
-      { label: '标签', isCurrent: true },
+      { label: '标签', isCurrent: true, icon: 'mingcute:tag-line' },
     ];
   } else if (isPosts) {
     items = [
       homeItem,
-      { label: '文章', isCurrent: true },
+      { label: '文章', isCurrent: true, icon: 'mingcute:notebook-line' },
     ];
   } else if (isLink) {
     items = [
       homeItem,
-      { label: '友链', isCurrent: true },
+      { label: '友链', isCurrent: true, icon: 'mingcute:link-line' },
+    ];
+  } else if (isAbout) {
+    items = [
+      homeItem,
+      { label: '关于', isCurrent: true, icon: 'mingcute:user-4-line' },
+    ];
+  } else if (isComments) {
+    items = [
+      homeItem,
+      { label: '留言板', isCurrent: true, icon: 'mingcute:comment-line' },
     ];
   } else {
     // 其他独立页面
@@ -98,17 +112,19 @@ if (!isHome) {
 
 {items.length > 0 && (
   <nav class="mb-6" aria-label="Breadcrumb">
-    <ol class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-600 dark:text-gray-400">
+    <ol class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-gray-600 dark:text-gray-400">
       {items.map((item, idx) => (
-        <li class="flex items-center gap-3">
+        <li class="flex items-center gap-2">
           {idx > 0 && <span class="text-gray-400 dark:text-gray-600">/</span>}
           {item.href && !item.isCurrent ? (
-            <a href={item.href} class="text-yellow-600 hover:text-yellow-700 dark:text-yellow-400 dark:hover:text-yellow-300 transition-colors">
-              {item.label}
+            <a href={item.href} class="inline-flex items-center gap-1.5 text-yellow-600 hover:text-yellow-700 dark:text-yellow-400 dark:hover:text-yellow-300 transition-colors">
+              {item.icon && <iconify-icon icon={item.icon} width="14" height="14"></iconify-icon>}
+              <span>{item.label}</span>
             </a>
           ) : (
-            <span class:list={[item.isCurrent ? 'text-gray-900 dark:text-gray-100 font-medium' : '']}>
-              {item.label}
+            <span class="inline-flex items-center gap-1.5 text-gray-900 dark:text-gray-100 font-medium">
+              {item.icon && <iconify-icon icon={item.icon} width="14" height="14"></iconify-icon>}
+              <span>{item.label}</span>
             </span>
           )}
         </li>

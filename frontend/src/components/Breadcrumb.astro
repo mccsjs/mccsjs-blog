@@ -1,26 +1,36 @@
 ---
-import type { Post } from '../types';
-
-const API_URL = 'http://localhost:4000';
+import MenuIcon from './MenuIcon.astro';
+import type { MenuItem, Post } from '../types';
 
 interface BreadcrumbItem {
   label: string;
   href?: string;
   isCurrent?: boolean;
-  icon?: string;
+  icon?: string | null;
 }
 
 interface Props {
   title?: string;
   postSlug?: string;
   postCategory?: string;
+  menus?: MenuItem[];
 }
 
-const { title, postSlug, postCategory } = Astro.props as Props;
+const { title, postSlug, postCategory, menus = [] } = Astro.props as Props;
 
 const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
 const isHome = pathname === '/';
 const origin = Astro.url.origin;
+
+// 从 menus 提取 href → icon 映射（与 Header 完全一致，同一份数据）
+const menuIconMap: Record<string, string | null> = {};
+const collect = (items: MenuItem[]) => {
+  for (const m of items) {
+    if (m.href) menuIconMap[m.href] = m.icon;
+    if (m.children?.length) collect(m.children);
+  }
+};
+collect(menus);
 
 // 页面类型判断
 const isPostDetail = pathname.startsWith('/posts/');
@@ -37,7 +47,7 @@ const isComments = pathname === '/comments';
 const homeItem: BreadcrumbItem = {
   label: '主页',
   href: '/',
-  icon: 'mingcute:home-2-line',
+  icon: menuIconMap['/'] ?? null,
 };
 
 let items: BreadcrumbItem[] = [];
@@ -47,60 +57,59 @@ if (!isHome) {
     const categoryLabel = postCategory || '未分类';
     items = [
       homeItem,
-      { label: '文章', href: '/posts', icon: 'mingcute:notebook-line' },
-      { label: title || categoryLabel, isCurrent: true, icon: 'mingcute:pen-line' },
+      { label: '文章', href: '/posts', icon: menuIconMap['/posts'] ?? null },
+      { label: title || categoryLabel, isCurrent: true },
     ];
   } else if (isArchive) {
     items = [
       homeItem,
-      { label: '归档', isCurrent: true, icon: 'mingcute:file-info-line' },
+      { label: '归档', isCurrent: true, icon: menuIconMap['/archive'] ?? null },
     ];
   } else if (isCategoryDetail) {
     const categorySlug = pathname.replace('/categories/', '');
     items = [
       homeItem,
-      { label: '分类', href: '/categories', icon: 'mingcute:grid-line' },
+      { label: '分类', href: '/categories', icon: menuIconMap['/categories'] ?? null },
       { label: categorySlug, isCurrent: true },
     ];
   } else if (isCategories) {
     items = [
       homeItem,
-      { label: '分类', isCurrent: true, icon: 'mingcute:grid-line' },
+      { label: '分类', isCurrent: true, icon: menuIconMap['/categories'] ?? null },
     ];
   } else if (isTagDetail) {
     const tagSlug = pathname.replace('/tags/', '');
     items = [
       homeItem,
-      { label: '标签', href: '/tags', icon: 'mingcute:tag-line' },
+      { label: '标签', href: '/tags', icon: menuIconMap['/tags'] ?? null },
       { label: `#${tagSlug}`, isCurrent: true },
     ];
   } else if (isTags) {
     items = [
       homeItem,
-      { label: '标签', isCurrent: true, icon: 'mingcute:tag-line' },
+      { label: '标签', isCurrent: true, icon: menuIconMap['/tags'] ?? null },
     ];
   } else if (isPosts) {
     items = [
       homeItem,
-      { label: '文章', isCurrent: true, icon: 'mingcute:notebook-line' },
+      { label: '文章', isCurrent: true, icon: menuIconMap['/posts'] ?? null },
     ];
   } else if (isLink) {
     items = [
       homeItem,
-      { label: '友链', isCurrent: true, icon: 'mingcute:link-line' },
+      { label: '友链', isCurrent: true, icon: menuIconMap['/link'] ?? null },
     ];
   } else if (isAbout) {
     items = [
       homeItem,
-      { label: '关于', isCurrent: true, icon: 'mingcute:user-4-line' },
+      { label: '关于', isCurrent: true, icon: menuIconMap['/about'] ?? null },
     ];
   } else if (isComments) {
     items = [
       homeItem,
-      { label: '留言板', isCurrent: true, icon: 'mingcute:comment-line' },
+      { label: '留言板', isCurrent: true, icon: menuIconMap['/comments'] ?? null },
     ];
   } else {
-    // 其他独立页面
     const pageTitle = title || '页面';
     items = [
       homeItem,
@@ -118,12 +127,12 @@ if (!isHome) {
           {idx > 0 && <span class="text-gray-400 dark:text-gray-600">/</span>}
           {item.href && !item.isCurrent ? (
             <a href={item.href} class="inline-flex items-center gap-1.5 text-yellow-600 hover:text-yellow-700 dark:text-yellow-400 dark:hover:text-yellow-300 transition-colors">
-              {item.icon && <iconify-icon icon={item.icon} width="14" height="14"></iconify-icon>}
+              <MenuIcon icon={item.icon} class="w-3.5 h-3.5" />
               <span>{item.label}</span>
             </a>
           ) : (
             <span class="inline-flex items-center gap-1.5 text-gray-900 dark:text-gray-100 font-medium">
-              {item.icon && <iconify-icon icon={item.icon} width="14" height="14"></iconify-icon>}
+              <MenuIcon icon={item.icon} class="w-3.5 h-3.5" />
               <span>{item.label}</span>
             </span>
           )}

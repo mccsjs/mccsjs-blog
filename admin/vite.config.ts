@@ -9,5 +9,9 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src')
     }
+  },
+  server: {
+    host: '0.0.0.0',
+    allowedHosts: ['d.seln.cn', 'localhost', '127.0.0.1'],
   }
 })

@@ -12,6 +12,7 @@ const navItems = [
   { to: '/comments', label: '评论', icon: 'message-square' },
   { to: '/menus', label: '菜单管理', icon: 'menu' },
   { to: '/friends', label: '友链管理', icon: 'link-2' },
+  { to: '/visitor-logs', label: '访客日志', icon: 'bar-chart-3' },
   { to: '/settings', label: '系统设置', icon: 'settings-2' },
 ];
 

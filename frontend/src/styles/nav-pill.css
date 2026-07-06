@@ -1,0 +1,75 @@
+/* ============================================= */
+/*  浮动胶囊导航栏 — 主体                          */
+/* ============================================= */
+
+#nav-top-row {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  padding: 20px 16px 0;
+  transition: padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#nav-top-row.scrolled {
+  padding-top: 8px;
+}
+
+#nav-pill-wrapper {
+  margin: 0 auto;
+  width: min(94%, 1100px);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#nav-top-row.scrolled #nav-pill-wrapper {
+  width: min(80%, 860px);
+}
+
+#nav-pill {
+  position: relative;
+  border-radius: 50px;
+  background: oklch(1 0 0 / 0.72);
+  border: 1px solid oklch(0 0 0 / 0.06);
+  box-shadow: 0 1px 3px oklch(0 0 0 / 0.04);
+  transition: border-radius 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 0;
+}
+.dark #nav-pill {
+  background: oklch(0.22 0 0 / 0.88);
+  border-color: oklch(1 0 0 / 0.12);
+  box-shadow: 0 1px 3px oklch(0 0 0 / 0.25);
+}
+
+/* 毛玻璃层 */
+#nav-glass-layer {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  background: oklch(1 0 0 / 0.15);
+  backdrop-filter: blur(12px) saturate(1.8);
+  -webkit-backdrop-filter: blur(12px) saturate(1.8);
+  opacity: 0;
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+.dark #nav-glass-layer {
+  background: oklch(0.14 0 0 / 0.45);
+}
+#nav-top-row.scrolled #nav-glass-layer {
+  opacity: 1;
+}
+
+#nav-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+  padding: 0 20px;
+  transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#nav-top-row.scrolled #nav-inner {
+  height: 44px;
+  padding: 0 14px;
+}

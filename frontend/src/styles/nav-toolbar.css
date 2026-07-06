@@ -1,0 +1,92 @@
+/* ============================================= */
+/*  右侧工具栏 + 主题切换 + 移动端 toggle             */
+/* ============================================= */
+
+#nav-right {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+/* 移动端菜单 toggle */
+#nav-mobile-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: none;
+  color: oklch(0.35 0 0);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.dark #nav-mobile-toggle {
+  color: oklch(0.9 0 0);
+}
+#nav-mobile-toggle:hover {
+  background: oklch(0 0 0 / 0.06);
+}
+.dark #nav-mobile-toggle:hover {
+  background: oklch(1 0 0 / 0.08);
+}
+
+/* 主题切换按钮 */
+#theme-toggle,
+#nav-search-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: none;
+  color: oklch(0.35 0 0);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+#theme-toggle {
+  position: relative;
+  overflow: hidden;
+}
+.dark #theme-toggle,
+.dark #nav-search-btn {
+  color: oklch(0.9 0 0);
+}
+#theme-toggle:hover,
+#nav-search-btn:hover {
+  background: oklch(0 0 0 / 0.06);
+}
+.dark #theme-toggle:hover,
+.dark #nav-search-btn:hover {
+  background: oklch(1 0 0 / 0.08);
+}
+
+/* 主题图标切换动画 */
+.theme-icon {
+  position: absolute;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+}
+.theme-icon-dark {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+.dark .theme-icon-dark {
+  opacity: 0;
+  transform: scale(0.5) rotate(90deg);
+  pointer-events: none;
+}
+.theme-icon-light {
+  opacity: 0;
+  transform: scale(0.5) rotate(-90deg);
+  pointer-events: none;
+}
+.dark .theme-icon-light {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+  pointer-events: auto;
+}

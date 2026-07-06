@@ -1,0 +1,123 @@
+import { prisma } from '../../db';
+
+const XXAPI_TOKEN = process.env.XXAPI_TOKEN || '';
+
+// API 测速（调用第三方 API）
+async function apiCheck(targetURL: string): Promise<[boolean, number]> {
+  const apiURL = 'https://v2.xxapi.cn/api/speed?url=' + encodeURIComponent(targetURL);
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+    const resp = await fetch(apiURL, {
+      signal: controller.signal,
+      headers: { Authorization: 'Bearer ' + XXAPI_TOKEN },
+    });
+    clearTimeout(timeout);
+    if (!resp.ok) return [false, 0];
+    const result = await resp.json() as { code: number; data: string };
+    if (result.code !== 200) return [false, 0];
+    const latencyStr = result.data.replace('ms', '');
+    const latency = parseInt(latencyStr) || 0;
+    return [true, latency];
+  } catch {
+    return [false, 0];
+  }
+}
+
+// 直连测速
+async function checkAccessibility(targetURL: string): Promise<[boolean, number]> {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000);
+    const start = Date.now();
+    const resp = await fetch(targetURL, {
+      signal: controller.signal,
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; BlogBot/1.0)' },
+      redirect: 'follow',
+    });
+    clearTimeout(timeout);
+    const elapsed = Date.now() - start;
+    const accessible = resp.status >= 200 && resp.status < 400;
+    return [accessible, elapsed];
+  } catch {
+    return [false, 0];
+  }
+}
+
+// 双策略测速：优先 API，失败则直连
+async function dualCheck(targetURL: string): Promise<[number, number]> {
+  const [ok1, lat1] = await apiCheck(targetURL);
+  if (ok1 && lat1 > 0) return [0, lat1];
+
+  const [ok2, lat2] = await checkAccessibility(targetURL);
+  if (ok2) return [0, lat2];
+
+  return [1, lat1 || lat2];
+}
+
+export function registerFriendCheckRoutes(app: any) {
+  // 测速单个友链
+  app.post('/api/admin/friends/:id/check', async ({ prisma, params, user, set }: any) => {
+    if (!user) { set.status = 401; return { error: 'Unauthorized' }; }
+    const friend = await prisma.friend.findUnique({ where: { id: params.id } });
+    if (!friend) { set.status = 404; return { error: 'Not Found' }; }
+    if (friend.isInvalid) { set.status = 400; return { error: '友链已标记失效，跳过测速' }; }
+    const [accessible, latency] = await dualCheck(friend.url);
+    await prisma.friend.update({
+      where: { id: params.id },
+      data: { accessible, latency },
+    });
+    return { accessible, latency };
+  }, { auth: true });
+
+  // 测速所有友链
+  app.post('/api/admin/friends/check-all', async ({ prisma, user, set }: any) => {
+    if (!user) { set.status = 401; return { error: 'Unauthorized' }; }
+    const friends = await prisma.friend.findMany({ where: { isInvalid: false } });
+    const results = [];
+    for (const f of friends) {
+      const [accessible, latency] = await dualCheck(f.url);
+      await prisma.friend.update({
+        where: { id: f.id },
+        data: { accessible, latency },
+      });
+      results.push({ id: f.id, name: f.name, accessible, latency });
+    }
+    return { total: friends.length, results };
+  }, { auth: true });
+}
+
+// 友链自动测速：每天 0 点和 12 点执行
+export function scheduleFriendAutoCheck() {
+  const run = async () => {
+    try {
+      const friends = await prisma.friend.findMany({ where: { isInvalid: false } });
+      if (!friends.length) return;
+      for (const f of friends) {
+        const [accessible, latency] = await dualCheck(f.url);
+        await prisma.friend.update({
+          where: { id: f.id },
+          data: { accessible, latency },
+        });
+      }
+      console.log(`[友链测速] 完成，共 ${friends.length} 个友链`);
+    } catch (e) {
+      console.error('[友链测速] 失败', e);
+    }
+  };
+
+  const now = new Date();
+  const next12 = new Date(now);
+  next12.setHours(12, 0, 0, 0);
+  const next0 = new Date(now);
+  next0.setHours(0, 0, 0, 0);
+  next0.setDate(next0.getDate() + 1);
+  const delay = now < next12 ? next12.getTime() - now.getTime() : next0.getTime() - now.getTime();
+
+  setTimeout(() => {
+    run();
+    setInterval(run, 12 * 60 * 60 * 1000);
+  }, delay);
+
+  console.log('[友链测速] 已安排定时任务：每天 0:00 / 12:00');
+}

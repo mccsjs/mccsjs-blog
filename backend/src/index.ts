@@ -22,7 +22,7 @@ import { registerRssRoutes, scheduleRssRefresh } from './routes/friends/rss';
 import { seedDefaultMenus, seedDefaultAggregateMenus, seedDefaultFriends } from './seed';
 
 const app = new Elysia()
-  .use(withRequestId())
+  .use(withRequestId)
   .use(cors())
   .use(staticPlugin({ assets: 'uploads', prefix: 'uploads' }))
   .get('/', () => ({ status: 'ok', service: 'elysiajs-blog' }))

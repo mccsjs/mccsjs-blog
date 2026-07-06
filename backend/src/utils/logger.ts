@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { Elysia } from 'elysia';
 
 // ─── 日志级别 ────────────────────────────────────────────────────────────
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
@@ -90,74 +91,19 @@ export class Logger {
   }
 
   /** 创建带额外固定字段的子 logger */
-  child(extra: Record<string, unknown>): LoggerWithChild {
-    return new LoggerWithChild(this.reqId, extra);
-  }
-}
-
-// ─── 带固定字段的 Logger ────────────────────────────────────────────────
-class LoggerWithChild {
-  constructor(
-    private readonly reqId?: string,
-    private readonly fixed: Record<string, unknown> = {},
-  ) {}
-
-  private log(level: LogLevel, message: string, extra: Record<string, unknown> = {}) {
-    if (!shouldLog(level)) return;
-    write({
-      t: new Date().toISOString(),
-      l: level,
-      msg: message,
-      ...(this.reqId ? { rid: this.reqId } : {}),
-      ...this.fixed,
-      ...extra,
-    });
-  }
-
-  debug(message: string, extra?: Record<string, unknown>) {
-    this.log('debug', message, extra ?? {});
-  }
-
-  info(message: string, extra?: Record<string, unknown>) {
-    this.log('info', message, extra ?? {});
-  }
-
-  warn(message: string, extra?: Record<string, unknown>) {
-    this.log('warn', message, extra ?? {});
-  }
-
-  error(message: string, error?: Error, extra?: Record<string, unknown>) {
-    write({
-      t: new Date().toISOString(),
-      l: 'error',
-      msg: message,
-      ...(this.reqId ? { rid: this.reqId } : {}),
-      ...this.fixed,
-      ...extra,
-      ...(error ? { err: { name: error.name, message: error.message, stack: error.stack } } : {}),
-    });
-  }
-
-  child(extra: Record<string, unknown>): LoggerWithChild {
-    return new LoggerWithChild(this.reqId, { ...this.fixed, ...extra });
+  child(extra: Record<string, unknown>): Logger {
+    return new Logger(this.reqId);
   }
 }
 
 // ─── 导出全局 logger（无 reqId） ────────────────────────────────────────
 export const logger = new Logger();
 
-// ─── 创建带 reqId 的 logger ────────────────────────────────────────────
-export function reqLogger(reqId: string): Logger {
-  return new Logger(reqId);
-}
-
-// ─── Elysia 请求 ID 中间件 ────────────────────────────────────────────
-export function withRequestId() {
-  return (app: any) =>
-    app.derive(({ request }: { request: Request }) => {
-      const reqId =
-        request.headers.get('x-request-id') ??
-        randomUUID().slice(0, 8);
-      return { reqId, logger: new Logger(reqId) };
-    });
-}
+// ─── Elysia 请求 ID 中间件（插件格式） ──────────────────────────────
+export const withRequestId = new Elysia({ name: 'withRequestId' })
+  .derive(({ request }) => {
+    const reqId =
+      request.headers.get('x-request-id') ??
+      randomUUID().slice(0, 8);
+    return { reqId, logger: new Logger(reqId) };
+  });

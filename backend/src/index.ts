@@ -3,6 +3,7 @@ import { cors } from '@elysiajs/cors';
 import { staticPlugin } from '@elysiajs/static';
 import { prisma } from './db';
 import { auth } from './auth';
+import { withRequestId, logger } from './utils/logger';
 
 // 路由模块
 import { registerPostRoutes } from './routes/posts';
@@ -21,6 +22,7 @@ import { registerRssRoutes, scheduleRssRefresh } from './routes/friends/rss';
 import { seedDefaultMenus, seedDefaultAggregateMenus, seedDefaultFriends } from './seed';
 
 const app = new Elysia()
+  .use(withRequestId())
   .use(cors())
   .use(staticPlugin({ assets: 'uploads', prefix: 'uploads' }))
   .get('/', () => ({ status: 'ok', service: 'elysiajs-blog' }))
@@ -42,7 +44,7 @@ registerRssRoutes(app);
 // 启动
 app.listen(process.env.PORT || 4000);
 
-console.log(`🦊 Backend running at ${app.server?.hostname}:${app.server?.port}`);
+logger.info(`🦊 Backend running at ${app.server?.hostname}:${app.server?.port}`);
 
 // 初始化默认数据
 seedDefaultMenus();

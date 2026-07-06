@@ -1,11 +1,12 @@
 import { prisma } from '../../db';
 import RssParser from 'rss-parser';
 import pLimit from 'p-limit';
+import { logger, Logger } from '../../utils/logger';
 
 const rssParser = new RssParser();
 
 // 自动发现友链的 RSS 地址
-export async function discoverRSSFeed(siteUrl: string): Promise<string | null> {
+export async function discoverRSSFeed(siteUrl: string, log: Logger): Promise<string | null> {
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 8000);
@@ -54,13 +55,14 @@ export async function discoverRSSFeed(siteUrl: string): Promise<string | null> {
     }
 
     return null;
-  } catch {
+  } catch (e) {
+    log.warn('[RSS发现] 失败', { url: siteUrl, error: e instanceof Error ? e.message : e });
     return null;
   }
 }
 
 // 解析单个友链的 RSS/Atom feed
-async function parseFriendFeed(friendId: string, rssUrl: string): Promise<{ title: string; link: string; publishedAt: Date | null }[]> {
+async function parseFriendFeed(friendId: string, rssUrl: string, log: Logger): Promise<{ title: string; link: string; publishedAt: Date | null }[]> {
   try {
     const feed = await rssParser.parseURL(rssUrl);
     const articles: { title: string; link: string; publishedAt: Date | null }[] = [];
@@ -71,16 +73,17 @@ async function parseFriendFeed(friendId: string, rssUrl: string): Promise<{ titl
       if (!publishedAt && item.pubDate) publishedAt = new Date(item.pubDate);
       articles.push({ title: item.title || '无标题', link: item.link, publishedAt });
     }
+    log.debug('[RSS解析] 成功', { friendId, rssUrl, count: articles.length });
     return articles;
   } catch (e) {
-    console.error(`[RSS解析失败] ${rssUrl}`, e instanceof Error ? e.message : e);
+    log.error('[RSS解析] 失败', e instanceof Error ? e : undefined, { rssUrl });
     return [];
   }
 }
 
 // 刷新单个友链的 RSS（写入数据库）
-async function refreshFriendFeed(friendId: string, rssUrl: string): Promise<number> {
-  const articles = await parseFriendFeed(friendId, rssUrl);
+async function refreshFriendFeed(friendId: string, rssUrl: string, log: Logger): Promise<number> {
+  const articles = await parseFriendFeed(friendId, rssUrl, log);
   if (articles.length === 0) return 0;
   let newCount = 0;
   for (const article of articles) {
@@ -109,7 +112,7 @@ async function refreshFriendFeed(friendId: string, rssUrl: string): Promise<numb
 }
 
 // 刷新所有配置了 RSS 的友链（并发控制）
-async function refreshAllFeeds(): Promise<{ total: number; newArticles: number }> {
+async function refreshAllFeeds(log: Logger): Promise<{ total: number; newArticles: number }> {
   const friends = await prisma.friend.findMany({ where: { rssUrl: { not: null } } });
   if (friends.length === 0) return { total: 0, newArticles: 0 };
   const limit = pLimit(5);
@@ -117,7 +120,7 @@ async function refreshAllFeeds(): Promise<{ total: number; newArticles: number }
   const tasks = friends.map((f: any) =>
     limit(async () => {
       if (!f.rssUrl) return 0;
-      const count = await refreshFriendFeed(f.id, f.rssUrl!);
+      const count = await refreshFriendFeed(f.id, f.rssUrl!, log.child({ friendId: f.id }));
       newArticles += count;
       return count;
     })
@@ -128,7 +131,7 @@ async function refreshAllFeeds(): Promise<{ total: number; newArticles: number }
 
 export function registerRssRoutes(app: any) {
   // 公开接口：获取朋友圈文章列表
-  app.get('/api/friends/feed', async ({ prisma, query }: any) => {
+  app.get('/api/friends/feed', async ({ prisma, query, logger }: any) => {
     const page = typeof query.page === 'string' ? Math.max(1, parseInt(query.page)) : 1;
     const pageSize = typeof query.pageSize === 'string'
       ? Math.max(1, Math.min(50, parseInt(query.pageSize))) : 21;
@@ -162,14 +165,15 @@ export function registerRssRoutes(app: any) {
   });
 
   // 管理接口：手动刷新所有 RSS
-  app.post('/api/admin/friends/refresh-feeds', async ({ user, set }: any) => {
+  app.post('/api/admin/friends/refresh-feeds', async ({ user, set, logger }: any) => {
     if (!user) { set.status = 401; return { error: 'Unauthorized' }; }
-    const result = await refreshAllFeeds();
+    const result = await refreshAllFeeds(logger);
+    logger.info('[RSS刷新] 手动刷新完成', { total: result.total, newArticles: result.newArticles });
     return { message: '刷新完成', ...result };
   }, { auth: true });
 
   // 管理接口：获取 RSS 文章列表
-  app.get('/api/admin/friends/feed', async ({ prisma, query, user, set }: any) => {
+  app.get('/api/admin/friends/feed', async ({ prisma, query, user, set, logger }: any) => {
     if (!user) { set.status = 401; return { error: 'Unauthorized' }; }
     const page = typeof query.page === 'string' ? Math.max(1, parseInt(query.page)) : 1;
     const pageSize = typeof query.pageSize === 'string'
@@ -202,14 +206,15 @@ export function registerRssRoutes(app: any) {
 
 // RSS 定时刷新：每天凌晨 3 点执行
 export function scheduleRssRefresh() {
-  // 使用简单的延迟执行（Bun 环境不依赖 node-cron 的时区处理）
+  const taskLogger = logger.child({ task: 'rss-refresh' });
+
   const run = async () => {
-    console.log('[RSS刷新] 开始...');
+    taskLogger.info('[RSS刷新] 定时任务开始');
     try {
-      const result = await refreshAllFeeds();
-      console.log(`[RSS刷新] 完成，共 ${result.total} 个友链，${result.newArticles} 篇新文章`);
+      const result = await refreshAllFeeds(taskLogger);
+      taskLogger.info('[RSS刷新] 定时任务完成', { total: result.total, newArticles: result.newArticles });
     } catch (e) {
-      console.error('[RSS刷新] 失败', e);
+      taskLogger.error('[RSS刷新] 定时任务失败', e instanceof Error ? e : undefined, { error: e });
     }
   };
 
@@ -227,5 +232,5 @@ export function scheduleRssRefresh() {
     setInterval(run, 24 * 60 * 60 * 1000);
   }, delay);
 
-  console.log(`[RSS刷新] 定时任务已安排：每天 03:00（${Math.round(delay / 1000 / 60)} 分钟后首次执行）`);
+  taskLogger.info('[RSS刷新] 定时任务已安排', { firstRunInMinutes: Math.round(delay / 1000 / 60) });
 }

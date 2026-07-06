@@ -1,4 +1,5 @@
 import { Request } from 'bun';
+import { Logger } from './logger';
 
 /**
  * 从 Request 中解析客户端 IP
@@ -52,11 +53,11 @@ export function parseBrowser(ua: string): string | null {
 
 /**
  * 综合解析客户端信息（IP + UA → 地理位置 + 系统 + 浏览器）
- * 需要 process.env.XXAPI_TOKEN 和 process.env.XXAPI_SK（可选）
+ * 需要 process.env.XXAPI_TOKEN（可选）
  */
 const XXAPI_TOKEN = process.env.XXAPI_TOKEN || '';
 
-export async function resolveClientInfo(ip: string | null, ua: string) {
+export async function resolveClientInfo(ip: string | null, ua: string, log?: Logger) {
   let country: string | null = null;
   let region: string | null = null;
   let city: string | null = null;
@@ -85,8 +86,8 @@ export async function resolveClientInfo(ip: string | null, ua: string) {
           isp = result.data.isp || null;
         }
       }
-    } catch {
-      // 静默失败，不影响主流程
+    } catch (e) {
+      log?.warn('[访客日志] IP 解析失败', { ip, error: e instanceof Error ? e.message : e });
     }
   }
 
@@ -105,7 +106,7 @@ export async function resolveClientInfo(ip: string | null, ua: string) {
 /**
  * 记录访客日志（如果当天已有相同 visitorId 则跳过）
  */
-export async function maybeLogVisitor(request: Request, page: string, prisma: any) {
+export async function maybeLogVisitor(request: Request, page: string, prisma: any, log?: Logger) {
   try {
     const ip = getClientIp(request);
     const ua = request.headers.get('user-agent') || '';
@@ -124,7 +125,7 @@ export async function maybeLogVisitor(request: Request, page: string, prisma: an
     });
 
     if (!existing) {
-      const info = await resolveClientInfo(ip, ua);
+      const info = await resolveClientInfo(ip, ua, log);
       await prisma.visitorLog.create({
         data: {
           ...info,
@@ -132,8 +133,11 @@ export async function maybeLogVisitor(request: Request, page: string, prisma: an
           visitedAt: new Date(),
         },
       });
+      log?.debug('[访客日志] 已记录', { page, ip });
+    } else {
+      log?.debug('[访客日志] 已存在，跳过', { page, visitorId });
     }
   } catch (e) {
-    console.error('[访客日志] 记录失败', e);
+    log?.error('[访客日志] 记录失败', e instanceof Error ? e : undefined, { error: e });
   }
 }

@@ -1,17 +1,18 @@
 import { prisma } from '../db';
 import { auth } from '../auth';
 import { maybeLogVisitor } from '../utils/visitor';
+import { Logger } from '../utils/logger';
 
 export function registerVisitorLogRoutes(app: any) {
   // 公开：记录访客（前端调用）
-  app.post('/api/collect', async ({ body, request }: any) => {
+  app.post('/api/collect', async ({ body, request, logger }: any) => {
     const { page } = body;
-    await maybeLogVisitor(request, page || '/', prisma);
+    await maybeLogVisitor(request, page || '/', prisma, logger);
     return { success: true };
   });
 
   // 管理：获取访客日志列表
-  app.get('/api/admin/visitor-logs', async ({ prisma, user, set, query }: any) => {
+  app.get('/api/admin/visitor-logs', async ({ prisma, user, set, query, logger }: any) => {
     if (!user) { set.status = 401; return { error: 'Unauthorized' }; }
     const page = typeof query.page === 'string' ? Math.max(1, parseInt(query.page)) : 1;
     const pageSize = typeof query.pageSize === 'string'
@@ -24,11 +25,12 @@ export function registerVisitorLogRoutes(app: any) {
       }),
       prisma.visitorLog.count(),
     ]);
+    logger.debug('[访客日志] 列表查询', { page, pageSize, total });
     return { list: logs, total, page, pageSize };
   }, { auth: true });
 
   // 管理：访客统计概览
-  app.get('/api/admin/visitor-stats', async ({ prisma, user, set }: any) => {
+  app.get('/api/admin/visitor-stats', async ({ prisma, user, set, logger }: any) => {
     if (!user) { set.status = 401; return { error: 'Unauthorized' }; }
 
     const today = new Date();
@@ -53,6 +55,7 @@ export function registerVisitorLogRoutes(app: any) {
       `,
     ]);
 
+    logger.debug('[访客统计] 查询完成');
     return {
       totalVisits,
       todayVisits,

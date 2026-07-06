@@ -1,4 +1,5 @@
 import { prisma } from '../db';
+import { logger } from '../utils/logger';
 
 export async function seedDefaultMenus() {
   const existing = await prisma.menu.findFirst({ where: { type: 'NAV' } });
@@ -16,7 +17,7 @@ export async function seedDefaultMenus() {
     await prisma.menu.create({ data: { ...item, type: 'NAV', visible: true } });
   }
 
-  console.log('🌱 默认导航菜单已初始化（首页/文章/归档/标签/分类）');
+  logger.info('[Seed] 默认导航菜单已初始化', { items: defaults.map(d => d.label) });
 }
 
 export async function seedDefaultAggregateMenus() {
@@ -55,7 +56,7 @@ export async function seedDefaultAggregateMenus() {
     });
   }
 
-  console.log('🌱 默认聚合菜单已初始化（我的网站/友情链接）');
+  logger.info('[Seed] 默认聚合菜单已初始化', { groups: ['我的网站', '友情链接'] });
 }
 
 export async function seedDefaultFriends() {
@@ -77,5 +78,5 @@ export async function seedDefaultFriends() {
     await prisma.friend.create({ data: { ...item, typeId: type.id } });
   }
 
-  console.log('🌱 默认友链已初始化');
+  logger.info('[Seed] 默认友链已初始化', { count: defaults.length });
 }

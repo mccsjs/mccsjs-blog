@@ -1,8 +1,0 @@
-schema_version: 1
-module_path: dev_scripts
-title: 开发期备份与友链导入脚本集
-scope:
-    - scripts/
-source_files: []
-depends_on: []
-related_to: []

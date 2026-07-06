@@ -1,8 +1,0 @@
-schema_version: 1
-module_path: admin_dashboard
-title: 博客后台管理前端（React + Vite）
-scope:
-    - admin/
-source_files: []
-depends_on: []
-related_to: []

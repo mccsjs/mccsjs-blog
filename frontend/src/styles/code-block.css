@@ -1,0 +1,256 @@
+/* ========= 代码块：工具栏、行号、折叠 ========= */
+
+/* 代码块基础 */
+.post-content pre {
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  border-radius: 12px;
+  background: rgb(var(--bg-soft));
+  border: 1px solid rgb(var(--border));
+  padding: 1.25rem;
+  font-size: 0.95rem;
+  color: rgb(var(--fg));
+  position: relative;
+  box-shadow: 0 1px 3px rgb(var(--fg) / 0.04);
+}
+
+/* 代码块工具栏（顶部：语言标签 + 复制按钮） */
+.post-content pre .code-tool-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 12px;
+  margin: -1.25rem -1.25rem 0.75rem -1.25rem;
+  border-bottom: 1px solid rgb(var(--border-light));
+  background: rgb(var(--bg-soft) / 0.45);
+  border-radius: 12px 12px 0 0;
+  min-height: 30px;
+}
+.post-content pre .code-lang {
+  font-family: 'BlogFont', system-ui, -apple-system, sans-serif;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  color: rgb(var(--fg-soft) / 0.7);
+  text-transform: uppercase;
+  user-select: none;
+  pointer-events: none;
+}
+.post-content pre .code-copy-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: rgb(var(--fg-soft) / 0.5);
+  font-family: 'BlogFont', system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+  user-select: none;
+}
+.post-content pre .code-copy-btn:hover {
+  background: rgb(var(--bg) / 0.6);
+  color: rgb(var(--primary));
+}
+.post-content pre .code-copy-btn.copied {
+  color: #22c55e !important;
+}
+/* 无语言标签时靠右显示 */
+.post-content pre .code-tool-bar:not(:has(.code-lang)) {
+  justify-content: flex-end;
+}
+
+/* 代码块行号 */
+.post-content pre code.has-line-numbers {
+  display: table;
+  padding-left: 0;
+}
+.post-content pre .code-line-numbers {
+  display: table-cell;
+  text-align: right;
+  user-select: none;
+  color: rgb(var(--fg-soft) / 0.4);
+  padding-right: 1rem;
+  border-right: 1px solid rgb(var(--border-light));
+  vertical-align: top;
+  font-size: inherit;
+  line-height: inherit;
+  min-width: 2em;
+}
+.post-content pre .code-line-numbers span {
+  display: block;
+}
+.post-content pre .code-line-numbers + .code-line-content {
+  display: table-cell;
+  vertical-align: top;
+}
+.post-content pre .code-line {
+  display: block;
+  min-height: 1em;
+}
+
+/* ===== 友链页代码块（同款样式）===== */
+#link-markdown-section pre {
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  border-radius: 12px;
+  background: rgb(var(--bg-soft));
+  border: 1px solid rgb(var(--border));
+  padding: 1.25rem;
+  font-size: 0.95rem;
+  color: rgb(var(--fg));
+  position: relative;
+  box-shadow: 0 1px 3px rgb(var(--fg) / 0.04);
+}
+#link-markdown-section pre code.has-line-numbers {
+  display: table;
+  padding-left: 0;
+}
+#link-markdown-section pre .code-line-numbers {
+  display: table-cell;
+  text-align: right;
+  user-select: none;
+  color: rgb(var(--fg-soft) / 0.4);
+  padding-right: 1rem;
+  border-right: 1px solid rgb(var(--border-light));
+  vertical-align: top;
+  font-size: inherit;
+  line-height: inherit;
+  min-width: 2em;
+}
+#link-markdown-section pre .code-line-numbers span {
+  display: block;
+}
+#link-markdown-section pre .code-line-numbers + .code-line-content {
+  display: table-cell;
+  vertical-align: top;
+}
+#link-markdown-section pre .code-line {
+  display: block;
+  min-height: 1em;
+}
+/* 友链页代码块工具栏 */
+#link-markdown-section pre .code-tool-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 12px;
+  margin: -1.25rem -1.25rem 0.75rem -1.25rem;
+  border-bottom: 1px solid rgb(var(--border-light));
+  background: rgb(var(--bg-soft) / 0.45);
+  border-radius: 12px 12px 0 0;
+  min-height: 30px;
+}
+#link-markdown-section pre .code-lang {
+  font-family: 'BlogFont', system-ui, -apple-system, sans-serif;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  color: rgb(var(--fg-soft) / 0.7);
+  text-transform: uppercase;
+  user-select: none;
+  pointer-events: none;
+}
+#link-markdown-section pre .code-copy-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: rgb(var(--fg-soft) / 0.5);
+  font-family: 'BlogFont', system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+  user-select: none;
+}
+#link-markdown-section pre .code-copy-btn:hover {
+  background: rgb(var(--bg) / 0.6);
+  color: rgb(var(--primary));
+}
+#link-markdown-section pre .code-copy-btn.copied {
+  color: #22c55e !important;
+}
+#link-markdown-section pre .code-tool-bar:not(:has(.code-lang)) {
+  justify-content: flex-end;
+}
+
+/* ===== 代码块折叠（超过10行自动折叠）===== */
+.post-content pre.code-collapsed,
+#link-markdown-section pre.code-collapsed {
+  max-height: 20rem;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+}
+.post-content pre:not(.code-collapsed),
+#link-markdown-section pre:not(.code-collapsed) {
+  overflow-x: auto;
+}
+/* 遮罩层 */
+.post-content pre .code-fold-overlay,
+#link-markdown-section pre .code-fold-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4em;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 0.5rem;
+  pointer-events: none;
+  z-index: 2;
+  transition: background 0.35s ease, height 0.35s ease;
+}
+.post-content pre.code-collapsed .code-fold-overlay,
+#link-markdown-section pre.code-collapsed .code-fold-overlay {
+  background: linear-gradient(to bottom, transparent, rgb(var(--bg-soft) / 0.85), rgb(var(--bg-soft)));
+}
+html.dark .post-content pre.code-collapsed .code-fold-overlay,
+html.dark #link-markdown-section pre.code-collapsed .code-fold-overlay {
+  background: linear-gradient(to bottom, transparent, rgb(var(--bg-soft) / 0.9), rgb(var(--bg-soft)));
+}
+.post-content pre:not(.code-collapsed) .code-fold-overlay,
+#link-markdown-section pre:not(.code-collapsed) .code-fold-overlay {
+  background: linear-gradient(to bottom, transparent, rgb(var(--bg-soft) / 0.4));
+  height: 2.5em;
+}
+html.dark .post-content pre:not(.code-collapsed) .code-fold-overlay,
+html.dark #link-markdown-section pre:not(.code-collapsed) .code-fold-overlay {
+  background: linear-gradient(to bottom, transparent, rgb(var(--bg-soft) / 0.5));
+}
+.post-content pre .code-expand-btn,
+#link-markdown-section pre .code-expand-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  pointer-events: auto;
+  font-family: 'BlogFont', system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  color: rgb(var(--fg-soft));
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 3px 14px;
+  border-radius: 6px;
+  transition: color 0.2s, background 0.2s;
+  user-select: none;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+}
+.post-content pre .code-expand-btn:hover,
+#link-markdown-section pre .code-expand-btn:hover {
+  color: rgb(var(--primary));
+  background: rgb(var(--bg) / 0.5);
+}
+
+/* 展开状态：给 <pre> 底部留空间，防止按钮遮挡代码 */
+.post-content pre:not(.code-collapsed):has(.code-fold-overlay),
+#link-markdown-section pre:not(.code-collapsed):has(.code-fold-overlay) {
+  padding-bottom: 3em;
+}

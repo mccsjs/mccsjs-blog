@@ -1,0 +1,66 @@
+/* ========= 文章页目录 TOC 样式 ========= */
+
+#toc-list {
+  --toc-color: #6b7280;
+  --toc-active-bg: rgba(234, 179, 8, 0.12);
+  --toc-active-text: #ca8a04;
+}
+.dark #toc-list {
+  --toc-color: #9ca3af;
+  --toc-active-bg: rgba(250, 204, 21, 0.12);
+  --toc-active-text: #facc15;
+}
+
+#toc-list,
+#toc-list ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+#toc-list > ol { padding-left: 0 !important; }
+#toc-list ol { padding-left: 16px; }
+
+.toc-child {
+  display: none;
+  border-left: 1px solid rgba(0, 0, 0, 0.06);
+  margin: 2px 0 2px 10px;
+}
+.dark .toc-child { border-left-color: rgba(255, 255, 255, 0.08); }
+li.toc-item.active > ol.toc-child { display: block; }
+
+.toc-item { margin: 1px 0; }
+
+.toc-link {
+  display: block;
+  padding: 3px 8px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--toc-color);
+  text-decoration: none;
+  border-radius: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.toc-level-1 > .toc-link {
+  font-weight: 600;
+  font-size: 13.5px;
+  color: #374151;
+}
+.dark .toc-level-1 > .toc-link { color: #d1d5db; }
+
+.toc-link:hover:not(.active) {
+  color: var(--toc-active-text);
+  background: rgba(234, 179, 8, 0.04);
+}
+.dark .toc-link:hover:not(.active) {
+  background: rgba(250, 204, 21, 0.06);
+}
+
+.toc-link.active {
+  font-weight: 600;
+  color: var(--toc-active-text) !important;
+  background: var(--toc-active-bg) !important;
+  border-radius: 6px;
+}

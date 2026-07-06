@@ -11,3 +11,7 @@ backend_backup_*/
 *.tar.gz
 backend/test-*.js
 backend/scripts/*.mjs
+*.db
+*.tar
+.qoder/
+.workbuddy/

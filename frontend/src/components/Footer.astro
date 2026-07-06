@@ -110,6 +110,12 @@ if (friends.length === 0) {
               </a>
             </div>
           ))}
+          {/* 广告位招占位（有互动效果，不跳转） */}
+          <div class="img-group-item img-group-ad">
+            <span title="广告位招租" class="ad-placeholder-btn">
+              <img src="/img/ad-placeholder.webp" alt="广告位招租" loading="lazy" />
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -267,15 +273,15 @@ if (friends.length === 0) {
     padding: 4px 8px;
     border-radius: 12px;
     color: rgb(var(--fg-soft));
-    transition: all 0.25s ease;
+    transition: color 0.25s ease, transform 0.2s ease;
   }
   .ft-links li a:hover {
     text-decoration: none;
-    color: var(--color-accent-sand);
-    background: rgb(var(--card-bg) / 0.6);
+    color: #facc15;
+    transform: translateX(3px);
   }
 
-  /* 推荐友链：头像网格 */
+  /* 推荐友链头像网格 — 5列自适应 */
   .ft-item-2 .ft-img-group {
     width: 100%;
     display: flex;
@@ -293,7 +299,7 @@ if (friends.length === 0) {
     padding-left: 14px;
   }
   .ft-item-2 .ft-img-group .img-group-item {
-    width: calc(33.33% - 7px);
+    width: calc(20% - 8px);
   }
   .ft-item-2 .ft-img-group .img-group-item a {
     display: block;
@@ -309,6 +315,53 @@ if (friends.length === 0) {
     transform: translateY(-3px);
     box-shadow: 0 10px 22px -10px rgba(0, 0, 0, 0.4);
     border-color: var(--color-accent-sand);
+  }
+
+  /* 广告位占位按钮：互动效果但不跳转 */
+  .ad-placeholder-btn {
+    display: block;
+    width: 100%;
+    height: 64px;
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    background: linear-gradient(135deg, rgba(59,130,246,.08), rgba(147,197,253,.12));
+    position: relative;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .ad-placeholder-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    opacity: 0;
+    background: radial-gradient(circle at center, rgba(59,130,246,.18) 0%, transparent 70%);
+    transition: opacity 0.35s ease;
+  }
+  .ad-placeholder-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 13px;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
+    opacity: 0.85;
+    transition: all 0.35s ease;
+  }
+  .ad-placeholder-btn:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 10px 26px -10px rgba(59, 130, 246, 0.45);
+    background: linear-gradient(135deg, rgba(59,130,246,.14), rgba(147,197,253,.18));
+  }
+  .ad-placeholder-btn:hover::after {
+    opacity: 1;
+  }
+  .ad-placeholder-btn:hover img {
+    opacity: 1;
+  }
+  .ad-placeholder-btn:active {
+    transform: translateY(-1px) scale(1.01);
+    box-shadow: 0 4px 14px -8px rgba(59, 130, 246, 0.4);
   }
   .ft-item-2 .ft-img-group .img-group-item img {
     width: 100%;
@@ -397,6 +450,9 @@ if (friends.length === 0) {
     }
     .ft-item-2 .ft-img-group .img-group-item {
       width: calc(25% - 8px);
+    }
+    .ad-placeholder-btn {
+      height: 56px;
     }
   }
 </style>

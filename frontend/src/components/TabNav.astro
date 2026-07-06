@@ -35,112 +35,31 @@ const slug = Astro.url.pathname.replace(/\/$/, '') || '/';
 </style>
 
   <script is:inline>
-  !(function() {
-    var resizeObserver = null;
-    var retryTimer = null;
-
-    // 批量读取布局属性，避免多次强制重排
-    function positionBorder(item, hoverBorder) {
-      // 使用 requestAnimationFrame 确保在同一帧内完成读写
-      requestAnimationFrame(function() {
-        var w = item.offsetWidth;
-        var l = item.offsetLeft;
-        if (w > 0) {
-          hoverBorder.style.width = w + 'px';
-          hoverBorder.style.left = l + 'px';
-        }
-      });
-    }
-
-    function initTabNav() {
-      var tabNav = document.getElementById('tab-nav');
-      var hoverBorder = document.getElementById('tab-hover-border');
-      if (!tabNav || !hoverBorder) return;
-
-      var tabItems = tabNav.querySelectorAll('.tab-item');
-
-      if (resizeObserver) {
-        resizeObserver.disconnect();
-        resizeObserver = null;
+  // TabNav 滑动边框初始化已移至 base-layout.js（Swup page:view 钩子统一调用）
+  // 此处保留为首次加载的兜底，避免 base-layout.js 未加载时无样式
+    !(function() {
+      function tryInit() {
+        var nav = document.getElementById('tab-nav');
+        var border = document.getElementById('tab-hover-border');
+        if (!nav || !border) return;
+        var active = nav.querySelector('.tab-item.active');
+        if (!active) { nav.classList.remove('has-active'); return; }
+        nav.classList.add('has-active');
+        border.style.width = active.offsetWidth + 'px';
+        border.style.left = active.offsetLeft + 'px';
       }
-      if (retryTimer) {
-        clearTimeout(retryTimer);
-        retryTimer = null;
-      }
-
-      tabItems.forEach(function(item) {
-        if (item._tabMouseEnter) {
-          item.removeEventListener('mouseenter', item._tabMouseEnter);
-        }
-      });
-
-      function pos(item) {
-        positionBorder(item, hoverBorder);
-      }
-
-      var active = tabNav.querySelector('.tab-item.active');
-      if (active) {
-        tabNav.classList.add('has-active');
-        pos(active);
-        requestAnimationFrame(function() { pos(active); });
-      } else {
-        tabNav.classList.remove('has-active');
-      }
-
-      tabItems.forEach(function(item) {
-        item._tabMouseEnter = function() { pos(item); };
-        item.addEventListener('mouseenter', item._tabMouseEnter);
-      });
-
-      tabNav.addEventListener('mouseleave', function() {
-        var activeItem = tabNav.querySelector('.tab-item.active');
-        if (activeItem) pos(activeItem);
-      });
-
-      if (active) {
-        retryTimer = setTimeout(function() {
-          var cur = tabNav.querySelector('.tab-item.active');
-          if (cur) pos(cur);
-        }, 100);
-      }
-    }
-
-    function firstInit() {
-      if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(function() { initTabNav(); });
-      } else {
-        initTabNav();
-      }
-    }
-    firstInit();
-
-    function handleSwupEnd() {
-      requestAnimationFrame(function() {
+      function go() {
         if (document.fonts && document.fonts.ready) {
-          document.fonts.ready.then(function() { initTabNav(); });
+          document.fonts.ready.then(tryInit);
         } else {
-          initTabNav();
+          tryInit();
         }
-      });
-    }
-
-    function hookTabNav() {
-      if (!window.swup || !window.swup.hooks) return;
-      if (window.__tabNavSwupHook && window.__tabNavSwupHook === window.swup) return;
-      window.swup.hooks.on('visit:end', handleSwupEnd);
-      window.swup.hooks.on('page:view', handleSwupEnd);
-      window.__tabNavSwupHook = window.swup;
-    }
-    hookTabNav();
-    if (!window.swup || !window.swup.hooks) {
-      var tabTimer = setInterval(function () {
-        if (window.swup && window.swup.hooks) {
-          clearInterval(tabTimer);
-          hookTabNav();
-        }
-      }, 50);
-    }
-
-    document.addEventListener('astro:page-load', handleSwupEnd);
-  })();
-</script>
+      }
+      // 首次立即尝试
+      go();
+      // 字体/图片等资源加载后重试
+      setTimeout(go, 200);
+      document.addEventListener('swup:page-view', go);
+      document.addEventListener('astro:page-load', go);
+    })();
+  </script>

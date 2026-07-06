@@ -1,5 +1,6 @@
 {
   "devDependencies": {
-    "chokidar": "^5.0.0"
+    "chokidar": "^5.0.0",
+    "node-cron": "^4.6.0"
   }
 }

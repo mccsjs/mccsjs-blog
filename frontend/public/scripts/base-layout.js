@@ -391,6 +391,66 @@
     updateProgress();
   }
 
+  // TabNav 滑动边框初始化（Swup 切页后需要重新定位）
+  var __tabNavRetryTimer = null;
+  function initTabNav() {
+    var tabNav = document.getElementById('tab-nav');
+    var hoverBorder = document.getElementById('tab-hover-border');
+    if (!tabNav || !hoverBorder) return;
+
+    var tabItems = tabNav.querySelectorAll('.tab-item');
+    if (__tabNavRetryTimer) { clearTimeout(__tabNavRetryTimer); __tabNavRetryTimer = null; }
+
+    // 清理旧事件绑定
+    tabItems.forEach(function(item) {
+      if (item._tabMouseEnter) {
+        item.removeEventListener('mouseenter', item._tabMouseEnter);
+        item._tabMouseEnter = null;
+      }
+    });
+
+    function pos(item) {
+      requestAnimationFrame(function() {
+        var w = item.offsetWidth;
+        var l = item.offsetLeft;
+        if (w > 0) {
+          hoverBorder.style.width = w + 'px';
+          hoverBorder.style.left = l + 'px';
+        }
+      });
+    }
+
+    var active = tabNav.querySelector('.tab-item.active');
+    if (active) {
+      tabNav.classList.add('has-active');
+      pos(active);
+      requestAnimationFrame(function() { pos(active); });
+    } else {
+      tabNav.classList.remove('has-active');
+    }
+
+    tabItems.forEach(function(item) {
+      item._tabMouseEnter = function() { pos(item); };
+      item.addEventListener('mouseenter', item._tabMouseEnter);
+    });
+
+    // 鼠标离开时回到 active 位置
+    tabNav.removeEventListener('mouseleave', window.__tabNavMouseLeave);
+    window.__tabNavMouseLeave = function() {
+      var activeItem = tabNav.querySelector('.tab-item.active');
+      if (activeItem) pos(activeItem);
+    };
+    tabNav.addEventListener('mouseleave', window.__tabNavMouseLeave);
+
+    // 字体加载后重新定位（防止字体切换导致位置偏移）
+    if (active) {
+      __tabNavRetryTimer = setTimeout(function() {
+        var cur = tabNav.querySelector('.tab-item.active');
+        if (cur) pos(cur);
+      }, 150);
+    }
+  }
+
   // 文章目录（TOC）：滚动高亮 + 点击跳转 + 固定定位
   function initPostToc() {
     var tocNav = document.getElementById('toc-list');
@@ -589,6 +649,7 @@
       initFancybox();
       initReadingProgress();
       initPostToc();
+      initTabNav(); // TabNav 滑动边框
       document.dispatchEvent(new CustomEvent('swup:page-view'));
     });
   }
@@ -609,6 +670,7 @@
   initFancybox();
   initReadingProgress();
   initPostToc();
+  initTabNav(); // TabNav 滑动边框
 
   if (window.swup && window.swup.hooks) {
     setup();
@@ -627,5 +689,6 @@
     initFancybox();
     initReadingProgress();
     initPostToc();
+    initTabNav(); // TabNav 滑动边框
   });
 })();

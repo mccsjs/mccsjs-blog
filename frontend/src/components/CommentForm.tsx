@@ -1,5 +1,9 @@
 import { useState } from 'react';
 
+const API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_URL)
+  || (typeof process !== 'undefined' && process.env && process.env.PUBLIC_API_URL)
+  || '';
+
 interface CommentFormProps {
   postId: string;
 }
@@ -18,7 +22,7 @@ export default function CommentForm({ postId }: CommentFormProps) {
     setStatus('submitting');
 
     try {
-      const response = await fetch('http://localhost:4000/api/comments', {
+      const response = await fetch((API_URL || '') + '/api/comments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

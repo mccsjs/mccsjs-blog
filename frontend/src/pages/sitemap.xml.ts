@@ -1,5 +1,9 @@
 import type { APIRoute } from 'astro';
 
+const API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_URL)
+  || (typeof process !== 'undefined' && process.env && process.env.PUBLIC_API_URL)
+  || '';
+
 const STATIC_PAGES = [
   { path: '', priority: '1.0', changefreq: 'daily' },
   { path: 'posts', priority: '0.9', changefreq: 'daily' },
@@ -15,7 +19,7 @@ export const GET: APIRoute = async ({ url }) => {
   // 动态文章页面
   let postUrls: { path: string; lastmod: string }[] = [];
   try {
-    const res = await fetch('http://localhost:4000/api/posts');
+    const res = await fetch((API_URL || '') + '/api/posts');
     if (res.ok) {
       const posts = await res.json();
       postUrls = posts.map((p: any) => ({
@@ -28,7 +32,7 @@ export const GET: APIRoute = async ({ url }) => {
   // 动态分类页面
   let categoryUrls: { path: string }[] = [];
   try {
-    const res = await fetch('http://localhost:4000/api/categories');
+    const res = await fetch((API_URL || '') + '/api/categories');
     if (res.ok) {
       const cats = await res.json();
       categoryUrls = cats.map((c: any) => ({ path: `categories/${c.slug}` }));
@@ -38,7 +42,7 @@ export const GET: APIRoute = async ({ url }) => {
   // 动态标签页面
   let tagUrls: { path: string }[] = [];
   try {
-    const res = await fetch('http://localhost:4000/api/tags');
+    const res = await fetch((API_URL || '') + '/api/tags');
     if (res.ok) {
       const tags = await res.json();
       tagUrls = tags.map((t: any) => ({ path: `tags/${t.slug}` }));

@@ -1,6 +1,8 @@
 import type { APIContext } from 'astro';
 
-const API_URL = 'http://localhost:4000';
+const API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_URL)
+  || (typeof process !== 'undefined' && process.env && process.env.PUBLIC_API_URL)
+  || '';
 
 export async function GET(context: APIContext) {
   let posts: any[] = [];

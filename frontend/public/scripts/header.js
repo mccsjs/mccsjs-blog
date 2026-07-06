@@ -214,12 +214,7 @@
         }, 150);
       }
 
-      aggTrigger.addEventListener('mouseenter', openAggDropdown, { signal: signal });
-      aggTrigger.addEventListener('mouseleave', closeAggDropdown, { signal: signal });
-      aggDropdown.addEventListener('mouseenter', openAggDropdown, { signal: signal });
-      aggDropdown.addEventListener('mouseleave', closeAggDropdown, { signal: signal });
-
-      aggTrigger.addEventListener('click', function(e) {
+      function toggleAggDropdown(e) {
         e.preventDefault();
         e.stopPropagation();
         if (aggDropdown.classList.contains('open')) {
@@ -227,7 +222,13 @@
         } else {
           aggDropdown.classList.add('open');
         }
-      }, { signal: signal });
+      }
+
+      aggTrigger.addEventListener('pointerdown', toggleAggDropdown, { signal: signal });
+      aggTrigger.addEventListener('mouseenter', openAggDropdown, { signal: signal });
+      aggTrigger.addEventListener('mouseleave', closeAggDropdown, { signal: signal });
+      aggDropdown.addEventListener('mouseenter', openAggDropdown, { signal: signal });
+      aggDropdown.addEventListener('mouseleave', closeAggDropdown, { signal: signal });
 
       document.addEventListener('click', function(e) {
         if (!aggTrigger.contains(e.target) && !aggDropdown.contains(e.target)) {
@@ -281,7 +282,8 @@
   }
 
   // ========= 搜索 =========
-  var API_URL = window.__API_URL__ || 'http://localhost:4000';
+  var API_BASE = window.__API_URL__ || ''
+  var API_PREFIX = API_BASE ? API_BASE + '/api' : '/api'
   var searchAbort = null;
   var searchResults = [];
   var searchActiveIdx = -1;
@@ -374,7 +376,7 @@
     if (searchAbort) searchAbort.abort();
     searchAbort = new AbortController();
 
-    fetch(API_URL + '/api/posts/search?q=' + encodeURIComponent(q), {
+    fetch(API_PREFIX + '/posts/search?q=' + encodeURIComponent(q), {
       signal: searchAbort.signal,
     })
       .then(function(res) {

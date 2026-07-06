@@ -2,10 +2,11 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import type { Post } from '../../types';
 
-const API_URL = 'http://localhost:4000';
-
 export async function getStaticPaths() {
-  const response = await fetch('http://localhost:4000/api/categories');
+  const API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_URL)
+    || (typeof process !== 'undefined' && process.env && process.env.PUBLIC_API_URL)
+    || 'http://localhost:4000';
+  const response = await fetch((API_URL || '') + '/api/categories');
   const categories = await response.json();
   return categories.map((category: { slug: string }) => ({
     params: { slug: category.slug },
@@ -13,6 +14,10 @@ export async function getStaticPaths() {
 }
 
 const { slug } = Astro.params;
+
+const API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_URL)
+  || (typeof process !== 'undefined' && process.env && process.env.PUBLIC_API_URL)
+  || '';
 
 let posts: Post[] = [];
 let error: string | null = null;

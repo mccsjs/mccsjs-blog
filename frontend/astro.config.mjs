@@ -15,7 +15,7 @@ export default defineConfig({
       smoothScrolling: false,
       preload: { hover: true, visible: false },
       accessibility: true,
-      updateHead: true,
+      updateHead: { persistAssets: true },
       updateBodyClass: false,
       globalInstance: true,
       reloadScripts: { optin: true },

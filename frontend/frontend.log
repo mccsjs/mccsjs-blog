@@ -459,3 +459,105 @@ $ astro dev --host "0.0.0.0" --port "4321"
 [2m17:06:56[22m [34m[200][39m /posts [2m61ms[22m
 [2m17:06:56[22m [34m[200][39m /posts [2m54ms[22m
 [2m17:06:56[22m [34m[200][39m / [2m53ms[22m
+[2m17:10:09[22m [34m[200][39m /archive [2m27ms[22m
+[2m17:10:11[22m [34m[200][39m / [2m22ms[22m
+[2m17:10:11[22m [34m[200][39m / [2m21ms[22m
+[2m17:10:11[22m [34m[200][39m / [2m20ms[22m
+[2m17:10:11[22m [34m[200][39m / [2m29ms[22m
+[2m17:10:11[22m [34m[watch][39m /src/components/TabNav.astro?astro&type=style&index=0&lang.css
+[2m17:10:12[22m [34m[200][39m /posts [2m29ms[22m
+[2m17:10:13[22m [34m[200][39m /archive [2m40ms[22m
+[2m17:10:15[22m [34m[200][39m /categories [2m15ms[22m
+[2m17:10:31[22m [34m[200][39m /posts [2m23ms[22m
+[2m17:10:31[22m [34m[200][39m /posts [2m20ms[22m
+[2m17:11:28[22m [34m[200][39m /posts [2m22ms[22m
+[2m17:11:28[22m [34m[200][39m /posts [2m19ms[22m
+[2m17:11:29[22m [34m[200][39m /archive [2m27ms[22m
+[2m17:11:29[22m [34m[200][39m / [2m21ms[22m
+[2m17:11:30[22m [34m[200][39m / [2m22ms[22m
+[2m17:11:30[22m [34m[200][39m / [2m24ms[22m
+[2m17:11:30[22m [34m[200][39m / [2m19ms[22m
+[2m17:11:30[22m [34m[200][39m / [2m21ms[22m
+[2m17:11:31[22m [34m[200][39m /posts [2m23ms[22m
+[2m17:11:31[22m [34m[200][39m /archive [2m28ms[22m
+(node:16228) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 close listeners added to [Socket]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+[2m17:11:32[22m [34m[200][39m /posts/94e661ef [2m38ms[22m
+[2m17:11:33[22m [34m[200][39m /posts [2m54ms[22m
+[2m17:11:33[22m [34m[200][39m /posts [2m48ms[22m
+[2m17:11:34[22m [34m[200][39m /posts/31476ded [2m83ms[22m
+[2m17:11:35[22m [34m[200][39m /posts/48146df6 [2m73ms[22m
+[2m17:14:00[22m [34m[200][39m /posts [2m25ms[22m
+[2m17:14:01[22m [34m[200][39m /posts [2m26ms[22m
+[2m17:14:02[22m [34m[200][39m / [2m24ms[22m
+[2m17:14:02[22m [34m[200][39m /posts [2m18ms[22m
+[2m17:14:02[22m [34m[200][39m /posts [2m20ms[22m
+[2m17:14:04[22m [34m[200][39m /posts/31476ded [2m54ms[22m
+[2m17:14:04[22m [34m[200][39m /posts/48146df6 [2m71ms[22m
+[2m17:14:07[22m [34m[200][39m /posts/00e8c18e [2m65ms[22m
+[2m17:14:07[22m [34m[200][39m /posts/ac06dd52 [2m62ms[22m
+[2m17:14:07[22m [34m[200][39m /categories [2m8ms[22m
+[2m17:14:08[22m [34m[200][39m /link [2m12ms[22m
+[2m17:14:08[22m [34m[200][39m /comments [2m3ms[22m
+(node:16228) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 close listeners added to [Socket]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+[2m17:14:11[22m [34m[200][39m /posts/acb5915f [2m73ms[22m
+[2m17:14:11[22m [34m[200][39m /tags [2m5ms[22m
+[2m17:14:15[22m [34m[200][39m /categories/未分类 [2m95ms[22m
+[2m17:14:15[22m [34m[200][39m /categories/教程碎片 [2m19ms[22m
+[2m17:14:16[22m [34m[200][39m /categories/教程 [2m28ms[22m
+[2m17:14:16[22m [34m[200][39m /categories/随笔 [2m15ms[22m
+[2m17:14:18[22m [34m[200][39m /posts/6cf003fa [2m74ms[22m
+[2m17:14:20[22m [34m[200][39m /posts/e190f93b [2m76ms[22m
+[2m17:14:20[22m [34m[200][39m /posts/b983f193 [2m72ms[22m
+[2m17:14:20[22m [34m[200][39m /posts/2b2538ce [2m71ms[22m
+[2m17:14:20[22m [34m[200][39m /posts/dc7d1189 [2m65ms[22m
+[2m17:14:21[22m [34m[200][39m / [2m51ms[22m
+[2m17:14:24[22m [34m[200][39m /posts/bbc8660f [2m88ms[22m
+[2m17:14:25[22m [34m[200][39m /posts/e2730619 [2m66ms[22m
+[2m17:14:25[22m [34m[200][39m /posts/8b4dd499 [2m74ms[22m
+[2m17:14:25[22m [34m[200][39m /posts/125dd428 [2m71ms[22m
+[2m17:14:25[22m [34m[200][39m /posts/c85fceea [2m68ms[22m
+[2m17:14:26[22m [34m[200][39m /posts/cd672dbd [2m52ms[22m
+[2m17:15:21[22m [34m[200][39m /posts/94e661ef [2m72ms[22m
+[2m17:16:46[22m Configuration file updated. Restarting...
+[2m17:16:46[22m [34m[vite][39m program reload
+[31m[1m17:16:46[22m [ERROR] [vite][39m An error happened during full reload
+Failed to load url astro:server-app.js (resolved id: astro:server-app.js). Does the file exist?
+Error: Failed to load url astro:server-app.js (resolved id: astro:server-app.js). Does the file exist?
+    at loadAndTransform (file:///D:/codex/mccsjsblog/frontend/node_modules/vite/dist/node/chunks/node.js:19714:31)
+[2m17:16:46[22m [34m[vite][39m connected.
+[2m17:16:46[22m [34m[200][39m / [2m122ms[22m
+[2m17:16:47[22m [34m[200][39m / [2m24ms[22m
+[2m17:16:48[22m [34m[vite][39m connected.
+[2m17:16:48[22m [34m[vite][39m Re-optimizing dependencies because vite config has changed
+[2m17:16:48[22m [34m[vite][39m server restarted.
+[2m17:16:48[22m [34m[200][39m / [2m60ms[22m
+[2m17:16:49[22m [34m[200][39m / [2m38ms[22m
+[2m17:16:49[22m [34m[vite][39m [32m✨ new dependencies optimized: [33m@swup/astro/client/Swup, @swup/astro/client/SwupA11yPlugin, @swup/astro/client/SwupHeadPlugin, @swup/astro/client/SwupPreloadPlugin, @swup/astro/client/SwupScriptsPlugin, @swup/astro/idle, @swup/astro/serialise, iconify-icon, lenis[32m[39m
+[2m17:16:49[22m [34m[200][39m / [2m28ms[22m
+[2m17:16:49[22m [34m[200][39m / [2m26ms[22m
+[2m17:17:03[22m [34m[vite][39m program reload
+[31m[1m17:17:03[22m [ERROR] [vite][39m An error happened during full reload
+Failed to load url astro:server-app.js (resolved id: astro:server-app.js). Does the file exist?
+Error: Failed to load url astro:server-app.js (resolved id: astro:server-app.js). Does the file exist?
+    at loadAndTransform (file:///D:/codex/mccsjsblog/frontend/node_modules/vite/dist/node/chunks/node.js:19714:31)
+[2m17:17:03[22m [34m[200][39m / [2m52ms[22m
+[2m17:17:03[22m [34m[200][39m / [2m23ms[22m
+[2m17:17:10[22m [34m[vite][39m program reload
+[2m17:17:10[22m [34m[200][39m / [2m43ms[22m
+[2m17:17:10[22m [34m[200][39m / [2m22ms[22m
+[2m17:17:21[22m [34m[watch][39m /src/styles/global.css
+[2m17:18:25[22m [34m[200][39m / [2m57ms[22m
+[2m17:18:25[22m [34m[200][39m / [2m24ms[22m
+(node:16228) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 close listeners added to [Socket]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+[2m17:18:25[22m [34m[200][39m / [2m24ms[22m
+[2m17:18:25[22m [34m[200][39m / [2m24ms[22m
+[2m17:18:25[22m [34m[200][39m / [2m25ms[22m
+[2m17:18:25[22m [34m[200][39m / [2m28ms[22m
+[2m17:18:26[22m [34m[200][39m /posts [2m72ms[22m
+[2m17:18:26[22m [34m[200][39m /comments [2m62ms[22m
+[2m17:18:27[22m [34m[200][39m /posts/8c906bf0 [2m49ms[22m
+[2m17:18:28[22m [34m[200][39m /posts/94e661ef [2m37ms[22m
+[2m17:18:29[22m [34m[200][39m /archive [2m137ms[22m
+[2m17:18:30[22m [34m[200][39m /posts/54f2eb54 [2m55ms[22m
+[2m17:18:30[22m [34m[200][39m /posts/d8de0ba8 [2m48ms[22m
+[2m17:18:30[22m [34m[200][39m /posts/31476ded [2m73ms[22m

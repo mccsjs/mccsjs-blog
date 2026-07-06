@@ -23,8 +23,8 @@ const LOG_PATH = path.join(ROOT, '.backup', 'backup.log');
 
 // 跳过的目录名
 const IGNORE_DIRS = new Set([
-  'node_modules', '.git', '.astro', 'dist', 'build', '.workbuddy', '.backup',
-  'node_modules', 'pnpm-lock.yaml', 'package-lock.json', 'thumbs.db', '.DS_Store'
+  'node_modules', '.git', '.astro', 'dist', 'build', '.workbuddy', '.qoder', '.backup',
+  'uploads', 'backups',
 ]);
 
 // 跳过的文件扩展名（二进制/构建产物）

@@ -18,8 +18,8 @@ const LOG_PATH = path.join(ROOT, '.backup', 'git-auto-push.log');
 
 // 跳过的目录
 const IGNORE_DIRS = new Set([
-  'node_modules', '.git', '.astro', 'dist', 'build', '.workbuddy', '.backup',
-  'uploads', 'backups', 'node_modules',
+  'node_modules', '.git', '.astro', 'dist', 'build', '.workbuddy', '.qoder', '.backup',
+  'uploads', 'backups',
 ]);
 
 // 防抖延迟（ms）：3 分钟无改动才推送

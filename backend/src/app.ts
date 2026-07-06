@@ -1,6 +1,7 @@
 import { Elysia } from 'elysia'
 import { cors } from '@elysiajs/cors'
 import { staticPlugin } from '@elysiajs/static'
+import { ZodError } from 'zod'
 import { auth } from './auth'
 import { prisma } from './db'
 import { maybeLogVisitor } from './utils/visitor'
@@ -41,6 +42,10 @@ export const app = new Elysia()
     if (code === 'VALIDATION') {
       set.status = 422
       return { error: 'Validation failed', issues: error.all || [error.message] }
+    }
+    if (error instanceof ZodError) {
+      set.status = 422
+      return { error: 'Validation failed', issues: error.issues }
     }
     if (code === 'NOT_FOUND') {
       set.status = 404

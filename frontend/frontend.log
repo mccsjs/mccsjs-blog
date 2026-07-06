@@ -26,3 +26,33 @@ $ astro dev --host "0.0.0.0" --port "4321"
 [2m16:24:20[22m [34m[200][39m / [2m50ms[22m
 [2m16:24:20[22m [34m[200][39m / [2m51ms[22m
 [2m16:24:27[22m [34m[200][39m /posts [2m108ms[22m
+[2m16:27:56[22m [34m[200][39m / [2m25ms[22m
+[2m16:27:56[22m [34m[200][39m / [2m21ms[22m
+[2m16:27:56[22m [34m[200][39m / [2m23ms[22m
+[2m16:27:57[22m [34m[200][39m / [2m22ms[22m
+[2m16:27:57[22m [34m[200][39m / [2m22ms[22m
+[2m16:27:57[22m [34m[200][39m / [2m22ms[22m
+[2m16:28:00[22m [34m[200][39m /posts [2m41ms[22m
+[2m16:28:00[22m [34m[200][39m /comments [2m64ms[22m
+[2m16:28:00[22m [34m[200][39m /link [2m64ms[22m
+[2m16:28:03[22m [34m[200][39m /fc [2m93ms[22m
+[2m16:28:06[22m [34m[200][39m /archive [2m166ms[22m
+[2m16:28:07[22m [34m[200][39m /posts/31476ded [2m71ms[22m
+[2m16:28:08[22m [34m[200][39m /posts/cd672dbd [2m58ms[22m
+(node:16228) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 close listeners added to [Socket]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(Use `node --trace-warnings ...` to show where the warning was created)
+[2m16:28:08[22m [34m[200][39m /posts/faba3172 [2m41ms[22m
+[2m16:28:08[22m [34m[200][39m /posts/ac06dd52 [2m47ms[22m
+[2m16:28:08[22m [34m[200][39m /posts/e6406371 [2m55ms[22m
+[2m16:28:08[22m [34m[200][39m /posts/aca4e2d4 [2m100ms[22m
+[2m16:28:08[22m [34m[200][39m /posts/f82a7857 [2m59ms[22m
+[2m16:28:08[22m [34m[200][39m /posts/ba0d2cb7 [2m91ms[22m
+[2m16:28:25[22m [34m[200][39m /posts/1cd9ff02 [2m438ms[22m
+[2m16:33:23[22m [34m[200][39m /posts [2m22ms[22m
+[2m16:33:23[22m [34m[200][39m /posts [2m23ms[22m
+[2m16:33:26[22m [34m[200][39m /posts/ba0d2cb7 [2m111ms[22m
+[2m16:33:27[22m [34m[200][39m /posts/6dc7ff83 [2m243ms[22m
+[2m16:33:33[22m [34m[200][39m /posts/57886552 [2m60ms[22m
+[2m16:33:33[22m [34m[200][39m /posts/acb5915f [2m91ms[22m
+[2m16:33:33[22m [34m[200][39m /posts/e865d4d0 [2m49ms[22m
+[2m16:33:33[22m [34m[200][39m / [2m41ms[22m

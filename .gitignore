@@ -19,3 +19,5 @@ scripts/*.mjs
 .git.backup/
 *.md.bak
 *.png.bak
+backend/.backend.log
+*.log.bak

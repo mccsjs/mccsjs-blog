@@ -67,7 +67,7 @@ function runGitPush() {
     const now = new Date();
     const dateStr = now.toISOString().slice(0, 10);
     const timeStr = now.toTimeString().slice(0, 5);
-    const commitMsg = `chore: auto backup ${dateStr} ${timeStr}`;
+    const commitMsg = `chore: 自动备份 ${dateStr} ${timeStr}`;
     execSync(`git commit -m "${commitMsg}"`, { cwd: ROOT, stdio: 'inherit' });
 
     // git pull
@@ -123,7 +123,7 @@ function main() {
 
   log('✅ Git 自动推送监听已启动');
 
-  const watcher = chokidar.watch('**/*', {
+  const watcher = chokidar.watch('.', {
     cwd: ROOT,
     ignored: (p) => {
       const rel = path.relative(ROOT, p);
@@ -140,6 +140,9 @@ function main() {
   });
 
   watcher
+    .on('ready', () => {
+      log('👀 文件监听已就绪');
+    })
     .on('add', (filePath) => {
       const full = path.join(ROOT, filePath);
       if (shouldWatch(full)) schedulePush();

@@ -104,6 +104,7 @@ export const friendSchema = z.object({
   screenshot: z.string().max(500).default(''),
   sort: z.number().int().min(1).max(10).default(5),
   isInvalid: z.boolean().default(false),
+  recommended: z.boolean().default(false),
   typeId: z.string().nullable().optional(),
   rssUrl: z.preprocess((val) => (val === '' ? null : val), z.string().url().nullable().optional()),
 })

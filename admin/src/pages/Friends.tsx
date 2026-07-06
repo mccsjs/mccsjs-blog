@@ -25,6 +25,7 @@ interface Friend {
   screenshot: string;
   sort: number;
   isInvalid: boolean;
+  recommended: boolean;
   accessible: number;
   latency: number;
   typeId: string | null;
@@ -117,6 +118,14 @@ export default function Friends() {
     mutationFn: ({ id, isInvalid }: { id: string; isInvalid: boolean }) => api<void>(`/api/admin/friends/${id}`, { 
       method: 'PUT', 
       body: JSON.stringify({ isInvalid: !isInvalid }) 
+    }),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['friends'] }); },
+  });
+
+  // 推荐 / 取消推荐
+  const toggleRecommend = useMutation({
+    mutationFn: (id: string) => api<{ id: string; recommended: boolean }>(`/api/admin/friends/${id}/recommend`, { 
+      method: 'POST' 
     }),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['friends'] }); },
   });
@@ -300,6 +309,7 @@ export default function Friends() {
                         <div className="flex items-center gap-1.5">
                           <span className="font-medium text-[var(--text-h)]">{friend.name}</span>
                           {friend.isInvalid && <span className="rounded bg-red-100 px-1 py-0.5 text-xs text-red-600 dark:bg-red-900/30 dark:text-red-400">失效</span>}
+                          {friend.recommended && <span className="rounded bg-amber-100 px-1 py-0.5 text-xs text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">推荐</span>}
                         </div>
                         <a href={friend.url} target="_blank" rel="noopener noreferrer" className="text-xs text-[var(--text)] hover:text-[var(--accent)] truncate block max-w-48">
                           {friend.url}
@@ -338,6 +348,15 @@ export default function Friends() {
                       </Button>
                       <Button variant="secondary" onClick={() => toggleInvalid.mutate({ id: friend.id, isInvalid: friend.isInvalid })} title={friend.isInvalid ? '标记正常' : '标记失效'}>
                         <Icon icon={friend.isInvalid ? 'lucide:check-circle' : 'lucide:x-circle'} width={14} height={14} />
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        onClick={() => toggleRecommend.mutate(friend.id)}
+                        disabled={toggleRecommend.isPending}
+                        title={friend.recommended ? '取消推荐（不再显示在页脚）' : '设为推荐（显示在页脚推荐友链）'}
+                        className={friend.recommended ? 'text-amber-500' : ''}
+                      >
+                        <Icon icon={friend.recommended ? 'lucide:star' : 'lucide:star-off'} width={14} height={14} />
                       </Button>
                       <Button variant="secondary" onClick={() => openEditFriend(friend)}>
                         <Icon icon="lucide:pencil" width={14} height={14} />

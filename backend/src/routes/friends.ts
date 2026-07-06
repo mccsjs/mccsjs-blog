@@ -133,6 +133,23 @@ export function registerFriendRoutes(app: App) {
     }
   })
 
+  // 公开接口：仅返回被推荐（recommended=true）的友链，用于页脚「推荐友链」
+  app.get('/api/friends/recommended', async ({ prisma }) => {
+    const friends = await prisma.friend.findMany({
+      where: { recommended: true, isInvalid: false },
+      orderBy: [{ sort: 'desc' }, { createdAt: 'asc' }],
+    })
+    return friends
+      .map(enrichFriendScreenshot)
+      .map((f) => ({
+        id: f.id,
+        name: f.name,
+        url: f.url,
+        avatar: f.avatar || f.screenshot || '',
+        screenshot: f.screenshot || '',
+      }))
+  })
+
   // === Friend Speed Check ===
   app.post('/api/admin/friends/:id/check', async ({ prisma, params, user, set }) => {
     if (!user) { set.status = 401; return { error: 'Unauthorized' } }
@@ -145,6 +162,18 @@ export function registerFriendRoutes(app: App) {
       data: { accessible, latency },
     })
     return { accessible, latency }
+  }, { auth: true })
+
+  // 推荐 / 取消推荐
+  app.post('/api/admin/friends/:id/recommend', async ({ prisma, params, user, set }) => {
+    if (!user) { set.status = 401; return { error: 'Unauthorized' } }
+    const friend = await prisma.friend.findUnique({ where: { id: params.id } })
+    if (!friend) { set.status = 404; return { error: 'Not Found' } }
+    const updated = await prisma.friend.update({
+      where: { id: params.id },
+      data: { recommended: !friend.recommended },
+    })
+    return { id: updated.id, recommended: updated.recommended }
   }, { auth: true })
 
   app.post('/api/admin/friends/check-all', async ({ prisma, user, set }) => {

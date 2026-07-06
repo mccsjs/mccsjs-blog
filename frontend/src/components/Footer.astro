@@ -7,61 +7,396 @@ interface Props {
   icp?: string;
   footerText?: string;
   menus?: MenuItem[];
+  apiUrl?: string;
 }
 
-const { siteTitle = 'mccsjs', icp = '', footerText = '', menus = [] } = Astro.props;
-const year = new Date().getFullYear();
+const {
+  siteTitle = 'mccsjs',
+  icp = '',
+  footerText = '',
+  menus = [],
+  apiUrl = '',
+} = Astro.props;
 
+const year = new Date().getFullYear();
 const visibleMenus = menus.filter((m) => m.visible);
+
+// 「猜你想看」：展开所有可见菜单（含子菜单），取前 8 个做两列布局
+const guessLinks: { label: string; href: string; target?: string }[] = [];
+for (const m of visibleMenus) {
+  if (m.children?.length) {
+    for (const c of m.children.filter((c) => c.visible)) {
+      guessLinks.push({ label: c.label, href: c.href || '#', target: c.target || undefined });
+    }
+  } else {
+    guessLinks.push({ label: m.label, href: m.href || '#', target: m.target || undefined });
+  }
+}
+
+// 「推荐友链」：从后端 /api/friends/recommended 拉取（仅 recommended=true 的友链）
+let friends: { name: string; url: string; avatar: string }[] = [];
+try {
+  if (apiUrl) {
+    const res = await fetch(`${apiUrl}/api/friends/recommended`);
+    if (res.ok) {
+      const data = await res.json();
+      for (const f of data || []) {
+        friends.push({ name: f.name, url: f.url, avatar: f.avatar || f.screenshot || '' });
+      }
+    }
+  }
+} catch {
+  // API 不可用时走兜底
+}
+// 兜底：后端未设置任何推荐友链时，展示技术栈占位（与旧版页脚一致，可删）
+if (friends.length === 0) {
+  friends = [
+    { name: 'Astro', url: 'https://astro.build', avatar: 'https://astro.build/assets/press/astro-icon-dark.png' },
+    { name: 'Elysia', url: 'https://elysiajs.com', avatar: 'https://elysiajs.com/assets/elysia.svg' },
+    { name: 'Prisma', url: 'https://prisma.io', avatar: 'https://prisma.io/images/apple-touch-icon.png' },
+    { name: 'Tailwind CSS', url: 'https://tailwindcss.com', avatar: 'https://tailwindcss.com/favicons/apple-touch-icon.png' },
+  ];
+}
 ---
 
-<footer class="border-t border-[rgb(var(--card-border))] bg-[rgb(var(--card-bg))]">
-  <div class="mx-auto max-w-5xl px-6 py-8 text-sm text-[rgb(var(--fg-muted))] dark:text-[rgb(var(--fg-muted))]">
-    {visibleMenus.length > 0 && (
-      <div class="mb-6 flex flex-wrap items-center justify-center gap-4 border-b border-[rgb(var(--border-light))] pb-6 dark:border-[rgb(var(--card-border))]">
-        {visibleMenus.map((menu) =>
-          menu.children?.length ? (
-            <div class="flex items-center gap-2">
-              <span class="font-medium text-[rgb(var(--fg-soft))] dark:text-[rgb(var(--fg-muted))]"><MenuIcon icon={menu.icon} class="mr-1 size-4" />{menu.label}:</span>
-              {menu.children.filter((c) => c.visible).map((child, idx) => (
-                <>
-                  <a
-                    href={child.href || '#'}
-                    target={child.target || undefined}
-                    class="hover:text-[rgb(var(--fg-soft))] dark:hover:text-gray-200"
-                  >
-                    <MenuIcon icon={child.icon} class="mr-1 size-4" />{child.label}
-                  </a>
-                  {idx < (menu.children.filter((c) => c.visible).length - 1) && <span>·</span>}
-                </>
-              ))}
+<footer class="site-footer">
+  <div id="footer-wrap">
+    <!-- 顶部分区：格言 + 猜你想看 / 推荐友链 -->
+    <div id="ft">
+      {/* 左：格言 + 猜你想看 */}
+      <div class="ft-item-1">
+        <div class="t-top">
+          {/* 格言 */}
+          <div class="t-t-l">
+            <p class="ft-t t-l-t">格言🧬</p>
+            <div class="bg-ad">
+              <div class="motto">
+                代码如水，逻辑如山；以热爱为引，赴一场与世界的对话。
+                这是被称作工程师的人们的故事，是无数个深夜里未竟的旅途。
+              </div>
+              <div class="btn-xz-box">
+                <a class="btn-xz" href="/about/">前往了解作者</a>
+              </div>
             </div>
-          ) : (
-            <a
-              href={menu.href || '#'}
-              target={menu.target || undefined}
-              class="hover:text-[rgb(var(--fg-soft))] dark:hover:text-gray-200"
-            >
-              <MenuIcon icon={menu.icon} class="mr-1 size-4" />{menu.label}
-            </a>
-          )
-        )}
+          </div>
+          {/* 猜你想看 */}
+          <div class="t-t-r">
+            <p class="ft-t t-l-t">猜你想看💡</p>
+            <ul class="ft-links">
+              {Array.from({ length: Math.ceil(guessLinks.length / 2) }).map((_, row) => (
+                <li>
+                  {guessLinks.slice(row * 2, row * 2 + 2).map((l) => (
+                    <a href={l.href} target={l.target || undefined}>{l.label}</a>
+                  ))}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </div>
-    )}
-    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-      <span>
-        &copy; {year} {siteTitle}。
-        {icp && (
-          <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" class="ml-1 hover:text-[rgb(var(--fg-soft))] dark:hover:text-gray-200">
-            {icp}
-          </a>
-        )}
-      </span>
-      {footerText ? (
-        <span class="text-center sm:text-right">{footerText}</span>
-      ) : (
-        <span>使用 Astro + React + Tailwind CSS 构建</span>
-      )}
+
+      {/* 右：推荐友链 */}
+      <div class="ft-item-2">
+        <p class="ft-t">推荐友链⌛</p>
+        <div class="ft-img-group">
+          {friends.map((f) => (
+            <div class="img-group-item">
+              <a href={f.url} title={f.name} target="_blank" rel="noopener noreferrer">
+                {f.avatar ? (
+                  <img src={f.avatar} alt={f.name} loading="lazy" />
+                ) : (
+                  <span class="img-fallback">{f.name.slice(0, 1)}</span>
+                )}
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
+
+    {/* 版权 */}
+    <div class="copyright">
+      <span><b>&copy;{year} {siteTitle}</b></span>
+      <span><b>&nbsp;&nbsp;By {siteTitle}</b></span>
+    </div>
+
+    {/* 框架信息 */}
+    <div class="framework-info">
+      <span>由 </span>
+      <a href="https://astro.build" target="_blank" rel="noopener noreferrer">Astro</a>
+      <span class="footer-separator">|</span>
+      <span>前端 </span>
+      <a href="https://tailwindcss.com" target="_blank" rel="noopener noreferrer">Tailwind CSS</a>
+      <span class="footer-separator">|</span>
+      <span>后端 </span>
+      <a href="https://elysiajs.com" target="_blank" rel="noopener noreferrer">ElysiaJS + Bun</a>
+    </div>
+
+    {/* 自定义页脚文字 */}
+    {footerText && <div class="footer_custom_text" set:html={footerText} />}
+
+    {/* shields.io 徽章 */}
+    <p id="ghbdages">
+      <a class="github-badge" target="_blank" href="https://astro.build" title="框架 Astro">
+        <img src="https://img.shields.io/badge/Frame-Astro-7eb8d6?style=flat&logo=astro" alt="" />
+      </a>
+      <a class="github-badge" target="_blank" href="https://tailwindcss.com" title="样式 Tailwind CSS">
+        <img src="https://img.shields.io/badge/Style-Tailwind-7eb8d6?style=flat&logo=tailwindcss" alt="" />
+      </a>
+      <a class="github-badge" target="_blank" href="https://elysiajs.com" title="后端 ElysiaJS + Bun">
+        <img src="https://img.shields.io/badge/Backend-Elysia%2FBun-d4b896?style=flat&logo=bun" alt="" />
+      </a>
+      <a class="github-badge" target="_blank" href="https://github.com/mccsjs/mccsjs-blog" title="源码托管于 GitHub">
+        <img src="https://img.shields.io/badge/Source-GitHub-d4b896?style=flat&logo=github" alt="" />
+      </a>
+      {icp && (
+        <a class="github-badge" target="_blank" href="https://beian.miit.gov.cn/" title="ICP 备案">
+          <img src={`https://img.shields.io/badge/ICP-${icp}-a8d5b8?style=flat`} alt="" />
+        </a>
+      )}
+    </p>
   </div>
 </footer>
+
+<style>
+  .site-footer {
+    margin-top: auto;
+    border-top: 1px solid rgb(var(--card-border));
+    background: rgb(var(--bg-soft) / 0.55);
+    backdrop-filter: blur(12px) saturate(140%);
+    color: rgb(var(--fg-muted));
+  }
+
+  #footer-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 28px 20px 22px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* 顶部分区：左(格言+猜你想看) 右(友链) */
+  #ft {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    text-align: left;
+    color: rgb(var(--fg-muted));
+    margin-bottom: 14px;
+  }
+  .ft-item-1,
+  .ft-item-2 {
+    display: flex;
+    height: 100%;
+    padding: 10px 14px;
+  }
+  .ft-item-1 {
+    flex: 2;
+    flex-direction: column;
+  }
+  .ft-item-2 {
+    flex: 1;
+    flex-direction: column;
+  }
+
+  .t-top {
+    display: flex;
+  }
+  .t-top .t-t-l {
+    display: flex;
+    flex-direction: column;
+    flex: 1.4;
+    margin-right: 10px;
+  }
+  .t-top .t-t-r {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  /* 格言卡片（玻璃拟态） */
+  .t-top .t-t-l .bg-ad {
+    width: 85%;
+    border-radius: 16px;
+    padding: 14px 16px;
+    background: rgb(var(--card-bg) / 0.6);
+    border: 1px solid rgb(var(--card-border));
+    backdrop-filter: blur(8px);
+  }
+  .motto {
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: rgb(var(--fg-soft));
+  }
+  .btn-xz-box {
+    margin-top: 12px;
+  }
+  .btn-xz {
+    display: block;
+    background: var(--color-accent-sand);
+    color: var(--color-ink-700);
+    text-align: center;
+    line-height: 2.4;
+    border-radius: 16px;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .btn-xz:hover {
+    text-decoration: none;
+    background: #c4a884;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.35);
+  }
+
+  /* 猜你想看：两列链接 */
+  .ft-links {
+    padding: 0 14px;
+    list-style: none;
+    margin: 0;
+  }
+  .ft-links li {
+    display: flex;
+    gap: 4px;
+  }
+  .ft-links li a {
+    display: inline-block;
+    width: 50%;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 12px;
+    color: rgb(var(--fg-soft));
+    transition: all 0.25s ease;
+  }
+  .ft-links li a:hover {
+    text-decoration: none;
+    color: var(--color-accent-sand);
+    background: rgb(var(--card-bg) / 0.6);
+  }
+
+  /* 推荐友链：头像网格 */
+  .ft-item-2 .ft-img-group {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .ft-t {
+    font-size: 0.8rem;
+    margin-bottom: 18px;
+    line-height: 1;
+    font-weight: 700;
+    color: rgb(var(--fg-soft));
+  }
+  .t-l-t {
+    padding-left: 14px;
+  }
+  .ft-item-2 .ft-img-group .img-group-item {
+    width: calc(33.33% - 7px);
+  }
+  .ft-item-2 .ft-img-group .img-group-item a {
+    display: block;
+    width: 100%;
+    height: 64px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: rgb(var(--card-bg) / 0.6);
+    border: 1px solid rgb(var(--card-border));
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .ft-item-2 .ft-img-group .img-group-item a:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px -10px rgba(0, 0, 0, 0.4);
+    border-color: var(--color-accent-sand);
+  }
+  .ft-item-2 .ft-img-group .img-group-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .img-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--color-accent-sand);
+  }
+
+  /* 版权 / 框架信息 / 自定义文字 */
+  #footer-wrap .copyright,
+  #footer-wrap .framework-info,
+  #footer-wrap .footer_custom_text,
+  #footer-wrap #ghbdages {
+    margin: 0 auto;
+  }
+  .copyright {
+    font-size: 0.85rem;
+    margin-top: 6px !important;
+  }
+  .framework-info {
+    font-size: 0.8rem;
+    margin-top: 8px;
+  }
+  .framework-info a {
+    color: var(--color-accent-sky);
+    transition: color 0.25s ease;
+  }
+  .framework-info a:hover {
+    color: var(--color-accent-sand);
+  }
+  .footer-separator {
+    margin: 0 4px;
+    opacity: 0.5;
+  }
+  .footer_custom_text {
+    margin-top: 8px;
+    font-size: 0.8rem;
+  }
+
+  /* shields 徽章 */
+  #ghbdages {
+    display: block;
+    margin-top: 12px;
+  }
+  .github-badge {
+    display: inline-block;
+    margin: 4px 5px;
+  }
+  .github-badge img {
+    border-radius: 4px;
+    transition: transform 0.25s ease;
+  }
+  .github-badge:hover img {
+    transform: scale(1.06);
+  }
+
+  /* 响应式 */
+  @media screen and (max-width: 768px) {
+    .ft-item-1,
+    .ft-item-2 {
+      flex-basis: 100% !important;
+    }
+    .t-top .t-t-l .bg-ad {
+      width: 100%;
+    }
+  }
+  @media screen and (max-width: 576px) {
+    .t-top {
+      flex-wrap: wrap;
+    }
+    .t-top .t-t-l,
+    .t-top .t-t-r {
+      flex-basis: 100% !important;
+    }
+    .t-top .t-t-r {
+      margin-top: 16px;
+    }
+    .ft-item-2 .ft-img-group .img-group-item {
+      width: calc(25% - 8px);
+    }
+  }
+</style>

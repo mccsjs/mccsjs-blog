@@ -175,6 +175,7 @@ model Friend {
   screenshot  String   @default("")
   sort        Int      @default(5)
   isInvalid   Boolean  @default(false) @map("is_invalid")
+  recommended Boolean  @default(false) @map("recommended")
   typeId      String?  @map("type_id")
   type        FriendType? @relation(fields: [typeId], references: [id], onDelete: SetNull)
   accessible  Int      @default(0)

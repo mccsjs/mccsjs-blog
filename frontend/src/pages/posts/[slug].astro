@@ -8,7 +8,9 @@ import type { Post } from '../../types';
 // 导入 highlight.js 用于服务端代码高亮
 import hljs from 'highlight.js';
 
-const API_URL = 'http://localhost:4000';
+const API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_URL)
+  || (typeof process !== 'undefined' && process.env && process.env.PUBLIC_API_URL)
+  || '';
 const DEFAULT_TWIKOO_ENV_ID = 'https://twikoo.seln.cn';
 
 let twikooEnvId = DEFAULT_TWIKOO_ENV_ID;
@@ -25,7 +27,9 @@ try {
 }
 
 export async function getStaticPaths() {
-  const API_URL = 'http://localhost:4000';
+  const API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_URL)
+  || (typeof process !== 'undefined' && process.env && process.env.PUBLIC_API_URL)
+  || '';
   const response = await fetch(`${API_URL}/api/posts`);
   if (!response.ok) {
     throw new Error(`无法生成文章路由：${response.status}`);

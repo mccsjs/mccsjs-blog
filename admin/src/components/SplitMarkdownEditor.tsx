@@ -251,10 +251,10 @@ export default function SplitMarkdownEditor({
         {uploading && <span className="ml-2 text-xs text-[#909399]">上传中...</span>}
       </div>
 
-      {/* 分屏编辑区：左右各占 50%，中间分割线 */}
+      {/* 分屏编辑区：PC 左右各 50%，手机只显示左侧编辑区 */}
       <div className="relative flex w-full flex-1 overflow-hidden">
         {/* 左侧：源码 */}
-        <div className="flex w-1/2 min-w-0 flex-col overflow-hidden bg-white">
+        <div className="flex w-full min-w-0 flex-col overflow-hidden bg-white md:w-1/2">
           <textarea
             ref={textareaRef}
             value={value}
@@ -269,11 +269,11 @@ export default function SplitMarkdownEditor({
           />
         </div>
 
-        {/* 中间分割线（始终可见） */}
-        <div className="w-px shrink-0 bg-[#c0c4cc]" aria-hidden="true" />
+        {/* 中间分割线（PC 可见，手机隐藏） */}
+        <div className="hidden w-px shrink-0 bg-[#c0c4cc] md:block" aria-hidden="true" />
 
-        {/* 右侧：预览 */}
-        <div className="flex w-1/2 min-w-0 flex-col overflow-hidden bg-[#fafafa]">
+        {/* 右侧：预览（PC 可见，手机隐藏） */}
+        <div className="hidden w-1/2 min-w-0 flex-col overflow-hidden bg-[#fafafa] md:flex">
           {value?.trim() ? (
             <div
               ref={previewRef}

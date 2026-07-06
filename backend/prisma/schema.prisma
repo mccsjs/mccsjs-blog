@@ -179,9 +179,44 @@ model Friend {
   type        FriendType? @relation(fields: [typeId], references: [id], onDelete: SetNull)
   accessible  Int      @default(0)
   latency     Int      @default(0) @map("latency")
+  rssUrl      String?  @map("rss_url")
+  rssLatime   DateTime? @map("rss_latime")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  rssArticles RssArticle[]
+
   @@index([sort])
   @@map("friend")
+}
+
+model RssArticle {
+  id          String   @id @default(cuid())
+  friendId    String   @map("friend_id")
+  friend      Friend   @relation(fields: [friendId], references: [id], onDelete: Cascade)
+  title       String
+  link        String   @unique
+  publishedAt DateTime? @map("published_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([friendId])
+  @@index([publishedAt])
+  @@map("rss_article")
+}
+
+model VisitorLog {
+  id         String   @id @default(cuid())
+  visitorId  String   @map("visitor_id")
+  ip         String?
+  page       String
+  region     String?
+  os         String?
+  browser    String?
+  referrer   String?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([visitorId])
+  @@index([page])
+  @@index([createdAt])
+  @@map("visitor_log")
 }

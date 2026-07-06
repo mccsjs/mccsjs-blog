@@ -4,6 +4,21 @@ import { staticPlugin } from '@elysiajs/static'
 import { z } from 'zod'
 import { auth } from './auth'
 import { prisma } from './db'
+import RssParser from 'rss-parser'
+import cron from 'node-cron'
+import pLimit from 'p-limit'
+
+import { Elysia } from 'elysia'
+import { cors } from '@elysiajs/cors'
+import { staticPlugin } from '@elysiajs/static'
+import { z } from 'zod'
+import { auth } from './auth'
+import { prisma } from './db'
+import RssParser from 'rss-parser'
+import cron from 'node-cron'
+import pLimit from 'p-limit'
+
+// ─── Visitor Log ────────────────────────────────────────────────────────────
 
 function getClientIp(request: Request): string | null {
   const forwarded = request.headers.get('x-forwarded-for')
@@ -14,6 +29,52 @@ function getClientIp(request: Request): string | null {
   if (realIp) return realIp.trim()
   return null
 }
+
+function visitorIdHash(ip: string | null, ua: string): string {
+  const raw = `${ip || 'unknown'}|${ua || ''}`
+  let h = 0
+  for (let i = 0; i < raw.length; i++) {
+    h = ((h << 5) - h + raw.charCodeAt(i)) | 0
+  }
+  return Math.abs(h).toString(36)
+}
+
+const VISITOR_LOG_DEDUP_WINDOW_MS = 5 * 60 * 1000 // 5 分钟去重
+
+async function maybeLogVisitor(request: Request, page: string) {
+  // 仅记录公开页面 GET 请求
+  if (request.method !== 'GET') return
+  if (page.startsWith('/api/') || page.startsWith('/uploads/') || page.startsWith('/_') || page.includes('.')) return
+
+  const ip = getClientIp(request)
+  const ua = request.headers.get('user-agent') || ''
+  const referrer = request.headers.get('referer') || null
+  const vid = visitorIdHash(ip, ua)
+
+  // 去重：同一访客同一页面 5 分钟内不重复记录
+  try {
+    const since = new Date(Date.now() - VISITOR_LOG_DEDUP_WINDOW_MS)
+    const recent = await prisma.visitorLog.findFirst({
+      where: { visitorId: vid, page, createdAt: { gte: since } },
+      select: { id: true },
+    })
+    if (recent) return
+  } catch {
+    // 去重查询失败不影响主流程
+  }
+
+  // 复用已有解析逻辑获取 os/browser
+  const { region, os, browser } = await resolveClientInfo(ip, ua)
+
+  try {
+    await prisma.visitorLog.create({
+      data: { visitorId: vid, ip: ip || undefined, page, region, os, browser, referrer: referrer || undefined },
+    })
+  } catch {
+    // 写入失败不影响主流程
+  }
+}
+
 
 
 async function resolveClientInfo(ip: string | null, ua: string) {
@@ -213,9 +274,78 @@ const app = new Elysia()
     set.status = 500
     return { error: 'Internal server error', message: error instanceof Error ? error.message : String(error) }
   })
+  .onBeforeHandle(({ request, path }) => {
+    // 异步记录访客日志，不阻塞请求
+    maybeLogVisitor(request, path).catch(() => {})
+  })
 
 app.get('/', () => ({ status: 'ok', service: 'elysiajs-blog' }))
 app.get('/health', () => ({ status: 'ok' }))
+
+// ============ 访客追踪（公开，无需登录） ============
+
+const collectSchema = z.object({
+  type: z.enum(['pageview', 'duration', 'event']).default('pageview'),
+  url: z.string().min(1),
+  referrer: z.string().optional().nullable(),
+  user_agent: z.string().optional().nullable(),
+  visitor_id: z.string().optional().nullable(),
+  duration: z.number().int().nonnegative().optional(),
+  article_id: z.string().optional().nullable(),
+  event_name: z.string().optional().nullable(),
+  event_data: z.any().optional(),
+})
+
+function visitorIdHash(ip: string | null, ua: string): string {
+  const raw = `${ip || 'unknown'}|${ua || ''}`
+  let h = 0
+  for (let i = 0; i < raw.length; i++) {
+    h = ((h << 5) - h + raw.charCodeAt(i)) | 0
+  }
+  return Math.abs(h).toString(36)
+}
+
+async function recordVisitFromCollect(body: z.infer<typeof collectSchema>, request: Request) {
+  const ip = getClientIp(request)
+  const ua = body.user_agent || request.headers.get('user-agent') || ''
+  const vid = body.visitor_id || visitorIdHash(ip, ua)
+  const page = body.url.replace(/^https?:\/\/[^/]+/, '') || '/'
+  const referrer = body.referrer || request.headers.get('referer') || null
+
+  // 去重：5 分钟内同一访客同一页面不重复记录
+  try {
+    const since = new Date(Date.now() - VISITOR_LOG_DEDUP_WINDOW_MS)
+    const recent = await prisma.visitorLog.findFirst({
+      where: { visitorId: vid, page, createdAt: { gte: since } },
+      select: { id: true },
+    })
+    if (recent) return
+  } catch { /* ignore */ }
+
+  const { region, os, browser } = await resolveClientInfo(ip, ua)
+
+  try {
+    await prisma.visitorLog.create({
+      data: {
+        visitorId: vid,
+        ip: ip || undefined,
+        page,
+        region,
+        os,
+        browser,
+        referrer: referrer || undefined,
+      },
+    })
+  } catch { /* ignore */ }
+}
+
+app.post('/api/collect', async ({ body, request, set }) => {
+  const data = collectSchema.parse(body)
+  // 异步写入，快速返回 204
+  recordVisitFromCollect(data, request).catch(() => {})
+  set.status = 204
+  return null
+})
 
 // Posts
 app.get('/api/posts', async ({ prisma, query }) => {
@@ -518,6 +648,113 @@ app.put('/api/settings', async ({ prisma, body, user, set }) => {
   return settings
 }, { auth: true })
 
+// Visitor Logs (Admin)
+const visitorLogQuerySchema = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  pageSize: z.coerce.number().int().positive().max(100).default(20),
+  keyword: z.string().optional(),
+  path: z.string().optional(),
+  dateFrom: z.string().optional(),
+  dateTo: z.string().optional(),
+})
+
+app.get('/api/admin/visitor-logs', async ({ prisma, user, set, query }) => {
+  if (!user) { set.status = 401; return { error: 'Unauthorized' } }
+
+  const parsed = visitorLogQuerySchema.safeParse(query)
+  if (!parsed.success) {
+    set.status = 422
+    return { error: 'Invalid query', issues: parsed.error.issues }
+  }
+  const { page, pageSize, keyword, path, dateFrom, dateTo } = parsed.data
+
+  const where: any = {}
+  if (path) where.page = { contains: path }
+  if (dateFrom || dateTo) {
+    where.createdAt = {}
+    if (dateFrom) where.createdAt.gte = new Date(dateFrom)
+    if (dateTo) {
+      const end = new Date(dateTo)
+      end.setHours(23, 59, 59, 999)
+      where.createdAt.lte = end
+    }
+  }
+
+  const [logs, total] = await Promise.all([
+    prisma.visitorLog.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    }),
+    prisma.visitorLog.count({ where }),
+  ])
+
+  // 关键词过滤在内存中做（对 ip / referrer / visitorId）
+  let result = logs
+  if (keyword) {
+    const kw = keyword.toLowerCase()
+    result = result.filter((l) =>
+      (l.ip && l.ip.includes(kw)) ||
+      (l.referrer && l.referrer.toLowerCase().includes(kw)) ||
+      l.visitorId.includes(kw) ||
+      l.page.includes(kw)
+    )
+  }
+
+  return {
+    list: result.map((l) => ({
+      id: l.id,
+      visitorId: l.visitorId,
+      ip: l.ip,
+      page: l.page,
+      region: l.region,
+      os: l.os,
+      browser: l.browser,
+      referrer: l.referrer,
+      createdAt: l.createdAt.toISOString(),
+    })),
+    total,
+    page,
+    pageSize,
+  }
+}, { auth: true })
+
+// Visitor stats (Admin) - 概览数据
+app.get('/api/admin/visitor-stats', async ({ prisma, user, set }) => {
+  if (!user) { set.status = 401; return { error: 'Unauthorized' } }
+
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  const [todayCount, totalCount, topPages, recentLogs] = await Promise.all([
+    prisma.visitorLog.count({ where: { createdAt: { gte: today } } }),
+    prisma.visitorLog.count(),
+    prisma.visitorLog.groupBy({
+      by: ['page'],
+      _count: { page: true },
+      orderBy: { _count: { page: 'desc' } },
+      take: 10,
+    }),
+    prisma.visitorLog.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+    }),
+  ])
+
+  return {
+    todayCount,
+    totalCount,
+    topPages: topPages.map((p) => ({ page: p.page, count: p._count.page })),
+    recentLogs: recentLogs.map((l) => ({
+      visitorId: l.visitorId,
+      page: l.page,
+      region: l.region,
+      createdAt: l.createdAt.toISOString(),
+    })),
+  }
+}, { auth: true })
+
 // Menus
 function buildMenuTree(menus: { id: string; label: string; href: string | null; icon: string | null; type: string; parentId: string | null; sortOrder: number; visible: boolean; target: string | null; createdAt: Date; updatedAt: Date }[]) {
   const map = new Map<string, any>()
@@ -672,6 +909,7 @@ const friendSchema = z.object({
   sort: z.number().int().min(1).max(10).default(5),
   isInvalid: z.boolean().default(false),
   typeId: z.string().nullable().optional(),
+  rssUrl: z.preprocess((val) => (val === '' ? null : val), z.string().url().nullable().optional()),
 })
 
 app.get('/api/admin/friends', async ({ prisma, user, set, query }) => {
@@ -706,10 +944,16 @@ app.get('/api/admin/friends/:id', async ({ prisma, params, user, set }) => {
 app.post('/api/admin/friends', async ({ prisma, body, user, set }) => {
   if (!user) { set.status = 401; return { error: 'Unauthorized' } }
   const data = friendSchema.parse(body)
-  if (!data.isInvalid && !data.screenshot && data.url) {
-    data.screenshot = autoScreenshot(data.url)
+  const { typeId, ...rest } = data
+  if (!rest.isInvalid && !rest.screenshot && rest.url) {
+    rest.screenshot = autoScreenshot(rest.url)
   }
-  return prisma.friend.create({ data: { ...data, type: data.typeId ? { connect: { id: data.typeId } } : undefined }, include: { type: true } })
+  // 自动发现 RSS
+  if (!rest.rssUrl && rest.url) {
+    const discovered = await discoverRSSFeed(rest.url)
+    if (discovered) rest.rssUrl = discovered
+  }
+  return prisma.friend.create({ data: { ...rest, type: typeId ? { connect: { id: typeId } } : undefined }, include: { type: true } })
 }, { auth: true })
 
 app.put('/api/admin/friends/:id', async ({ prisma, params, body, user, set }) => {
@@ -721,6 +965,14 @@ app.put('/api/admin/friends/:id', async ({ prisma, params, body, user, set }) =>
     const friend = await prisma.friend.findUnique({ where: { id: params.id } })
     const url = rest.url || friend?.url
     if (url) rest.screenshot = autoScreenshot(url)
+  }
+  // 自动发现 RSS：如果 rssUrl 未提供且 URL 有变化，则尝试自动发现
+  if (rest.rssUrl === undefined && rest.url) {
+    const friend = await prisma.friend.findUnique({ where: { id: params.id } })
+    if (friend && friend.url !== rest.url) {
+      const discovered = await discoverRSSFeed(rest.url)
+      if (discovered) rest.rssUrl = discovered
+    }
   }
   return prisma.friend.update({
     where: { id: params.id },
@@ -875,6 +1127,168 @@ function scheduleFriendAutoCheck() {
   console.log('[友链测速] 已安排定时任务：每天 0:00 / 12:00')
 }
 
+// === RSS Feed 抓取 ===
+
+// 自动发现友链的 RSS 地址
+async function discoverRSSFeed(siteUrl: string): Promise<string | null> {
+  try {
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 8000)
+    
+    // 1. 从网站首页 HTML 中解析 RSS 链接
+    const resp = await fetch(siteUrl, {
+      signal: controller.signal,
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; MccsjsBlog/1.0)' },
+    })
+    clearTimeout(timeout)
+    
+    if (!resp.ok) return null
+    
+    const html = await resp.text()
+    
+    // 解析 <link type="application/rss+xml" href="..."> 或 <link type="application/atom+xml" href="...">
+    const linkRegex = /<link[^>]+type\s*=\s*["'](application\/(rss|atom)\+xml|application\/feed\+json)["'][^>]+href\s*=\s*["']([^"']+)["']/gi
+    const matches = [...html.matchAll(linkRegex)]
+    
+    if (matches.length > 0) {
+      const href = matches[0][3]
+      // 相对路径转绝对路径
+      if (href.startsWith('http')) return href
+      const base = new URL(siteUrl)
+      if (href.startsWith('/')) return base.origin + href
+      return base.origin + '/' + href
+    }
+    
+    // 2. 尝试常见 RSS 路径
+    const commonPaths = ['/feed', '/rss.xml', '/atom.xml', '/index.xml', '/feed.xml', '/rss', '/posts/index.xml', '/blog/rss', '/blog/feed']
+    const base = new URL(siteUrl)
+    
+    for (const path of commonPaths) {
+      try {
+        const rssUrl = base.origin + path
+        const testResp = await fetch(rssUrl, { 
+          method: 'HEAD',
+          signal: AbortSignal.timeout(5000),
+          headers: { 'User-Agent': 'Mozilla/5.0 (compatible; MccsjsBlog/1.0)' },
+        })
+        const contentType = testResp.headers.get('content-type') || ''
+        if (testResp.ok && (contentType.includes('xml') || contentType.includes('rss') || contentType.includes('atom') || contentType.includes('json'))) {
+          return rssUrl
+        }
+      } catch {
+        continue
+      }
+    }
+    
+    return null
+  } catch {
+    return null
+  }
+}
+
+const rssParser = new RssParser()
+
+// 解析单个友链的 RSS/Atom feed
+async function parseFriendFeed(friendId: string, rssUrl: string): Promise<{ title: string; link: string; publishedAt: Date | null }[]> {
+  try {
+    const feed = await rssParser.parseURL(rssUrl)
+    const articles: { title: string; link: string; publishedAt: Date | null }[] = []
+    for (const item of feed.items || []) {
+      if (!item.link) continue
+      let publishedAt: Date | null = null
+      // rss-parser 的正确属性：isoDate > pubDate
+      if (item.isoDate) publishedAt = new Date(item.isoDate)
+      if (!publishedAt && item.pubDate) publishedAt = new Date(item.pubDate)
+      articles.push({ title: item.title || '无标题', link: item.link, publishedAt })
+    }
+    return articles
+  } catch (e) {
+    console.error(`[RSS解析失败] ${rssUrl}`, e instanceof Error ? e.message : e)
+    return []
+  }
+}
+
+// 刷新单个友链的 RSS（写入数据库）
+async function refreshFriendFeed(friendId: string, rssUrl: string): Promise<number> {
+  const articles = await parseFriendFeed(friendId, rssUrl)
+  if (articles.length === 0) return 0
+  let newCount = 0
+  for (const article of articles) {
+    try {
+      await prisma.rssArticle.create({ data: { friendId, title: article.title, link: article.link, publishedAt: article.publishedAt } })
+      newCount++
+    } catch (e: any) {
+      if (e?.code === 'P2002') continue // 唯一约束冲突（已存在），跳过
+      throw e
+    }
+  }
+  // 更新友链的 RSS 最后更新时间
+  const latest = await prisma.rssArticle.findFirst({ where: { friendId }, orderBy: { publishedAt: 'desc' } })
+  if (latest) await prisma.friend.update({ where: { id: friendId }, data: { rssLatime: latest.publishedAt || new Date() } })
+  return newCount
+}
+
+// 刷新所有配置了 RSS 的友链（并发控制）
+async function refreshAllFeeds(): Promise<{ total: number; newArticles: number }> {
+  const friends = await prisma.friend.findMany({ where: { rssUrl: { not: null } } })
+  if (friends.length === 0) return { total: 0, newArticles: 0 }
+  const limit = pLimit(5)
+  let newArticles = 0
+  const tasks = friends.map((f) => limit(async () => { if (!f.rssUrl) return 0; const count = await refreshFriendFeed(f.id, f.rssUrl!); newArticles += count; return count }))
+  await Promise.all(tasks)
+  return { total: friends.length, newArticles }
+}
+
+// RSS 定时刷新：每天凌晨 3 点执行
+function scheduleRssRefresh() {
+  cron.schedule('0 3 * * *', async () => {
+    console.log('[RSS刷新] 开始...')
+    try {
+      const result = await refreshAllFeeds()
+      console.log(`[RSS刷新] 完成，共 ${result.total} 个友链，${result.newArticles} 篇新文章`)
+    } catch (e) { console.error('[RSS刷新] 失败', e) }
+  }, { timezone: 'Asia/Shanghai' })
+  console.log('[RSS刷新] 定时任务已安排：每天 03:00')
+}
+
+// === RSS Feed API ===
+
+// 公开接口：获取朋友圈文章列表
+app.get('/api/friends/feed', async ({ prisma, query }) => {
+  const page = typeof query.page === 'string' ? Math.max(1, parseInt(query.page)) : 1
+  const pageSize = typeof query.pageSize === 'string' ? Math.max(1, Math.min(50, parseInt(query.pageSize))) : 21
+  const [articles, total] = await Promise.all([
+    prisma.rssArticle.findMany({ orderBy: { publishedAt: 'desc' }, skip: (page - 1) * pageSize, take: pageSize, include: { friend: true } }),
+    prisma.rssArticle.count(),
+  ])
+  return {
+    code: 0,
+    data: {
+      list: articles.map((a) => ({ id: a.id, friend_id: a.friendId, friend_name: a.friend.name, friend_url: a.friend.url, friend_avatar: a.friend.avatar, title: a.title, link: a.link, published_at: a.publishedAt?.toISOString() || null })),
+      total, page, page_size: pageSize
+    }
+  }
+})
+
+// 管理接口：手动刷新所有 RSS
+app.post('/api/admin/friends/refresh-feeds', async ({ user, set }) => {
+  if (!user) { set.status = 401; return { error: 'Unauthorized' } }
+  const result = await refreshAllFeeds()
+  return { message: '刷新完成', ...result }
+}, { auth: true })
+
+// 管理接口：获取 RSS 文章列表
+app.get('/api/admin/friends/feed', async ({ prisma, query, user, set }) => {
+  if (!user) { set.status = 401; return { error: 'Unauthorized' } }
+  const page = typeof query.page === 'string' ? Math.max(1, parseInt(query.page)) : 1
+  const pageSize = typeof query.pageSize === 'string' ? Math.max(1, Math.min(100, parseInt(query.pageSize))) : 20
+  const [articles, total] = await Promise.all([
+    prisma.rssArticle.findMany({ orderBy: { publishedAt: 'desc' }, skip: (page - 1) * pageSize, take: pageSize, include: { friend: true } }),
+    prisma.rssArticle.count(),
+  ])
+  return { list: articles.map((a) => ({ id: a.id, friend_name: a.friend.name, friend_url: a.friend.url, title: a.title, link: a.link, published_at: a.publishedAt?.toISOString() || null, created_at: a.createdAt.toISOString() })), total, page, page_size: pageSize }
+}, { auth: true })
+
 // Uploads
 app.post('/api/upload', async ({ request, user, set }) => {
   if (!user) {
@@ -914,6 +1328,7 @@ seedDefaultMenus()
 seedDefaultAggregateMenus()
 seedDefaultFriends()
 scheduleFriendAutoCheck()
+scheduleRssRefresh()
 
 async function seedDefaultMenus() {
   const existing = await prisma.menu.findFirst({ where: { type: 'NAV' } })

@@ -19,7 +19,11 @@
     "bcryptjs": "^3.0.3",
     "better-auth": "^1.6.23",
     "elysia": "^1.4.29",
+    "node-cron": "^4.5.0",
+    "p-limit": "^7.3.0",
     "prisma": "6.6.0",
+    "rss-parser": "^3.13.0",
+    "yaml": "^2.9.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {

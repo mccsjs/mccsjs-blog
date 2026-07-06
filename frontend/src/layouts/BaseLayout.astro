@@ -6,7 +6,9 @@ import Breadcrumb from '../components/Breadcrumb.astro';
 import FloatingBar from '../components/FloatingBar.astro';
 import type { SiteSettings, MenuItem } from '../types';
 
-const API_URL = 'http://localhost:4000';
+const API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_URL)
+  || (typeof process !== 'undefined' && process.env && process.env.PUBLIC_API_URL)
+  || '';
 
 interface Props {
   title?: string;
@@ -114,6 +116,7 @@ const effectiveFontFamily = fontFamily
     <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.xml" />
     <link rel="alternate" type="application/atom+xml" title="Atom" href="/atom.xml" />
     <title>{title}</title>
+    {API_URL && <script is:inline set:html={`window.__API_URL__ = ${JSON.stringify(API_URL)};`} />}
     <script is:inline>
       (function () {
         const STORAGE_KEY = 'theme';
@@ -175,5 +178,6 @@ const effectiveFontFamily = fontFamily
     <div id="progress-bar"></div>
 
     <script defer src="/scripts/base-layout.js"></script>
+    <script defer src="/scripts/tracker.js"></script>
   </body>
 </html>

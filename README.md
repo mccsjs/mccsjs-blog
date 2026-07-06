@@ -1,7 +1,7 @@
 # mccsjs-blog
 
 Astro 7 + ElysiaJS + Bun 全栈博客系统
-
+`*100%由AI进行构建*`
 ## 技术栈
 
 - **前端**：Astro 7 + Vue + TailwindCSS

@@ -8,16 +8,6 @@ import RssParser from 'rss-parser'
 import cron from 'node-cron'
 import pLimit from 'p-limit'
 
-import { Elysia } from 'elysia'
-import { cors } from '@elysiajs/cors'
-import { staticPlugin } from '@elysiajs/static'
-import { z } from 'zod'
-import { auth } from './auth'
-import { prisma } from './db'
-import RssParser from 'rss-parser'
-import cron from 'node-cron'
-import pLimit from 'p-limit'
-
 // ─── Visitor Log ────────────────────────────────────────────────────────────
 
 function getClientIp(request: Request): string | null {

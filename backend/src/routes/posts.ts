@@ -8,38 +8,38 @@ const postSchema = z.object({
   content: z.string(),
   excerpt: z.string().max(500).default(''),
   cover: z.string().max(500).default(''),
-  categories: z.array(z.string()).default([]),
-  tags: z.array(z.string()).default([]),
-  visible: z.boolean().default(true),
+  categoryId: z.string(),
+  tagIds: z.array(z.string()).default([]),
+  published: z.boolean().default(false),
 });
 
 export function registerPostRoutes(app: any) {
   // Posts - 公开列表
-  app.get('/api/posts', async ({ prisma, query }: any) => {
+  app.get('/api/posts', async ({ query }: any) => {
     const page = typeof query.page === 'string' ? Math.max(1, parseInt(query.page)) : 1;
     const pageSize = typeof query.pageSize === 'string'
       ? Math.max(1, Math.min(50, parseInt(query.pageSize)))
       : 10;
     const [posts, total] = await Promise.all([
       prisma.post.findMany({
-        where: { visible: true },
+        where: { published: true },
         orderBy: { createdAt: 'desc' },
         skip: (page - 1) * pageSize,
         take: pageSize,
-        include: { categories: { include: { category: true } }, tags: { include: { tag: true } } },
+        include: { category: true, tags: true, comments: true },
       }),
-      prisma.post.count({ where: { visible: true } }),
+      prisma.post.count({ where: { published: true } }),
     ]);
     return { list: posts, total, page, pageSize };
   });
 
   // 文章搜索（必须放在 /:slug 前面）
-  app.get('/api/posts/search', async ({ prisma, query }: any) => {
+  app.get('/api/posts/search', async ({ query }: any) => {
     const keyword = typeof query.keyword === 'string' ? query.keyword : '';
     if (!keyword) return { list: [], total: 0 };
     const posts = await prisma.post.findMany({
       where: {
-        visible: true,
+        published: true,
         OR: [
           { title: { contains: keyword } },
           { content: { contains: keyword } },
@@ -48,25 +48,25 @@ export function registerPostRoutes(app: any) {
       },
       orderBy: { createdAt: 'desc' },
       take: 50,
-      include: { categories: { include: { category: true } }, tags: { include: { tag: true } } },
+      include: { category: true, tags: true },
     });
     return { list: posts, total: posts.length };
   });
 
   // 文章详情
-  app.get('/api/posts/:slug', async ({ prisma, params, query }: any) => {
+  app.get('/api/posts/:slug', async ({ params, query }: any) => {
     const post = await prisma.post.findUnique({
       where: { slug: params.slug },
-      include: { categories: { include: { category: true } }, tags: { include: { tag: true } } },
+      include: { category: true, tags: true, comments: { where: { parentId: null } } },
     });
-    if (!post || (!post.visible && !query.preview)) {
+    if (!post || (!post.published && !query.preview)) {
       return new Response(JSON.stringify({ error: 'Not Found' }), { status: 404 });
     }
     return post;
   });
 
   // 创建文章（管理）
-  app.post('/api/posts', async ({ prisma, body, user, set }: any) => {
+  app.post('/api/posts', async ({ body, user, set }: any) => {
     if (!user) { set.status = 401; return { error: 'Unauthorized' }; }
     const data = postSchema.parse(body);
     const slug = await generateUniqueSlug(prisma, data.title);
@@ -75,35 +75,38 @@ export function registerPostRoutes(app: any) {
         title: data.title,
         slug,
         content: data.content,
-        excerpt: data.excerpt,        cover: data.cover,
-        visible: data.visible,
-        categories: { create: data.categories.map((id: string) => ({ category: { connect: { id } } })) },
-        tags: { create: data.tags.map((id: string) => ({ tag: { connect: { id } } })) },
+        excerpt: data.excerpt,
+        coverImage: data.cover || null,
+        published: data.published,
+        categoryId: data.categoryId,
+        tags: { connect: data.tagIds.map((id: string) => ({ id })) },
       },
     });
     return post;
   }, { auth: true });
 
   // 更新文章（管理）
-  app.patch('/api/posts/:id', async ({ prisma, params, body, user, set }: any) => {
+  app.patch('/api/posts/:id', async ({ params, body, user, set }: any) => {
     if (!user) { set.status = 401; return { error: 'Unauthorized' }; }
     const data = postSchema.partial().parse(body);
+    const updateData: any = {};
+    if (data.title !== undefined) updateData.title = data.title;
+    if (data.content !== undefined) updateData.content = data.content;
+    if (data.excerpt !== undefined) updateData.excerpt = data.excerpt;
+    if (data.cover !== undefined) updateData.coverImage = data.cover;
+    if (data.published !== undefined) updateData.published = data.published;
+    if (data.categoryId !== undefined) updateData.categoryId = data.categoryId;
+    if (data.tagIds !== undefined) {
+      updateData.tags = { set: data.tagIds.map((id: string) => ({ id })) };
+    }
     return prisma.post.update({
       where: { id: params.id },
-      data: {
-        ...data,
-        categories: data.categories
-          ? { deleteMany: {}, create: data.categories.map((id: string) => ({ category: { connect: { id } } })) }
-          : undefined,
-        tags: data.tags
-          ? { deleteMany: {}, create: data.tags.map((id: string) => ({ tag: { connect: { id } } })) }
-          : undefined,
-      },
+      data: updateData,
     });
   }, { auth: true });
 
   // 删除文章（管理）
-  app.delete('/api/posts/:id', async ({ prisma, params, user, set }: any) => {
+  app.delete('/api/posts/:id', async ({ params, user, set }: any) => {
     if (!user) { set.status = 401; return { error: 'Unauthorized' }; }
     await prisma.post.delete({ where: { id: params.id } });
     set.status = 204;

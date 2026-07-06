@@ -1,0 +1,67 @@
+---
+import type { MenuItem } from '../types';
+import MenuIcon from './MenuIcon.astro';
+
+interface Props {
+  siteTitle?: string;
+  icp?: string;
+  footerText?: string;
+  menus?: MenuItem[];
+}
+
+const { siteTitle = 'mccsjs', icp = '', footerText = '', menus = [] } = Astro.props;
+const year = new Date().getFullYear();
+
+const visibleMenus = menus.filter((m) => m.visible);
+---
+
+<footer class="border-t border-[rgb(var(--card-border))] bg-[rgb(var(--card-bg))]">
+  <div class="mx-auto max-w-5xl px-6 py-8 text-sm text-[rgb(var(--fg-muted))] dark:text-[rgb(var(--fg-muted))]">
+    {visibleMenus.length > 0 && (
+      <div class="mb-6 flex flex-wrap items-center justify-center gap-4 border-b border-[rgb(var(--border-light))] pb-6 dark:border-[rgb(var(--card-border))]">
+        {visibleMenus.map((menu) =>
+          menu.children?.length ? (
+            <div class="flex items-center gap-2">
+              <span class="font-medium text-[rgb(var(--fg-soft))] dark:text-[rgb(var(--fg-muted))]"><MenuIcon icon={menu.icon} class="mr-1 size-4" />{menu.label}:</span>
+              {menu.children.filter((c) => c.visible).map((child, idx) => (
+                <>
+                  <a
+                    href={child.href || '#'}
+                    target={child.target || undefined}
+                    class="hover:text-[rgb(var(--fg-soft))] dark:hover:text-gray-200"
+                  >
+                    <MenuIcon icon={child.icon} class="mr-1 size-4" />{child.label}
+                  </a>
+                  {idx < (menu.children.filter((c) => c.visible).length - 1) && <span>·</span>}
+                </>
+              ))}
+            </div>
+          ) : (
+            <a
+              href={menu.href || '#'}
+              target={menu.target || undefined}
+              class="hover:text-[rgb(var(--fg-soft))] dark:hover:text-gray-200"
+            >
+              <MenuIcon icon={menu.icon} class="mr-1 size-4" />{menu.label}
+            </a>
+          )
+        )}
+      </div>
+    )}
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+      <span>
+        &copy; {year} {siteTitle}。
+        {icp && (
+          <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" class="ml-1 hover:text-[rgb(var(--fg-soft))] dark:hover:text-gray-200">
+            {icp}
+          </a>
+        )}
+      </span>
+      {footerText ? (
+        <span class="text-center sm:text-right">{footerText}</span>
+      ) : (
+        <span>使用 Astro + React + Tailwind CSS 构建</span>
+      )}
+    </div>
+  </div>
+</footer>

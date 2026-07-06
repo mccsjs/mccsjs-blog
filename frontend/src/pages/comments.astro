@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import TwikooComments from '../components/TwikooComments.astro';
+---
+
+<BaseLayout title="留言板" showComment={true} description="留言板 — 有任何问题或想法，欢迎在此留言">
+  <!-- 页面标题区 -->
+  <section class="mb-10 text-center">
+    <div class="mb-4 text-5xl">💬</div>
+    <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">留言板</h1>
+    <p class="mt-3 text-[rgb(var(--fg-soft))] dark:text-[rgb(var(--fg-muted))]">
+      有任何问题或想法，欢迎在此留言
+    </p>
+  </section>
+
+  <!-- 评论区 -->
+  <section id="comments" class="rounded-2xl border border-[rgb(var(--card-border))] bg-[rgb(var(--card-bg))] p-6 shadow-sm dark:border-[rgb(var(--card-border))] dark:bg-[rgb(var(--card-bg))]">
+    <TwikooComments />
+  </section>
+</BaseLayout>

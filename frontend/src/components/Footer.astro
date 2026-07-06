@@ -8,6 +8,12 @@ interface Props {
   footerText?: string;
   menus?: MenuItem[];
   apiUrl?: string;
+  showMotto?: string;
+  mottoTitle?: string;
+  mottoText?: string;
+  mottoCtaText?: string;
+  mottoCtaUrl?: string;
+  footerBadges?: string;
 }
 
 const {
@@ -16,7 +22,21 @@ const {
   footerText = '',
   menus = [],
   apiUrl = '',
+  showMotto = 'true',
+  mottoTitle = '格言🧬',
+  mottoText = '',
+  mottoCtaText = '',
+  mottoCtaUrl = '',
+  footerBadges = '',
 } = Astro.props;
+
+// 解析页脚徽标（footerBadges 为 JSON 字符串数组）
+let badges: { title: string; href: string; img: string }[] = [];
+try {
+  if (footerBadges) badges = JSON.parse(footerBadges);
+} catch {
+  badges = [];
+}
 
 const year = new Date().getFullYear();
 const visibleMenus = menus.filter((m) => m.visible);
@@ -67,18 +87,19 @@ if (friends.length === 0) {
       <div class="ft-item-1">
         <div class="t-top">
           {/* 格言 */}
-          <div class="t-t-l">
-            <p class="ft-t t-l-t">格言🧬</p>
-            <div class="bg-ad">
-              <div class="motto">
-                代码如水，逻辑如山；以热爱为引，赴一场与世界的对话。
-                这是被称作工程师的人们的故事，是无数个深夜里未竟的旅途。
-              </div>
-              <div class="btn-xz-box">
-                <a class="btn-xz" href="/about/">前往了解作者</a>
+          {showMotto !== 'false' && (
+            <div class="t-t-l">
+              <p class="ft-t t-l-t">{mottoTitle}</p>
+              <div class="bg-ad">
+                {mottoText && <div class="motto">{mottoText}</div>}
+                {mottoCtaText && (
+                  <div class="btn-xz-box">
+                    <a class="btn-xz" href={mottoCtaUrl || '#'}>{mottoCtaText}</a>
+                  </div>
+                )}
               </div>
             </div>
-          </div>
+          )}
           {/* 猜你想看 */}
           <div class="t-t-r">
             <p class="ft-t t-l-t">猜你想看💡</p>
@@ -141,26 +162,21 @@ if (friends.length === 0) {
     {/* 自定义页脚文字 */}
     {footerText && <div class="footer_custom_text" set:html={footerText} />}
 
-    {/* shields.io 徽章 */}
-    <p id="ghbdages">
-      <a class="github-badge" target="_blank" href="https://astro.build" title="框架 Astro">
-        <img src="https://img.shields.io/badge/Frame-Astro-7eb8d6?style=flat&logo=astro" alt="" />
-      </a>
-      <a class="github-badge" target="_blank" href="https://tailwindcss.com" title="样式 Tailwind CSS">
-        <img src="https://img.shields.io/badge/Style-Tailwind-7eb8d6?style=flat&logo=tailwindcss" alt="" />
-      </a>
-      <a class="github-badge" target="_blank" href="https://elysiajs.com" title="后端 ElysiaJS + Bun">
-        <img src="https://img.shields.io/badge/Backend-Elysia%2FBun-d4b896?style=flat&logo=bun" alt="" />
-      </a>
-      <a class="github-badge" target="_blank" href="https://github.com/mccsjs/mccsjs-blog" title="源码托管于 GitHub">
-        <img src="https://img.shields.io/badge/Source-GitHub-d4b896?style=flat&logo=github" alt="" />
-      </a>
-      {icp && (
-        <a class="github-badge" target="_blank" href="https://beian.miit.gov.cn/" title="ICP 备案">
-          <img src={`https://img.shields.io/badge/ICP-${icp}-a8d5b8?style=flat`} alt="" />
-        </a>
-      )}
-    </p>
+    {/* shields.io 徽章（来自系统设置「页脚设置」） */}
+    {(badges.length > 0 || icp) && (
+      <p id="ghbdages">
+        {badges.map((b) => (
+          <a class="github-badge" target="_blank" href={b.href} title={b.title}>
+            <img src={b.img} alt="" loading="lazy" />
+          </a>
+        ))}
+        {icp && (
+          <a class="github-badge" target="_blank" href="https://beian.miit.gov.cn/" title="ICP 备案">
+            <img src={`https://img.shields.io/badge/ICP-${icp}-a8d5b8?style=flat`} alt="" />
+          </a>
+        )}
+      </p>
+    )}
   </div>
 </footer>
 

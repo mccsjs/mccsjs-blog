@@ -46,6 +46,17 @@ export const defaultSettings = {
   fontFamily: '',
   backgroundImage: '',
   linkMarkdown: '',
+  showMotto: 'true',
+  mottoTitle: '格言🧬',
+  mottoText: '代码如水，逻辑如山；以热爱为引，赴一场与世界的对话。\n这是被称作工程师的人们的故事，是无数个深夜里未竟的旅途。',
+  mottoCtaText: '前往了解作者',
+  mottoCtaUrl: '/about/',
+  footerBadges: JSON.stringify([
+    { title: '框架 Astro', href: 'https://astro.build', img: 'https://img.shields.io/badge/Frame-Astro-7eb8d6?style=flat&logo=astro' },
+    { title: '样式 Tailwind CSS', href: 'https://tailwindcss.com', img: 'https://img.shields.io/badge/Style-Tailwind-7eb8d6?style=flat&logo=tailwindcss' },
+    { title: '后端 ElysiaJS + Bun', href: 'https://elysiajs.com', img: 'https://img.shields.io/badge/Backend-Elysia%2FBun-d4b896?style=flat&logo=bun' },
+    { title: '源码托管于 GitHub', href: 'https://github.com/mccsjs/mccsjs-blog', img: 'https://img.shields.io/badge/Source-GitHub-d4b896?style=flat&logo=github' },
+  ]),
 } as const
 
 export type SettingKey = keyof typeof defaultSettings

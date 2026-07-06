@@ -64,4 +64,67 @@ export function registerVisitorLogRoutes(app: any) {
       topPages: topPages.map((p: any) => ({ page: p.page, count: Number(p.cnt) })),
     };
   }, { auth: true });
+
+  // 公开：网站统计卡片数据（无需登录）
+  app.get('/api/stats', async ({ prisma, logger }: any) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const weekAgo = new Date(today);
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    const monthAgo = new Date(today);
+    monthAgo.setMonth(monthAgo.getMonth() - 1);
+
+    const [
+      totalVisits,
+      totalVisitors,
+      todayVisits,
+      weekVisits,
+      monthVisits,
+      topCountries,
+      topOs,
+      topBrowsers,
+    ] = await Promise.all([
+      prisma.visitorLog.count(),
+      prisma.visitorLog.groupBy({ by: ['visitorId'], _count: { visitorId: true } }).then((r) => r.length),
+      prisma.visitorLog.count({ where: { visitedAt: { gte: today } } }),
+      prisma.visitorLog.count({ where: { visitedAt: { gte: weekAgo } } }),
+      prisma.visitorLog.count({ where: { visitedAt: { gte: monthAgo } } }),
+      prisma.$queryRaw<Array<{ country: string | null; cnt: bigint }>>`
+        SELECT country, COUNT(*) as cnt FROM visitor_logs
+        WHERE country IS NOT NULL AND country != ''
+        GROUP BY country ORDER BY cnt DESC LIMIT 5
+      `,
+      prisma.$queryRaw<Array<{ os: string | null; cnt: bigint }>>`
+        SELECT os, COUNT(*) as cnt FROM visitor_logs
+        WHERE os IS NOT NULL AND os != ''
+        GROUP BY os ORDER BY cnt DESC LIMIT 5
+      `,
+      prisma.$queryRaw<Array<{ browser: string | null; cnt: bigint }>>`
+        SELECT browser, COUNT(*) as cnt FROM visitor_logs
+        WHERE browser IS NOT NULL AND browser != ''
+        GROUP BY browser ORDER BY cnt DESC LIMIT 5
+      `,
+    ]);
+
+    logger.debug('[公开统计] 查询完成');
+
+    const clean = (row: any) => ({
+      name: row.country ?? row.os ?? row.browser ?? '未知',
+      count: Number(row.cnt),
+    });
+
+    return {
+      code: 0,
+      data: {
+        totalVisits,
+        totalVisitors,
+        todayVisits,
+        weekVisits,
+        monthVisits,
+        topCountries: topCountries.map(clean),
+        topOs: topOs.map(clean),
+        topBrowsers: topBrowsers.map(clean),
+      },
+    };
+  });
 }

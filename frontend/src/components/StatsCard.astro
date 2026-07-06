@@ -1,0 +1,304 @@
+---
+// StatsCard.astro - 纯 Astro 组件，无框架依赖
+// 调用 GET /api/stats 展示访问统计卡片
+---
+
+<div id="stats-card" class="stats-card">
+  <div class="stats-loading" id="stats-loading">
+    <div class="loading-spinner"></div>
+    <span>加载统计中...</span>
+  </div>
+  <div class="stats-body" id="stats-body" style="display:none;">
+    <!-- 顶部概览数字 -->
+    <div class="stats-overview">
+      <div class="stat-item">
+        <span class="stat-label">总浏览量</span>
+        <span class="stat-value" id="stat-totalVisits">-</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">总访客数</span>
+        <span class="stat-value" id="stat-totalVisitors">-</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">今日访问</span>
+        <span class="stat-value" id="stat-todayVisits">-</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">本月访问</span>
+        <span class="stat-value" id="stat-monthVisits">-</span>
+      </div>
+    </div>
+
+    <!-- 排行榜 -->
+    <div class="stats-rankings">
+      <div class="rank-section">
+        <h4 class="rank-title">🌍 国家/地区 TOP5</h4>
+        <ul class="rank-list" id="rank-countries"></ul>
+      </div>
+      <div class="rank-section">
+        <h4 class="rank-title">💻 操作系统 TOP5</h4>
+        <ul class="rank-list" id="rank-os"></ul>
+      </div>
+      <div class="rank-section">
+        <h4 class="rank-title">🌐 浏览器 TOP5</h4>
+        <ul class="rank-list" id="rank-browsers"></ul>
+      </div>
+    </div>
+
+    <div class="stats-footer">
+      数据来源：本站 · 实时更新
+    </div>
+  </div>
+</div>
+
+<style>
+  .stats-card {
+    background: rgba(17, 24, 39, 0.85);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 28px;
+    color: #e5e7eb;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  .stats-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 40px;
+    color: #9ca3af;
+    font-size: 14px;
+  }
+
+  .loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255,255,255,0.1);
+    border-top-color: #60a5fa;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .stats-overview {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .stat-item {
+    text-align: center;
+    padding: 16px 8px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .stat-label {
+    display: block;
+    font-size: 12px;
+    color: #9ca3af;
+    margin-bottom: 6px;
+    letter-spacing: 0.05em;
+  }
+
+  .stat-value {
+    display: block;
+    font-size: 24px;
+    font-weight: 700;
+    color: #93c5fd;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stats-rankings {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .rank-section {
+    background: rgba(255,255,255,0.03);
+    border-radius: 10px;
+    padding: 16px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .rank-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #d1d5db;
+    margin: 0 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .rank-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .rank-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    font-size: 13px;
+    color: #9ca3af;
+  }
+
+  .rank-list li .rank-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 70%;
+  }
+
+  .rank-list li .rank-count {
+    color: #60a5fa;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+  }
+
+  .stats-footer {
+    text-align: center;
+    font-size: 12px;
+    color: #6b7280;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  @media (max-width: 768px) {
+    .stats-overview {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .stats-rankings {
+      grid-template-columns: 1fr;
+    }
+    .stat-value {
+      font-size: 20px;
+    }
+  }
+
+  /* 亮色模式 */
+  :global(.light) .stats-card,
+  :global([data-theme="light"]) .stats-card {
+    background: rgba(255,255,255,0.92);
+    border-color: rgba(0,0,0,0.08);
+    color: #1f2937;
+  }
+  :global(.light) .stat-item,
+  :global([data-theme="light"]) .stat-item {
+    background: rgba(0,0,0,0.03);
+    border-color: rgba(0,0,0,0.06);
+  }
+  :global(.light) .stat-value,
+  :global([data-theme="light"]) .stat-value {
+    color: #2563eb;
+  }
+  :global(.light) .rank-section,
+  :global([data-theme="light"]) .rank-section {
+    background: rgba(0,0,0,0.02);
+    border-color: rgba(0,0,0,0.06);
+  }
+  :global(.light) .rank-title,
+  :global([data-theme="light"]) .rank-title {
+    color: #374151;
+    border-color: rgba(0,0,0,0.08);
+  }
+  :global(.light) .rank-list li,
+  :global([data-theme="light"]) .rank-list li {
+    color: #6b7280;
+  }
+  :global(.light) .rank-list li .rank-count,
+  :global([data-theme="light"]) .rank-list li .rank-count {
+    color: #2563eb;
+  }
+  :global(.light) .stats-footer,
+  :global([data-theme="light"]) .stats-footer {
+    color: #9ca3af;
+    border-color: rgba(0,0,0,0.06);
+  }
+</style>
+
+<script>
+  interface RankItem {
+    name: string;
+    count: number;
+  }
+
+  interface StatsData {
+    totalVisits: number;
+    totalVisitors: number;
+    todayVisits: number;
+    weekVisits: number;
+    monthVisits: number;
+    topCountries: RankItem[];
+    topOs: RankItem[];
+    topBrowsers: RankItem[];
+  }
+
+  async function loadStats() {
+    const loading = document.getElementById('stats-loading');
+    const body = document.getElementById('stats-body');
+
+    try {
+      const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
+      const res = await fetch(`${API_URL}/api/stats`);
+      if (!res.ok) throw new Error('Failed to fetch stats');
+      const json = await res.json();
+      // json = { code: 0, data: StatsData }
+      const data: StatsData = json.data;
+
+      // 填充概览数字
+      const setText = (id: string, val: number | undefined) => {
+        const el = document.getElementById(id);
+        if (el && val !== undefined) el.textContent = val.toLocaleString();
+      };
+      setText('stat-totalVisits', data.totalVisits);
+      setText('stat-totalVisitors', data.totalVisitors);
+      setText('stat-todayVisits', data.todayVisits);
+      setText('stat-monthVisits', data.monthVisits);
+
+      // 填充排行榜
+      fillRankList('rank-countries', data.topCountries);
+      fillRankList('rank-os', data.topOs);
+      fillRankList('rank-browsers', data.topBrowsers);
+
+      if (loading) loading.style.display = 'none';
+      if (body) body.style.display = 'block';
+    } catch (err) {
+      console.error('[统计卡片] 加载失败', err);
+      if (loading) {
+        loading.innerHTML = '<span style="color:#f87171;">统计加载失败，请稍后重试</span>';
+      }
+    }
+  }
+
+  function fillRankList(elementId: string, items: RankItem[]) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    el.innerHTML = items
+      .filter((item) => item.name && item.name !== '未知')
+      .slice(0, 5)
+      .map(
+        (item, i) =>
+          `<li><span class="rank-name">${item.name}</span><span class="rank-count">${item.count}</span></li>`
+      )
+      .join('');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadStats);
+  } else {
+    loadStats();
+  }
+</script>

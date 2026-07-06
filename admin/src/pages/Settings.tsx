@@ -33,6 +33,7 @@ interface SettingsData {
   mottoText: string;
   mottoCtaText: string;
   mottoCtaUrl: string;
+  mottoCtaTarget: string;
   footerBadges: string;
 }
 
@@ -54,6 +55,7 @@ const defaultValues: SettingsData = {
   mottoText: '',
   mottoCtaText: '',
   mottoCtaUrl: '',
+  mottoCtaTarget: '_self',
   footerBadges: '',
 };
 
@@ -279,6 +281,17 @@ export default function Settings() {
 
                   <Field label="按钮链接" className="md:col-span-2">
                     <Input id="mottoCtaUrl" placeholder="/about/" {...register('mottoCtaUrl')} />
+                  </Field>
+
+                  <Field label="打开方式">
+                    <select
+                      id="mottoCtaTarget"
+                      {...register('mottoCtaTarget')}
+                      className="w-full rounded-md border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] transition-colors focus:border-[var(--accent)] focus:outline-none"
+                    >
+                      <option value="_self">当前窗口</option>
+                      <option value="_blank">新窗口</option>
+                    </select>
                   </Field>
 
                   <Field label="格言正文" className="md:col-span-2">

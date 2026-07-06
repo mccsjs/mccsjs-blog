@@ -13,6 +13,7 @@ interface Props {
   mottoText?: string;
   mottoCtaText?: string;
   mottoCtaUrl?: string;
+  mottoCtaTarget?: string;
   footerBadges?: string;
 }
 
@@ -27,6 +28,7 @@ const {
   mottoText = '',
   mottoCtaText = '',
   mottoCtaUrl = '',
+  mottoCtaTarget = '_self',
   footerBadges = '',
 } = Astro.props;
 
@@ -94,7 +96,12 @@ if (friends.length === 0) {
                 {mottoText && <div class="motto">{mottoText}</div>}
                 {mottoCtaText && (
                   <div class="btn-xz-box">
-                    <a class="btn-xz" href={mottoCtaUrl || '#'}>{mottoCtaText}</a>
+                    <a
+                      class="btn-xz"
+                      href={mottoCtaUrl || '#'}
+                      target={mottoCtaTarget === '_blank' ? '_blank' : undefined}
+                      rel={mottoCtaTarget === '_blank' ? 'noopener noreferrer' : undefined}
+                    >{mottoCtaText}</a>
                   </div>
                 )}
               </div>

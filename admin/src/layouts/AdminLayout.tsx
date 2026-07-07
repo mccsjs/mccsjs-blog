@@ -54,7 +54,7 @@ export default function AdminLayout() {
   const initials = (user?.name || user?.email || 'A').charAt(0).toUpperCase();
 
   return (
-    <div className="flex min-h-screen bg-[var(--bg-soft)]">
+    <div className="bg-[var(--bg-soft)] lg:flex lg:h-screen lg:overflow-hidden">
       {/* 移动端遮罩 */}
       {sidebarOpen && (
         <div
@@ -65,7 +65,7 @@ export default function AdminLayout() {
 
       {/* 侧边栏 */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-[var(--border)] bg-[var(--bg)] transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-[var(--border)] bg-[var(--bg)] transition-transform duration-300 ease-in-out lg:fixed lg:top-0 lg:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -134,7 +134,7 @@ export default function AdminLayout() {
       </aside>
 
       {/* 主内容 */}
-      <main className="flex-1 overflow-auto min-w-0">
+      <main className="flex-1 min-w-0 lg:ml-64 lg:h-screen lg:overflow-y-auto">
         {/* 移动端顶部栏 */}
         <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-[var(--border)] bg-[var(--bg)] px-4 lg:hidden">
           <button

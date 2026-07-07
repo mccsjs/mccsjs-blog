@@ -23,7 +23,7 @@ export async function seedDefaultMenus() {
 }
 
 export async function seedDefaultAggregateMenus() {
-  // 每次启动都重新同步聚合菜单内容
+  // 每次启动都重新同步图标菜单内容
   await prisma.menu.deleteMany({ where: { OR: [{ label: '我的网站' }, { label: '友情链接' }] } })
 
   // 创建分组 1：我的网站
@@ -56,7 +56,7 @@ export async function seedDefaultAggregateMenus() {
     })
   }
 
-  console.log('🌱 默认聚合菜单已初始化（我的网站/友情链接）')
+  console.log('🌱 默认图标菜单已初始化（我的网站/友情链接）')
 }
 
 export async function seedDefaultFriends() {

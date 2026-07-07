@@ -144,7 +144,7 @@
     height: 24px;
   }
 
-  /* 聚合菜单下拉 */
+  /* 图标菜单下拉 */
   #nav-logo-wrapper {
     flex-shrink: 0;
     z-index: 2;

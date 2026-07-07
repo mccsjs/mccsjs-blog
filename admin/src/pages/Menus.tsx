@@ -36,7 +36,7 @@ interface MenuFormData {
 }
 
 const typeLabels: Record<MenuType, string> = {
-  GROUP: '聚合菜单',
+  GROUP: '图标菜单',
   NAV: '导航菜单',
   FOOTER: '页脚菜单',
 };
@@ -205,7 +205,7 @@ export default function Menus() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold text-[var(--text-h)]">菜单管理</h1>
-          <p className="mt-1 text-sm text-[var(--text)]">管理前端导航、页脚及聚合菜单</p>
+          <p className="mt-1 text-sm text-[var(--text)]">管理前端导航、页脚及图标菜单</p>
         </div>
         <Icon icon="lucide:menu" width={20} height={20} className="text-[var(--text)]" />
       </div>

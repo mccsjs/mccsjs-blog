@@ -197,7 +197,7 @@
       if (e.key === 'Escape') closeDrawer();
     }, { signal: signal });
 
-    // ===== 5. 聚合菜单下拉 =====
+    // ===== 5. 图标菜单下拉 =====
     var aggTrigger = document.getElementById('nav-aggregate-trigger');
     var aggDropdown = document.getElementById('nav-aggregate-dropdown');
     if (aggTrigger && aggDropdown) {

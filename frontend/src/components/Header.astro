@@ -23,10 +23,10 @@ const visibleAggregateMenus = aggregateMenus.filter((m) => m.visible && m.childr
       <div id="nav-glass-layer"></div>
 
       <div id="nav-inner">
-        <!-- Logo + 聚合菜单 -->
+        <!-- Logo + 图标菜单 -->
         <div id="nav-logo-wrapper" class="relative flex items-center gap-2">
           {visibleAggregateMenus.length > 0 && (
-            <button id="nav-aggregate-trigger" class="flex shrink-0 items-center justify-center" aria-label="打开聚合菜单">
+            <button id="nav-aggregate-trigger" class="flex shrink-0 items-center justify-center" aria-label="打开图标菜单">
               {favicon ? (
                 <img src={favicon} alt={siteTitle} class="nav-logo-icon" />
               ) : (

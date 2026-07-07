@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../lib/api';
@@ -58,6 +58,9 @@ export default function Friends() {
   const [showForm, setShowForm] = useState(false);
   const [showTypeManager, setShowTypeManager] = useState(false);
   const [editingType, setEditingType] = useState<FriendType | null>(null);
+  const [headerMenuOpen, setHeaderMenuOpen] = useState(false);
+  const [actionMenuId, setActionMenuId] = useState<string | null>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
 
   // ===== Queries =====
   const { data: types = [] } = useQuery({
@@ -192,18 +195,50 @@ export default function Friends() {
           <p className="text-sm text-[var(--text)] mt-1">管理友情链接分组和条目</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="secondary" onClick={() => { if (confirm('将对所有有效友链进行测速，可能需要一些时间，确定？')) checkAllFriends.mutate(); }} disabled={checkAllFriends.isPending}>
-            <Icon icon="lucide:zap" width={16} height={16} className="mr-1.5" />
-            {checkAllFriends.isPending ? '测速中...' : '批量测速'}
-          </Button>
-          <Button variant="secondary" onClick={() => setShowTypeManager(!showTypeManager)}>
-            <Icon icon="lucide:folder-tree" width={16} height={16} className="mr-1.5" />
-            类型管理 {showTypeManager ? '收起' : '展开'}
-          </Button>
-          <Button onClick={openNewFriend}>
+          {/* 主操作：始终可见 */}
+          <Button onClick={openNewFriend} className="sm:flex">
             <Icon icon="lucide:plus" width={16} height={16} className="mr-1.5" />
             新增友链
           </Button>
+          {/* 手机端溢出菜单 */}
+          <div ref={headerRef} className="relative sm:hidden">
+            <Button variant="secondary" onClick={() => setHeaderMenuOpen(!headerMenuOpen)}>
+              <Icon icon="lucide:more-horizontal" width={18} height={18} />
+            </Button>
+            {headerMenuOpen && (
+              <>
+                <div className="fixed inset-0 z-10" onClick={() => setHeaderMenuOpen(false)} />
+                <div className="absolute right-0 z-20 mt-2 w-44 rounded-lg border border-[var(--border)] bg-[var(--bg)] p-1 shadow-xl">
+                  <button
+                    onClick={() => { setHeaderMenuOpen(false); if (confirm('将对所有有效友链进行测速，可能需要一些时间，确定？')) checkAllFriends.mutate(); }}
+                    disabled={checkAllFriends.isPending}
+                    className="flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-sm text-[var(--text-h)] hover:bg-[var(--bg-muted)] transition-colors disabled:opacity-50"
+                  >
+                    <Icon icon="lucide:zap" width={15} height={15} />
+                    批量测速
+                  </button>
+                  <button
+                    onClick={() => { setHeaderMenuOpen(false); setShowTypeManager(!showTypeManager); }}
+                    className="flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-sm text-[var(--text-h)] hover:bg-[var(--bg-muted)] transition-colors"
+                  >
+                    <Icon icon="lucide:folder-tree" width={15} height={15} />
+                    类型管理{showTypeManager ? ' 收起' : ' 展开'}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+          {/* 桌面端：完整按钮组 */}
+          <span className="hidden sm:flex items-center gap-2">
+            <Button variant="secondary" onClick={() => { if (confirm('将对所有有效友链进行测速，可能需要一些时间，确定？')) checkAllFriends.mutate(); }} disabled={checkAllFriends.isPending}>
+              <Icon icon="lucide:zap" width={16} height={16} className="mr-1.5" />
+              {checkAllFriends.isPending ? '测速中...' : '批量测速'}
+            </Button>
+            <Button variant="secondary" onClick={() => setShowTypeManager(!showTypeManager)}>
+              <Icon icon="lucide:folder-tree" width={16} height={16} className="mr-1.5" />
+              类型管理 {showTypeManager ? '收起' : '展开'}
+            </Button>
+          </span>
         </div>
       </div>
 
@@ -343,27 +378,71 @@ export default function Friends() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-1">
-                      <Button variant="secondary" onClick={() => checkFriend.mutate(friend.id)} disabled={checkFriend.isPending} title="测速">
-                        <Icon icon="lucide:zap" width={14} height={14} className={checkFriend.isPending ? 'animate-pulse' : ''} />
-                      </Button>
-                      <Button variant="secondary" onClick={() => toggleInvalid.mutate({ id: friend.id, isInvalid: friend.isInvalid })} title={friend.isInvalid ? '标记正常' : '标记失效'}>
-                        <Icon icon={friend.isInvalid ? 'lucide:check-circle' : 'lucide:x-circle'} width={14} height={14} />
-                      </Button>
-                      <Button
-                        variant="secondary"
-                        onClick={() => toggleRecommend.mutate(friend.id)}
-                        disabled={toggleRecommend.isPending}
-                        title={friend.recommended ? '取消推荐（不再显示在页脚）' : '设为推荐（显示在页脚推荐友链）'}
-                        className={friend.recommended ? 'text-amber-500' : ''}
-                      >
-                        <Icon icon={friend.recommended ? 'lucide:star' : 'lucide:star-off'} width={14} height={14} />
-                      </Button>
-                      <Button variant="secondary" onClick={() => openEditFriend(friend)}>
+                      {/* 桌面端：全部 5 个图标按钮 */}
+                      <span className="hidden sm:flex items-center gap-1">
+                        <Button variant="secondary" onClick={() => checkFriend.mutate(friend.id)} disabled={checkFriend.isPending} title="测速">
+                          <Icon icon="lucide:zap" width={14} height={14} className={checkFriend.isPending ? 'animate-pulse' : ''} />
+                        </Button>
+                        <Button variant="secondary" onClick={() => toggleInvalid.mutate({ id: friend.id, isInvalid: friend.isInvalid })} title={friend.isInvalid ? '标记正常' : '标记失效'}>
+                          <Icon icon={friend.isInvalid ? 'lucide:check-circle' : 'lucide:x-circle'} width={14} height={14} />
+                        </Button>
+                        <Button
+                          variant="secondary"
+                          onClick={() => toggleRecommend.mutate(friend.id)}
+                          disabled={toggleRecommend.isPending}
+                          title={friend.recommended ? '取消推荐（不再显示在页脚）' : '设为推荐（显示在页脚推荐友链）'}
+                          className={friend.recommended ? 'text-amber-500' : ''}
+                        >
+                          <Icon icon={friend.recommended ? 'lucide:star' : 'lucide:star-off'} width={14} height={14} />
+                        </Button>
+                      </span>
+                      {/* 始终显示：编辑 + 删除 */}
+                      <Button variant="secondary" onClick={() => openEditFriend(friend)} title="编辑">
                         <Icon icon="lucide:pencil" width={14} height={14} />
                       </Button>
-                      <Button variant="secondary" onClick={() => { if (confirm('确定删除？')) deleteFriend.mutate(friend.id); }}>
+                      <Button variant="secondary" onClick={() => { if (confirm('确定删除？')) deleteFriend.mutate(friend.id); }} title="删除">
                         <Icon icon="lucide:trash-2" width={14} height={14} className="text-red-500" />
                       </Button>
+                      {/* 手机端溢出菜单（测速 / 标记失效 / 推荐） */}
+                      <div className="relative sm:hidden">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setActionMenuId(actionMenuId === friend.id ? null : friend.id); }}
+                          className="rounded-lg p-1.5 text-[var(--text)] hover:bg-[var(--bg-muted)] transition-colors"
+                        >
+                          <Icon icon="lucide:more-horizontal" width={16} height={16} />
+                        </button>
+                        {actionMenuId === friend.id && (
+                          <>
+                            <div className="fixed inset-0 z-10" onClick={() => setActionMenuId(null)} />
+                            <div className="absolute right-0 z-20 mt-1 w-40 rounded-lg border border-[var(--border)] bg-[var(--bg)] p-1 shadow-xl">
+                              <button
+                                onClick={() => { setActionMenuId(null); checkFriend.mutate(friend.id); }}
+                                disabled={checkFriend.isPending}
+                                className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-[var(--text-h)] hover:bg-[var(--bg-muted)] transition-colors disabled:opacity-50"
+                              >
+                                <Icon icon="lucide:zap" width={15} height={15} /> 测速
+                              </button>
+                              <button
+                                onClick={() => { setActionMenuId(null); toggleInvalid.mutate({ id: friend.id, isInvalid: friend.isInvalid }); }}
+                                className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-[var(--text-h)] hover:bg-[var(--bg-muted)] transition-colors"
+                              >
+                                <Icon icon={friend.isInvalid ? 'lucide:check-circle' : 'lucide:x-circle'} width={15} height={15} />
+                                {friend.isInvalid ? '标记正常' : '标记失效'}
+                              </button>
+                              <button
+                                onClick={() => { setActionMenuId(null); toggleRecommend.mutate(friend.id); }}
+                                disabled={toggleRecommend.isPending}
+                                className={`flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-[var(--bg-muted)] transition-colors disabled:opacity-50 ${
+                                  friend.recommended ? 'text-amber-600' : 'text-[var(--text-h)]'
+                                }`}
+                              >
+                                <Icon icon={friend.recommended ? 'lucide:star' : 'lucide:star-off'} width={15} height={15} />
+                                {friend.recommended ? '取消推荐' : '设为推荐'}
+                              </button>
+                            </div>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </td>
                 </tr>
@@ -394,7 +473,7 @@ export default function Friends() {
               </div>
               <div>
                 <Label htmlFor="description">描述</Label>
-                <Textarea id="description" rows={2} {...friendForm.register('description')} />
+                <Textarea id="description" rows={2} className="!resize-none" {...friendForm.register('description')} />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>

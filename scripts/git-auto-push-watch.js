@@ -44,6 +44,17 @@ function shouldWatch(filePath) {
   return true;
 }
 
+function getAheadCount() {
+  try {
+    return parseInt(
+      execSync('git rev-list --count origin/main..HEAD', { cwd: ROOT, encoding: 'utf8' }).trim(),
+      10
+    ) || 0;
+  } catch {
+    return 0;
+  }
+}
+
 function runGitPush() {
   try {
     // 检查是否有未提交改动
@@ -51,24 +62,31 @@ function runGitPush() {
       cwd: ROOT,
       encoding: 'utf8',
     }).trim();
+    const ahead = getAheadCount();
 
-    if (!status) {
+    // 既无未提交改动、也无领先远程的提交 -> 跳过
+    if (!status && ahead === 0) {
       log('✅ 没有未提交改动，跳过推送');
       return;
     }
 
-    log('📝 发现未提交改动，开始推送...');
-    log(`改动文件：\n${status}`);
+    if (status) {
+      log('📝 发现未提交改动，开始推送...');
+      log(`改动文件：\n${status}`);
 
-    // git add
-    execSync('git add .', { cwd: ROOT, stdio: 'inherit' });
+      // git add
+      execSync('git add .', { cwd: ROOT, stdio: 'inherit' });
 
-    // git commit
-    const now = new Date();
-    const dateStr = now.toISOString().slice(0, 10);
-    const timeStr = now.toTimeString().slice(0, 5);
-    const commitMsg = `chore: 自动备份 ${dateStr} ${timeStr}`;
-    execSync(`git commit -m "${commitMsg}"`, { cwd: ROOT, stdio: 'inherit' });
+      // git commit
+      const now = new Date();
+      const dateStr = now.toISOString().slice(0, 10);
+      const timeStr = now.toTimeString().slice(0, 5);
+      const commitMsg = `chore: 自动备份 ${dateStr} ${timeStr}`;
+      execSync(`git commit -m "${commitMsg}"`, { cwd: ROOT, stdio: 'inherit' });
+    } else {
+      // 改动已提交但上次 push 失败，仅补推
+      log('📝 存在已提交但未推送的改动，直接推送...');
+    }
 
     // git pull
     log('📥 拉取远程更新...');
@@ -142,6 +160,15 @@ function main() {
   watcher
     .on('ready', () => {
       log('👀 文件监听已就绪');
+      // 启动兜底：若有已提交但未推送的提交（如之前代理断开导致 push 失败），直接补推
+      let statusClean = true;
+      try {
+        statusClean = execSync('git status -s', { cwd: ROOT, encoding: 'utf8' }).trim() === '';
+      } catch { /* ignore */ }
+      if (statusClean && getAheadCount() > 0) {
+        log('🔄 启动兜底：检测到本地有未推送提交，补推中...');
+        runGitPush();
+      }
     })
     .on('add', (filePath) => {
       const full = path.join(ROOT, filePath);

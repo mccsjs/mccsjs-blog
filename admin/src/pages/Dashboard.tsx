@@ -1,6 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
+import {
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+} from 'recharts';
 import { api } from '../lib/api';
 import type { Post, Comment } from '../../../shared/src/index';
 import { Icon } from '@iconify/react';
@@ -12,6 +21,24 @@ interface VisitorStats {
   recentLogs: { visitorId: string; page: string; region: string | null; createdAt: string }[];
 }
 
+interface TrendPoint {
+  date: string;
+  label: string;
+  pv: number;
+  uv: number;
+}
+
+interface TrendResp {
+  range: 'day' | 'month';
+  data: TrendPoint[];
+}
+
+// 图表配色（贴合截图：浏览量紫 / 访客量蓝）
+const PV_COLOR = '#8b5cf6';
+const UV_COLOR = '#3b82f6';
+const AXIS_MUTED = 'rgba(148,163,184,0.85)';
+const GRID_LINE = 'rgba(148,163,184,0.18)';
+
 function timeAgo(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
   const m = Math.floor(diff / 60000);
@@ -22,6 +49,22 @@ function timeAgo(iso: string): string {
   const d = Math.floor(h / 24);
   if (d < 30) return `${d} 天前`;
   return new Date(iso).toLocaleDateString('zh-CN');
+}
+
+function TrendTooltip({ active, payload, label }: any) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-xs shadow-xl">
+      <div className="mb-1.5 font-medium text-[var(--text-h)]">{label}</div>
+      {payload.map((p: any) => (
+        <div key={p.dataKey} className="flex items-center gap-2 py-0.5">
+          <span className="inline-block h-2 w-2 rounded-full" style={{ background: p.color }} />
+          <span className="text-[var(--text)]">{p.dataKey === 'pv' ? '浏览量' : '访客量'}</span>
+          <span className="ml-auto pl-3 tabular-nums font-semibold text-[var(--text-h)]">{p.value}</span>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 export default function Dashboard() {
@@ -38,6 +81,13 @@ export default function Dashboard() {
   const { data: visitorStats } = useQuery<VisitorStats>({
     queryKey: ['visitor-stats', 'dashboard'],
     queryFn: () => api('/api/admin/visitor-stats'),
+  });
+
+  // 访问趋势（日 / 月）
+  const [range, setRange] = useState<'day' | 'month'>('day');
+  const { data: trend } = useQuery<TrendResp>({
+    queryKey: ['visitor-trend', range],
+    queryFn: () => api(`/api/admin/visitor-trend?range=${range}`),
   });
 
   // 触发热门页面进度条入场动画
@@ -85,6 +135,8 @@ export default function Dashboard() {
   const maxPageCount = visitorStats
     ? Math.max(...visitorStats.topPages.map((p) => p.count), 1)
     : 1;
+
+  const latest = trend?.data?.[trend.data.length - 1];
 
   return (
     <div className="space-y-8">
@@ -141,6 +193,114 @@ export default function Dashboard() {
               />
             </Link>
           ))}
+        </div>
+      </div>
+
+      {/* 访问趋势 */}
+      <div className="card p-6">
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--accent-bg)] text-[var(--accent)]">
+              <Icon icon="lucide:trending-up" width={17} height={17} />
+            </span>
+            <h2>访问趋势</h2>
+          </div>
+          {/* 日 / 月 切换 */}
+          <div className="flex items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--bg-soft)] p-0.5">
+            {(['day', 'month'] as const).map((r) => (
+              <button
+                key={r}
+                type="button"
+                onClick={() => setRange(r)}
+                className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                  range === r
+                    ? 'bg-[var(--accent)] text-white shadow-sm'
+                    : 'text-[var(--text)] hover:text-[var(--text-h)]'
+                }`}
+              >
+                {r === 'day' ? '日' : '月'}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* 当前值图例 */}
+        <div className="mb-3 flex items-center gap-5">
+          <span className="flex items-center gap-1.5 text-xs text-[var(--text)]">
+            <span className="h-2.5 w-2.5 rounded-full" style={{ background: PV_COLOR }} />
+            浏览量
+            <b className="tabular-nums text-[var(--text-h)]">{latest?.pv ?? 0}</b>
+          </span>
+          <span className="flex items-center gap-1.5 text-xs text-[var(--text)]">
+            <span className="h-2.5 w-2.5 rounded-full" style={{ background: UV_COLOR }} />
+            访客量
+            <b className="tabular-nums text-[var(--text-h)]">{latest?.uv ?? 0}</b>
+          </span>
+        </div>
+
+        {/* 双线图 */}
+        <div className="h-[280px] w-full">
+          {trend && trend.data.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={trend.data} margin={{ top: 8, right: 8, bottom: 0, left: -16 }}>
+                <CartesianGrid stroke={GRID_LINE} strokeDasharray="3 3" vertical={false} />
+                <XAxis
+                  dataKey="label"
+                  tick={{ fill: AXIS_MUTED, fontSize: 11 }}
+                  tickLine={false}
+                  axisLine={{ stroke: GRID_LINE }}
+                  minTickGap={16}
+                />
+                <YAxis
+                  yAxisId="pv"
+                  tick={{ fill: AXIS_MUTED, fontSize: 11 }}
+                  tickLine={false}
+                  axisLine={false}
+                  width={36}
+                  allowDecimals={false}
+                />
+                <YAxis
+                  yAxisId="uv"
+                  orientation="right"
+                  tick={{ fill: AXIS_MUTED, fontSize: 11 }}
+                  tickLine={false}
+                  axisLine={false}
+                  width={36}
+                  allowDecimals={false}
+                />
+                <Tooltip
+                  content={<TrendTooltip />}
+                  cursor={{ stroke: GRID_LINE, strokeWidth: 1 }}
+                />
+                <Line
+                  yAxisId="pv"
+                  type="monotone"
+                  dataKey="pv"
+                  name="浏览量"
+                  stroke={PV_COLOR}
+                  strokeWidth={2.5}
+                  dot={false}
+                  activeDot={{ r: 4, strokeWidth: 0 }}
+                  animationDuration={900}
+                />
+                <Line
+                  yAxisId="uv"
+                  type="monotone"
+                  dataKey="uv"
+                  name="访客量"
+                  stroke={UV_COLOR}
+                  strokeWidth={2.5}
+                  dot={false}
+                  activeDot={{ r: 4, strokeWidth: 0 }}
+                  animationDuration={900}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex h-full items-center justify-center text-xs text-[var(--text)]">
+              暂无访问数据
+            </div>
+          )}
         </div>
       </div>
 

@@ -110,4 +110,53 @@ export function registerVisitorRoutes(app: App) {
       })),
     }
   }, { auth: true })
+
+  // Visitor trend (Admin) - 访问趋势（按日 / 按月）
+  app.get('/api/admin/visitor-trend', async ({ prisma, user, set, query }) => {
+    if (!user) { set.status = 401; return { error: 'Unauthorized' } }
+
+    const range = query.range === 'month' ? 'month' : 'day'
+    const now = new Date()
+    const from =
+      range === 'month'
+        ? new Date(now.getFullYear(), now.getMonth() - 11, 1)
+        : new Date(now.getFullYear(), now.getMonth(), now.getDate() - 29)
+
+    const logs = await prisma.visitorLog.findMany({
+      where: { createdAt: { gte: from } },
+      select: { visitorId: true, createdAt: true },
+    })
+
+    const buckets = new Map<string, { pv: number; uv: Set<string> }>()
+    for (const l of logs) {
+      const d = new Date(l.createdAt)
+      const key =
+        range === 'month'
+          ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+          : `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+      if (!buckets.has(key)) buckets.set(key, { pv: 0, uv: new Set() })
+      const b = buckets.get(key)!
+      b.pv++
+      b.uv.add(l.visitorId)
+    }
+
+    const data: { date: string; label: string; pv: number; uv: number }[] = []
+    if (range === 'month') {
+      for (let i = 0; i < 12; i++) {
+        const d = new Date(now.getFullYear(), now.getMonth() - 11 + i, 1)
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+        const b = buckets.get(key)
+        data.push({ date: key, label: `${d.getMonth() + 1}月`, pv: b?.pv ?? 0, uv: b?.uv.size ?? 0 })
+      }
+    } else {
+      for (let i = 0; i < 30; i++) {
+        const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 29 + i)
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+        const b = buckets.get(key)
+        data.push({ date: key, label: `${d.getMonth() + 1}/${d.getDate()}`, pv: b?.pv ?? 0, uv: b?.uv.size ?? 0 })
+      }
+    }
+
+    return { range, data }
+  }, { auth: true })
 }

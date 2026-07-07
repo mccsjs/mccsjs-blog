@@ -1,5 +1,6 @@
 import { Elysia } from 'elysia'
 import { cors } from '@elysiajs/cors'
+import { openapi } from '@elysiajs/openapi'
 import { staticPlugin } from '@elysiajs/static'
 import { ZodError } from 'zod'
 import { auth } from './auth'
@@ -58,5 +59,23 @@ export const app = new Elysia()
     // 异步记录访客日志，不阻塞请求
     maybeLogVisitor(request, path).catch(() => {})
   })
+
+// 仅开发环境挂载 API 文档（Scalar UI）
+// 官方已弃用 @elysiajs/swagger，改用 @elysiajs/openapi（provider 默认 scalar）
+if (process.env.NODE_ENV !== 'production') {
+  app.use(
+    openapi({
+      provider: 'scalar',
+      path: '/docs',
+      documentation: {
+        info: {
+          title: 'MccsjsBlog API',
+          version: '1.0.0',
+          description: 'MccsjsBlog 后端接口文档（仅开发环境）',
+        },
+      },
+    })
+  )
+}
 
 export type App = typeof app

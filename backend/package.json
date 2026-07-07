@@ -13,6 +13,7 @@
   "dependencies": {
     "@better-auth/prisma-adapter": "^1.6.23",
     "@elysiajs/cors": "^1.4.2",
+    "@elysiajs/openapi": "^1",
     "@elysiajs/static": "^1.4.10",
     "@libsql/client": "^0.17.4",
     "@prisma/client": "6.6.0",

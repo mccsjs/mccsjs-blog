@@ -23,6 +23,8 @@ interface SettingsData {
   footerText: string;
   postsPerPage: string;
   twikooEnvId: string;
+  imgbedUrl: string;
+  imgbedToken: string;
   fontCssUrl: string;
   fontFamily: string;
   backgroundImage: string;
@@ -46,6 +48,8 @@ const defaultValues: SettingsData = {
   footerText: '',
   postsPerPage: '10',
   twikooEnvId: '',
+  imgbedUrl: '',
+  imgbedToken: '',
   fontCssUrl: '',
   fontFamily: '',
   backgroundImage: '',
@@ -218,6 +222,27 @@ export default function Settings() {
                   id="twikooEnvId"
                   placeholder="https://twikoo.xxx.vercel.app"
                   {...register('twikooEnvId')}
+                />
+              </Field>
+
+              <div className="md:col-span-2 border-t border-[var(--border)] pt-2" />
+              <h2 className="md:col-span-2 text-base font-semibold text-[var(--text-h)]">图床设置 (ImgBed)</h2>
+
+              <Field label="图床地址" className="md:col-span-2">
+                <Input
+                  id="imgbedUrl"
+                  placeholder="https://imgbed.example.com"
+                  {...register('imgbedUrl')}
+                />
+              </Field>
+
+              <Field label="API Token（上传鉴权，按上图床后台生成）" className="md:col-span-2">
+                <Input
+                  id="imgbedToken"
+                  type="password"
+                  autoComplete="off"
+                  placeholder="imgbed_xxxxxxxxxxxxxxxx"
+                  {...register('imgbedToken')}
                 />
               </Field>
 

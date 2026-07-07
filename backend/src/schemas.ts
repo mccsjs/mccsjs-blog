@@ -42,6 +42,8 @@ export const defaultSettings = {
   footerText: '',
   postsPerPage: '10',
   twikooEnvId: '',
+  imgbedUrl: '',
+  imgbedToken: '',
   fontCssUrl: '',
   fontFamily: '',
   backgroundImage: '',

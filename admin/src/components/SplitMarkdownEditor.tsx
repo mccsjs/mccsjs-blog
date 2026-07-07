@@ -9,7 +9,7 @@ interface SplitMarkdownEditorProps {
   onWordCountChange?: (count: number) => void;
 }
 
-const UPLOAD_URL = (import.meta.env.VITE_API_URL ?? 'http://localhost:4000') + '/api/upload';
+const UPLOAD_URL = (import.meta.env.VITE_API_URL ?? 'http://localhost:4000') + '/api/imgbed/upload';
 
 function insertAt(textarea: HTMLTextAreaElement, before: string, after: string = '') {
   const start = textarea.selectionStart;
@@ -158,7 +158,16 @@ export default function SplitMarkdownEditor({
         credentials: 'include',
         body: formData,
       });
-      if (!response.ok) throw new Error('上传失败');
+      if (!response.ok) {
+        let msg = '上传失败';
+        try {
+          const err = await response.json();
+          if (err?.error) msg = err.error;
+        } catch {
+          /* 忽略解析失败，使用默认提示 */
+        }
+        throw new Error(msg);
+      }
       const result = await response.json();
       const baseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
       const url = (result.url as string).startsWith('http') ? result.url : `${baseUrl}${result.url}`;

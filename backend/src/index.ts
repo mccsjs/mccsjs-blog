@@ -3,6 +3,7 @@ import { registerContentRoutes } from './routes/content'
 import { registerVisitorRoutes } from './routes/visitor'
 import { registerMenuRoutes } from './routes/menus'
 import { registerFriendRoutes } from './routes/friends'
+import { registerImgbedRoutes } from './routes/imgbed'
 import { seedDefaultMenus, seedDefaultAggregateMenus, seedDefaultFriends } from './seed'
 import { scheduleFriendAutoCheck } from './utils/friend-check'
 import { scheduleRssRefresh } from './utils/feed'
@@ -14,6 +15,7 @@ registerContentRoutes(app)
 registerVisitorRoutes(app)
 registerMenuRoutes(app)
 registerFriendRoutes(app)
+registerImgbedRoutes(app)
 
 app.listen(process.env.PORT || 4000)
 

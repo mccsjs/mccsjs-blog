@@ -25,6 +25,12 @@ export default defineConfig({
     react(),
     lenis(),
   ],
+  // 关闭 Astro 内置 Dev Toolbar：其内置的 audit app 会用 MutationObserver 监听 DOM 变动
+  // （打字机/计时器每秒改 innerHTML 会持续触发），并反复 fetch 页面图片做审计，
+  // 导致 dev 下 Network 面板图片循环加载。生产构建本就不加载 toolbar，无影响。
+  devToolbar: {
+    enabled: false,
+  },
   vite: {
     plugins: [tailwindcss()],
     server: {

@@ -40,6 +40,8 @@ export const defaultSettings = {
   favicon: '',
   icp: '',
   footerText: '',
+  siteStartDate: '',
+  footerTechInfo: '',
   postsPerPage: '10',
   twikooEnvId: '',
   imgbedUrl: '',

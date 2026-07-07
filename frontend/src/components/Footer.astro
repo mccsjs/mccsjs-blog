@@ -6,6 +6,8 @@ interface Props {
   siteTitle?: string;
   icp?: string;
   footerText?: string;
+  siteStartDate?: string;
+  footerTechInfo?: string;
   menus?: MenuItem[];
   apiUrl?: string;
   showMotto?: string;
@@ -21,6 +23,8 @@ const {
   siteTitle = 'mccsjs',
   icp = '',
   footerText = '',
+  siteStartDate = '',
+  footerTechInfo = '',
   menus = [],
   apiUrl = '',
   showMotto = 'true',
@@ -41,6 +45,8 @@ try {
 }
 
 const year = new Date().getFullYear();
+const startYear = siteStartDate ? new Date(siteStartDate).getFullYear() : NaN;
+const copyrightRange = !isNaN(startYear) && startYear < year ? `${startYear} - ${year}` : `${year}`;
 const visibleMenus = menus.filter((m) => m.visible);
 
 // 「猜你想看」：展开所有可见菜单（含子菜单），取前 8 个做两列布局
@@ -150,21 +156,27 @@ if (friends.length === 0) {
 
     {/* 版权 */}
     <div class="copyright">
-      <span><b>&copy;{year} {siteTitle}</b></span>
-      <span><b>&nbsp;&nbsp;By {siteTitle}</b></span>
+      <span><b>&copy;{copyrightRange} {siteTitle}</b></span>
     </div>
 
+    {/* 网站运行时长计时器 */}
+    {siteStartDate && <div id="workboard"></div>}
+
     {/* 框架信息 */}
-    <div class="framework-info">
-      <span>由 </span>
-      <a href="https://astro.build" target="_blank" rel="noopener noreferrer">Astro</a>
-      <span class="footer-separator">|</span>
-      <span>前端 </span>
-      <a href="https://tailwindcss.com" target="_blank" rel="noopener noreferrer">Tailwind CSS</a>
-      <span class="footer-separator">|</span>
-      <span>后端 </span>
-      <a href="https://elysiajs.com" target="_blank" rel="noopener noreferrer">ElysiaJS + Bun</a>
-    </div>
+    {footerTechInfo ? (
+      <div class="framework-info">{footerTechInfo}</div>
+    ) : (
+      <div class="framework-info">
+        <span>由 </span>
+        <a href="https://astro.build" target="_blank" rel="noopener noreferrer">Astro</a>
+        <span class="footer-separator">|</span>
+        <span>前端 </span>
+        <a href="https://tailwindcss.com" target="_blank" rel="noopener noreferrer">Tailwind CSS</a>
+        <span class="footer-separator">|</span>
+        <span>后端 </span>
+        <a href="https://elysiajs.com" target="_blank" rel="noopener noreferrer">ElysiaJS + Bun</a>
+      </div>
+    )}
 
     {/* 自定义页脚文字 */}
     {footerText && <div class="footer_custom_text" set:html={footerText} />}
@@ -201,7 +213,7 @@ if (friends.length === 0) {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    padding: 28px 20px 22px;
+    padding: 12px 20px 0;
     max-width: 1200px;
     margin: 0 auto;
   }
@@ -410,8 +422,19 @@ if (friends.length === 0) {
     margin: 0 auto;
   }
   .copyright {
-    font-size: 0.85rem;
-    margin-top: 6px !important;
+    font-size: 1rem;
+    margin-top: -16px !important;
+  }
+  #workboard {
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-top: 4px;
+    color: rgb(var(--fg-soft));
+  }
+  .runtime-heart {
+    display: inline-block;
+    margin-left: 2px;
+    animation: heartbeat 1.2s ease-in-out infinite;
   }
   .framework-info {
     font-size: 0.8rem;
@@ -436,11 +459,11 @@ if (friends.length === 0) {
   /* shields 徽章 */
   #ghbdages {
     display: block;
-    margin-top: 12px;
+    margin-top: 6px;
   }
   .github-badge {
     display: inline-block;
-    margin: 4px 5px;
+    margin: 2px 5px;
   }
   .github-badge img {
     border-radius: 4px;
@@ -478,4 +501,46 @@ if (friends.length === 0) {
       height: 56px;
     }
   }
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    25% { transform: scale(1.15); }
+    50% { transform: scale(1); }
+    75% { transform: scale(1.1); }
+  }
 </style>
+
+{siteStartDate && (
+  <script define:vars={{ startDate: siteStartDate }}>
+    function createRuntimeCounter() {
+      const startTime = new Date(startDate);
+      if (isNaN(startTime.getTime())) return;
+
+      function pad(n) { return String(n).padStart(2, '0'); }
+
+      function update() {
+        const now = new Date();
+        const diff = now - startTime;
+        const totalDays = Math.floor(diff / 86400000);
+        const years = Math.floor(totalDays / 365);
+        const days = totalDays % 365;
+        const hours = Math.floor((diff % 86400000) / 3600000);
+        const minutes = Math.floor((diff % 3600000) / 60000);
+        const seconds = Math.floor((diff % 60000) / 1000);
+
+        let text;
+        if (years > 0) {
+          text = `\u672C\u7AD9\u5C45\u7136\u8FD0\u884C\u4E86${years}\u5E74${days}\u5929${pad(hours)}\u5C0F\u65F6${pad(minutes)}\u5206${pad(seconds)}\u79D2`;
+        } else {
+          text = `\u672C\u7AD9\u5C45\u7136\u8FD0\u884C\u4E86${totalDays}\u5929${pad(hours)}\u5C0F\u65F6${pad(minutes)}\u5206${pad(seconds)}\u79D2`;
+        }
+
+        const el = document.getElementById('workboard');
+        if (el) el.innerHTML = text + '<span class="runtime-heart">❤️</span>';
+      }
+
+      update();
+      setInterval(update, 1000);
+    }
+    createRuntimeCounter();
+  </script>
+)}

@@ -31,6 +31,8 @@ const defaultSettings: SiteSettings = {
   favicon: '',
   icp: '',
   footerText: '',
+  siteStartDate: '',
+  footerTechInfo: '',
   postsPerPage: '10',
   twikooEnvId: '',
   fontCssUrl: '',
@@ -171,6 +173,8 @@ const effectiveFontFamily = fontFamily
         siteTitle={settings.siteTitle}
         icp={settings.icp}
         footerText={settings.footerText}
+        siteStartDate={settings.siteStartDate}
+        footerTechInfo={settings.footerTechInfo}
         menus={footerMenus}
         apiUrl={API_URL}
         showMotto={settings.showMotto}

@@ -55,6 +55,8 @@ export interface SiteSettings {
   favicon: string;
   icp: string;
   footerText: string;
+  siteStartDate: string;
+  footerTechInfo: string;
   postsPerPage: string;
   twikooEnvId: string;
   fontCssUrl: string;

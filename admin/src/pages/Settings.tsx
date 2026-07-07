@@ -21,6 +21,8 @@ interface SettingsData {
   favicon: string;
   icp: string;
   footerText: string;
+  siteStartDate: string;
+  footerTechInfo: string;
   postsPerPage: string;
   twikooEnvId: string;
   imgbedUrl: string;
@@ -46,6 +48,8 @@ const defaultValues: SettingsData = {
   favicon: '',
   icp: '',
   footerText: '',
+  siteStartDate: '',
+  footerTechInfo: '',
   postsPerPage: '10',
   twikooEnvId: '',
   imgbedUrl: '',
@@ -236,7 +240,7 @@ export default function Settings() {
                 />
               </Field>
 
-              <Field label="API Token（上传鉴权，按上图床后台生成）" className="md:col-span-2">
+              <Field label="API Token" className="md:col-span-2">
                 <Input
                   id="imgbedToken"
                   type="password"
@@ -277,6 +281,33 @@ export default function Settings() {
 
           {tab === 'footer' && (
             <div className="space-y-8">
+              {/* 版权信息 */}
+              <section className="space-y-4">
+                <h2 className="text-base font-semibold text-[var(--text-h)]">版权信息</h2>
+                <Field label="网站起始时间" className="md:col-span-2">
+                  <Input id="siteStartDate" type="date" {...register('siteStartDate')} />
+                </Field>
+                <p className="text-xs text-[var(--text)]">
+                  留空则版权只显示当前年份；填写后页脚版权显示为「©起始年 - 当前年 By 站点名」（如 ©2023 - 2026 By mccsjs）。
+                </p>
+              </section>
+
+              {/* 框架信息 */}
+              <section className="space-y-4">
+                <h2 className="text-base font-semibold text-[var(--text-h)]">框架信息</h2>
+                <Field label="框架信息文本" className="md:col-span-2">
+                  <Textarea
+                    id="footerTechInfo"
+                    rows={2}
+                    placeholder="留空则显示默认「由 Astro | 前端 Tailwind CSS | 后端 ElysiaJS + Bun」"
+                    {...register('footerTechInfo')}
+                  />
+                </Field>
+                <p className="text-xs text-[var(--text)]">
+                  自定义页脚「框架信息」一行文案，留空使用默认内容。
+                </p>
+              </section>
+
               {/* 格言卡片 */}
               <section className="space-y-4">
                 <h2 className="text-base font-semibold text-[var(--text-h)]">格言卡片</h2>

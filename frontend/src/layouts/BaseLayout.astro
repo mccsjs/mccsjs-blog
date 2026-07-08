@@ -9,6 +9,8 @@ import type { SiteSettings, MenuItem } from '../types';
 
 const API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_URL)
   || (typeof process !== 'undefined' && process.env && process.env.PUBLIC_API_URL)
+// 运行期客户端调用地址（可不同于构建期 SSG 地址：本地 SSG + 线上 API 分离）
+const RUNTIME_API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_RUNTIME_API_URL) || API_URL
   || '';
 
 interface Props {
@@ -119,7 +121,7 @@ const effectiveFontFamily = fontFamily
     <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.xml" />
     <link rel="alternate" type="application/atom+xml" title="Atom" href="/atom.xml" />
     <title>{title}</title>
-    {API_URL && <script is:inline set:html={`window.__API_URL__ = ${JSON.stringify(API_URL)};`} />}
+    {(API_URL || import.meta.env.PUBLIC_RUNTIME_API_URL) && <script is:inline set:html={`window.__API_URL__ = ${JSON.stringify(RUNTIME_API_URL)};`} />}
     <script is:inline>
       (function () {
         const STORAGE_KEY = 'theme';

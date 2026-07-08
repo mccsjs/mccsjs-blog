@@ -27,12 +27,7 @@ try {
 }
 
 // serverless 化：文章详情按需渲染，发/改文章零重建实时可见
-export const prerender = false;
-
 // 允许任意 slug 按需渲染（不依赖 getStaticPaths 枚举，新文章免重建即可访问）
-export const dynamicParams = true;
-
-// hybrid 下动态路由仍需 getStaticPaths（返回空，零预渲染，由 dynamicParams 接管匹配）
 export async function getStaticPaths() {
   return [];
 }

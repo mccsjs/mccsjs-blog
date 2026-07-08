@@ -3,8 +3,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import TabNav from '../components/TabNav.astro';
 
 // serverless 化：朋友圈按需渲染，友链 RSS 动态实时
-export const prerender = false;
-
 const API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_URL)
   || (typeof process !== 'undefined' && process.env && process.env.PUBLIC_API_URL)
   || '';
@@ -215,7 +213,7 @@ function timeAgo(dateStr?: string): string {
     btn.disabled = true;
 
     try {
-      const res = await fetch(`${API_URL}/api/friends/feed?page=${page + 1}&page_size=${LOAD_MORE_SIZE}`);
+      const res = await fetch(`${(window.__API_URL__ || API_URL)}/api/friends/feed?page=${page + 1}&page_size=${LOAD_MORE_SIZE}`);
       const data = await res.json();
       if (data.code === 0 && data.data.list.length > 0) {
         page++;

@@ -3,12 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import type { Post } from '../../types';
 
 // serverless 化：分类页按需渲染，新增分类零重建即可访问
-export const prerender = false;
-
 // 允许任意 slug 按需渲染（新分类免重建即可访问）
-export const dynamicParams = true;
-
-// hybrid 下动态路由仍需 getStaticPaths（返回空，零预渲染，由 dynamicParams 接管匹配）
 export async function getStaticPaths() {
   return [];
 }

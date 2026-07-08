@@ -589,6 +589,12 @@
       initFancybox();
       initReadingProgress();
       initPostToc();
+      // TabNav 滑块定位（swup 切页后 DOM 尺寸可能未稳定，延迟到下一帧）
+      if (window.__initTabNav) {
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() { window.__initTabNav(); });
+        });
+      }
       document.dispatchEvent(new CustomEvent('swup:page-view'));
     });
   }
@@ -609,6 +615,7 @@
   initFancybox();
   initReadingProgress();
   initPostToc();
+  if (window.__initTabNav) { window.__initTabNav(); }
 
   if (window.swup && window.swup.hooks) {
     setup();
@@ -627,5 +634,6 @@
     initFancybox();
     initReadingProgress();
     initPostToc();
+    if (window.__initTabNav) { window.__initTabNav(); }
   });
 })();

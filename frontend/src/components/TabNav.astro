@@ -38,14 +38,15 @@ const slug = Astro.url.pathname.replace(/\/$/, '') || '/';
   !(function() {
     var resizeObserver = null;
     var retryTimer = null;
+    var retryCount = 0;
+    var MAX_RETRIES = 8;
 
     // 批量读取布局属性，避免多次强制重排
     function positionBorder(item, hoverBorder) {
-      // 使用 requestAnimationFrame 确保在同一帧内完成读写
       requestAnimationFrame(function() {
         var w = item.offsetWidth;
         var l = item.offsetLeft;
-        if (w > 0) {
+        if (w > 0 && l >= 0) {
           hoverBorder.style.width = w + 'px';
           hoverBorder.style.left = l + 'px';
         }
@@ -58,7 +59,9 @@ const slug = Astro.url.pathname.replace(/\/$/, '') || '/';
       if (!tabNav || !hoverBorder) return;
 
       var tabItems = tabNav.querySelectorAll('.tab-item');
+      if (!tabItems.length) return;
 
+      // 清理旧监听器
       if (resizeObserver) {
         resizeObserver.disconnect();
         resizeObserver = null;
@@ -67,6 +70,7 @@ const slug = Astro.url.pathname.replace(/\/$/, '') || '/';
         clearTimeout(retryTimer);
         retryTimer = null;
       }
+      retryCount = 0;
 
       tabItems.forEach(function(item) {
         if (item._tabMouseEnter) {
@@ -82,7 +86,11 @@ const slug = Astro.url.pathname.replace(/\/$/, '') || '/';
       if (active) {
         tabNav.classList.add('has-active');
         pos(active);
-        requestAnimationFrame(function() { pos(active); });
+
+        // 如果元素有尺寸则立即再定位一次（字体/CSS 可能刚加载）
+        if (active.offsetWidth > 0) {
+          requestAnimationFrame(function() { pos(active); });
+        }
       } else {
         tabNav.classList.remove('has-active');
       }
@@ -92,35 +100,79 @@ const slug = Astro.url.pathname.replace(/\/$/, '') || '/';
         item.addEventListener('mouseenter', item._tabMouseEnter);
       });
 
-      tabNav.addEventListener('mouseleave', function() {
+      // 移除旧的 mouseleave 监听（防止重复绑定）
+      if (tabNav._tabMouseLeave) {
+        tabNav.removeEventListener('mouseleave', tabNav._tabMouseLeave);
+      }
+      tabNav._tabMouseLeave = function() {
         var activeItem = tabNav.querySelector('.tab-item.active');
         if (activeItem) pos(activeItem);
-      });
+      };
+      tabNav.addEventListener('mouseleave', tabNav._tabMouseLeave);
 
-      if (active) {
+      // ResizeObserver：窗口大小变化或字体加载后自动重新定位
+      if (typeof ResizeObserver !== 'undefined') {
+        resizeObserver = new ResizeObserver(function() {
+          var curActive = tabNav.querySelector('.tab-item.active');
+          if (curActive && curActive.offsetWidth > 0) pos(curActive);
+        });
+        resizeObserver.observe(tabNav);
+      }
+
+      // 多次延迟重试：处理 swup 切页后布局未稳定 / 字体异步加载等场景
+      function scheduleRetry(delay) {
+        if (retryCount >= MAX_RETRIES) return;
         retryTimer = setTimeout(function() {
-          var cur = tabNav.querySelector('.tab-item.active');
-          if (cur) pos(cur);
-        }, 100);
+          retryCount++;
+          var cur = document.getElementById('tab-nav');
+          var hb = document.getElementById('tab-hover-border');
+          if (!cur || !hb) return;
+          var curActive = cur.querySelector('.tab-item.active');
+          if (curActive && curActive.offsetWidth > 0) {
+            pos(curActive);
+            // 连续两次成功就停止重试
+            if (retryCount >= 2) return;
+            scheduleRetry(Math.min(delay * 1.5, 400));
+          } else if (curActive) {
+            // 元素存在但尺寸仍为 0（字体/CSS 未就绪），继续等待
+            scheduleRetry(Math.min(delay * 1.5, 400));
+          }
+        }, delay);
+      }
+
+      if (active && active.offsetWidth === 0) {
+        scheduleRetry(50);
+      } else if (active) {
+        // 有尺寸但也延迟一次确认（应对 async font）
+        retryTimer = setTimeout(function() {
+          var cur = document.getElementById('tab-nav');
+          if (cur) {
+            var ca = cur.querySelector('.tab-item.active');
+            if (ca && ca.offsetWidth > 0) pos(ca);
+          }
+        }, 150);
       }
     }
 
-    function firstInit() {
+    function safeInit() {
+      // 先立即尝试一次
+      initTabNav();
+      // 再等字体就绪后尝试（自定义字体会改变布局尺寸）
       if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(function() { initTabNav(); });
-      } else {
-        initTabNav();
       }
     }
-    firstInit();
 
+    // 首次初始化
+    safeInit();
+
+    // swup 切页后的重初始化（核心修复点）
     function handleSwupEnd() {
+      // 用多重 rAF 确保 DOM 已完成布局
       requestAnimationFrame(function() {
-        if (document.fonts && document.fonts.ready) {
-          document.fonts.ready.then(function() { initTabNav(); });
-        } else {
-          initTabNav();
-        }
+        requestAnimationFrame(function() {
+          safeInit();
+        });
       });
     }
 
@@ -141,6 +193,19 @@ const slug = Astro.url.pathname.replace(/\/$/, '') || '/';
       }, 50);
     }
 
+    // Astro View Transitions 兼容
     document.addEventListener('astro:page-load', handleSwupEnd);
+
+    // 暴露给 base-layout.js 调用（统一入口）
+    window.__initTabNav = safeInit;
+
+    // 监听 base-layout.js 发出的自定义事件（最终安全网）
+    document.addEventListener('swup:page-view', function() {
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          safeInit();
+        });
+      });
+    });
   })();
 </script>

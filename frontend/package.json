@@ -7,8 +7,11 @@
     "preview": "astro preview"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^14.1.1",
     "@astrojs/react": "^6.0.0",
     "@astrojs/rss": "^4.0.19",
+    "@astrojs/vercel": "^11.0.2",
+    "@edgeone/astro": "^1.1.4",
     "@swup/astro": "^1.8.0",
     "@tailwindcss/vite": "^4.3.2",
     "astro": "^7.0.3",

@@ -5,16 +5,29 @@ import { recordVisitFromCollect } from '../utils/visitor'
 export function registerVisitorRoutes(app: App) {
   // ============ 访客追踪（公开，无需登录） ============
 
-  app.post('/api/collect', async ({ body, request, set }) => {
-    const parsed = collectSchema.safeParse(body)
-    if (!parsed.success) {
-      console.error('[collect] invalid body:', body, parsed.error.issues)
-      set.status = 204
-      return null
-    }
-    // 异步写入，快速返回 204
-    recordVisitFromCollect(parsed.data, request).catch((e) => console.error('[collect] record error:', e))
+  // 防弹收集端点：任何情况下都返回 204，绝不 500。
+  // 自己读取原始 body（避免 Elysia 在不同 content-type 下解析失败抛 500），
+  // 全程 try/catch 兜底。
+  app.post('/api/collect', async ({ request, set }) => {
     set.status = 204
+    try {
+      const raw = await request.text()
+      let body: unknown = {}
+      if (raw) {
+        try { body = JSON.parse(raw) } catch { body = {} }
+      }
+      const parsed = collectSchema.safeParse(body)
+      if (parsed.success) {
+        // 异步写入，失败不影响响应
+        recordVisitFromCollect(parsed.data, request).catch((e) =>
+          console.error('[collect] record error:', e)
+        )
+      } else {
+        console.warn('[collect] invalid body:', parsed.error.issues)
+      }
+    } catch (e) {
+      console.error('[collect] handler error (ignored):', e)
+    }
     return null
   })
 

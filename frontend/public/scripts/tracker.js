@@ -50,14 +50,18 @@
     }
 
     var blob = new Blob([JSON.stringify(payload)], { type: 'application/json' })
+    var isCrossOrigin = COLLECT_URL.indexOf('http') === 0
 
-    if (navigator.sendBeacon) {
+    // 同域优先 sendBeacon（页面卸载也可靠）；跨域必须用 fetch(keepalive)，
+    // 因为 sendBeacon 无法发送 CORS 预检，跨域带 application/json 会静默失败。
+    if (!isCrossOrigin && navigator.sendBeacon) {
       navigator.sendBeacon(COLLECT_URL, blob)
     } else {
       fetch(COLLECT_URL, {
         method: 'POST',
         body: blob,
         keepalive: true,
+        mode: 'cors',
         headers: { 'Content-Type': 'application/json' },
       }).catch(function () {})
     }

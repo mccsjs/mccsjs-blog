@@ -11,14 +11,14 @@
   "schedules": [
     {
       "name": "friend-check",
-      "cron": "0 */6 * * *",
+      "cron": "0 3 * * *",
       "path": "/api/cron/friend-check",
       "method": "POST",
       "timezone": "Asia/Shanghai"
     },
     {
       "name": "rss-refresh",
-      "cron": "0 */3 * * *",
+      "cron": "0 4 * * *",
       "path": "/api/cron/rss-refresh",
       "method": "POST",
       "timezone": "Asia/Shanghai"

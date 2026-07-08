@@ -51,7 +51,7 @@ const latestPosts = posts.slice(0, 6);
 ---
 
 <BaseLayout description={siteTitle + ' — 个人博客，分享技术文章与生活感悟'}>
-  <section class="relative overflow-hidden rounded-3xl text-center sm:py-24">
+  <section class="relative overflow-hidden rounded-3xl text-center h-[280px] sm:h-[360px] sm:py-24">
     {heroIsVideo ? (
       <video
         src={heroImage}
@@ -70,11 +70,11 @@ const latestPosts = posts.slice(0, 6);
       />
     )}
     <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/60"></div>
-    <div class="relative px-6 py-16">
-      <h1 class="neon-text text-5xl font-extrabold tracking-tight text-white drop-shadow-lg">
+    <div class="relative flex flex-col items-center justify-center px-6 py-8 sm:py-16 h-full">
+      <h1 class="neon-text text-3xl font-extrabold tracking-tight text-white drop-shadow-lg sm:text-5xl">
         {siteTitle}
       </h1>
-      <p class="mt-4 text-lg text-white/85 min-h-[4.5rem]">
+      <p class="mt-2 text-sm text-white/85 min-h-[3rem] sm:mt-4 sm:text-lg sm:min-h-[4.5rem]">
         <span id="typewriter-text" class="neon-text"></span><span id="typewriter-cursor" class="ml-1 animate-blink">|</span>
       </p>
     </div>

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "bun run --watch src/index.ts",
-    "build": "esbuild src/index.ts --bundle --platform=node --format=esm --target=node18 --outfile=deploy/dist/index.mjs --banner:js=\"import{Buffer}from'node:buffer';globalThis.Buffer=Buffer\"",
+    "build": "esbuild src/index.ts --bundle --platform=node --format=esm --target=node18 --outfile=dist/index.mjs --banner:js=\"import{Buffer}from'node:buffer';globalThis.Buffer=Buffer;import{createRequire as _cr}from'module';const require=_cr(import.meta.url);import{fileURLToPath as _fp}from'node:url';import{dirname as _dn}from'node:path';const __filename=_fp(import.meta.url);const __dirname=_dn(__filename)\"",
     "start": "bun run src/index.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
@@ -29,7 +29,8 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "esbuild": "^0.28.1"
   },
   "peerDependencies": {
     "typescript": "^5"

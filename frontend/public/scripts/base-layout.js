@@ -589,12 +589,8 @@
       initFancybox();
       initReadingProgress();
       initPostToc();
-      // TabNav 滑块定位（切页后需重置 DOM 引用才能重新初始化）
-      if (window.__refreshTabNav) {
-        requestAnimationFrame(function() {
-          requestAnimationFrame(function() { window.__refreshTabNav(); });
-        });
-      }
+      // TabNav 滑块定位（极简版 init()，直接调用即可）
+      if (window.__refreshTabNav) window.__refreshTabNav();
     });
   }
 

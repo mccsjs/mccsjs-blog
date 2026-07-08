@@ -52,24 +52,27 @@ export async function dualCheck(targetURL: string): Promise<[number, number]> {
   return [1, lat1 || lat2]
 }
 
-// 友链自动测速：每天 0 点和 12 点执行
-export function scheduleFriendAutoCheck() {
-  const run = async () => {
-    try {
-      const friends = await prisma.friend.findMany({ where: { isInvalid: false } })
-      if (!friends.length) return
-      for (const f of friends) {
-        const [accessible, latency] = await dualCheck(f.url)
-        await prisma.friend.update({
-          where: { id: f.id },
-          data: { accessible, latency },
-        })
-      }
-      console.log(`[友链测速] 完成，共 ${friends.length} 个友链`)
-    } catch (e) {
-      console.error('[友链测速] 失败', e)
+// 友链自动测速（可执行函数，供平台 Cron 端点调用）
+export async function runFriendAutoCheck() {
+  try {
+    const friends = await prisma.friend.findMany({ where: { isInvalid: false } })
+    if (!friends.length) return
+    for (const f of friends) {
+      const [accessible, latency] = await dualCheck(f.url)
+      await prisma.friend.update({
+        where: { id: f.id },
+        data: { accessible, latency },
+      })
     }
+    console.log(`[友链测速] 完成，共 ${friends.length} 个友链`)
+  } catch (e) {
+    console.error('[友链测速] 失败', e)
   }
+}
+
+// 友链自动测速：每天 0 点和 12 点执行（仅本地开发调度，serverless 下由 /api/cron/friend-check 触发）
+export function scheduleFriendAutoCheck() {
+  const run = () => runFriendAutoCheck()
 
   const now = new Date()
   const next12 = new Date(now)

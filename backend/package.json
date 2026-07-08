@@ -16,6 +16,7 @@
     "@elysiajs/openapi": "^1",
     "@elysiajs/static": "^1.4.10",
     "@libsql/client": "^0.17.4",
+    "@prisma/adapter-libsql": "6.6.0",
     "@prisma/client": "6.6.0",
     "bcryptjs": "^3.0.3",
     "better-auth": "^1.6.23",

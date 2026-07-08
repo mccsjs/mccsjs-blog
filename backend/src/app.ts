@@ -26,13 +26,18 @@ export const app = new Elysia()
   .use(
     cors({
       origin: process.env.NODE_ENV === 'production'
-        ? [
-            process.env.FRONTEND_URL,
-            process.env.ADMIN_URL,
-          ].filter(Boolean) as string[]
+        ? (
+            [
+              process.env.FRONTEND_URL,
+              process.env.ADMIN_URL,
+              'https://blog.seln.cn',
+              'https://ad.seln.cn',
+            ].filter(Boolean) as string[]
+          )
         : true, // 开发环境：反射请求来源，支持所有 localhost 端口
       credentials: true,
-      allowedHeaders: ['Content-Type', 'Authorization'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With'],
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     })
   )
   .use(staticPlugin({ prefix: '/uploads', assets: 'uploads' }))

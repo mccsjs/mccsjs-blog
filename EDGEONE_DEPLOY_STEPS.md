@@ -69,6 +69,7 @@
    | `FRONTEND_URL` | `https://blog.seln.cn` |
    | `ADMIN_URL` | `https://ad.seln.cn` |
    | `CRON_SECRET` | 可选，一段随机串 |
+   | `DEPLOY_WEBHOOK_URL` | `https://pages-api.cloud.tencent.com/v1/webhook/6f3d47bd39617c791d86c2da097dacc0bd3fa064ecb9267ee764d43793b66359`（博客 deploy webhook，管理端改内容后端自动触发博客重建；不设则不自动更新） |
 4. 部署 →「域名管理」→ 添加 `api.seln.cn` → 加 CNAME → 验证。
 5. 验证：浏览器打开 **https://api.seln.cn/health** ，页面应显示 `ok`。
 

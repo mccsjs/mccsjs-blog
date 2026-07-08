@@ -1,16 +1,27 @@
 {
   "name": "mccsjsblog-backend",
-  "runtime": "nodejs18",
-  "entry": "edgeone-entry.ts",
-  "env": {
-    "NODE_ENV": "production"
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "outputDirectory": "dist",
+  "cloudFunctions": {
+    "nodejs": {
+      "entry": "node-functions/[[...slug]].ts"
+    }
   },
-  "triggers": {
-    "http": [
-      {
-        "path": "/*",
-        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
-      }
-    ]
-  }
+  "schedules": [
+    {
+      "name": "friend-check",
+      "cron": "0 */6 * * *",
+      "path": "/api/cron/friend-check",
+      "method": "POST",
+      "timezone": "Asia/Shanghai"
+    },
+    {
+      "name": "rss-refresh",
+      "cron": "0 */3 * * *",
+      "path": "/api/cron/rss-refresh",
+      "method": "POST",
+      "timezone": "Asia/Shanghai"
+    }
+  ]
 }

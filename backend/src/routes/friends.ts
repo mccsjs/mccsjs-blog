@@ -252,10 +252,9 @@ export function registerFriendRoutes(app: App) {
       return { error: 'File too large' }
     }
 
-    const ext = file.name.split('.').pop() || 'bin'
-    const name = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-    const path = `uploads/${name}`
-    await Bun.write(path, file)
-    return { url: `/uploads/${name}` }
+    // serverless 安全：不写本地磁盘（EdgeOne/CF 等平台磁盘只读或临时），改为返回 base64 data URL
+    const buf = Buffer.from(await file.arrayBuffer())
+    const url = `data:${file.type};base64,${buf.toString('base64')}`
+    return { url }
   }, { auth: true })
 }

@@ -90,7 +90,6 @@ model Post {
   author     User      @relation(fields: [authorId], references: [id])
   category   Category  @relation(fields: [categoryId], references: [id])
   tags       Tag[]
-  comments   Comment[]
 }
 
 model Category {
@@ -105,23 +104,6 @@ model Tag {
   name  String @unique
   slug  String @unique
   posts Post[]
-}
-
-model Comment {
-  id        String   @id @default(cuid())
-  postId    String
-  author    String
-  email     String
-  website   String?
-  content   String
-  ip        String?
-  region    String?
-  os        String?
-  browser   String?
-  visible   Boolean  @default(true)
-  createdAt DateTime @default(now())
-
-  post Post @relation(fields: [postId], references: [id])
 }
 
 model SiteSetting {

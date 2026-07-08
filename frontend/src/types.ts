@@ -33,21 +33,6 @@ export interface Tag {
   slug: string;
 }
 
-export interface Comment {
-  id: string;
-  postId: string;
-  author: string;
-  email: string;
-  website: string | null;
-  content: string;
-  ip: string | null;
-  region: string | null;
-  os: string | null;
-  browser: string | null;
-  visible: boolean;
-  createdAt: string;
-}
-
 export interface SiteSettings {
   siteTitle: string;
   siteDescription: string;

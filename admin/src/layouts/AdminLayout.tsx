@@ -9,7 +9,6 @@ const navItems = [
   { to: '/posts', label: '文章', icon: 'file-text' },
   { to: '/categories', label: '分类', icon: 'folder-open' },
   { to: '/tags', label: '标签', icon: 'tags' },
-  { to: '/comments', label: '评论', icon: 'message-square' },
   { to: '/menus', label: '菜单管理', icon: 'menu' },
   { to: '/friends', label: '友链管理', icon: 'link-2' },
   { to: '/visitor-logs', label: '访客日志', icon: 'bar-chart-3' },

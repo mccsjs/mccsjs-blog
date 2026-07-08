@@ -18,14 +18,6 @@ export const postCreateSchema = z.object({
 
 export const postUpdateSchema = postCreateSchema.partial().omit({ slug: true })
 
-export const commentCreateSchema = z.object({
-  postId: z.string().min(1),
-  author: z.string().min(1).max(100),
-  email: z.string().email().max(200),
-  website: z.string().max(500).optional().nullable(),
-  content: z.string().min(1).max(5000),
-})
-
 export const categorySchema = z.object({
   name: z.string().min(1).max(100),
   slug: z.string().min(1).max(100).regex(/^[a-z0-9-]+$/i, 'slug 只能包含字母、数字和连字符'),

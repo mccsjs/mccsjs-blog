@@ -3,7 +3,6 @@ import {
   postListInclude,
   postCreateSchema,
   postUpdateSchema,
-  commentCreateSchema,
   categorySchema,
   tagSchema,
   defaultSettings,
@@ -11,7 +10,7 @@ import {
   settingsUpdateSchema,
   type SettingKey,
 } from '../schemas'
-import { generateUniqueSlug, getClientIp, resolveClientInfo } from '../utils/visitor'
+import { generateUniqueSlug } from '../utils/visitor'
 
 export function registerContentRoutes(app: App) {
   // Posts
@@ -211,67 +210,6 @@ export function registerContentRoutes(app: App) {
       return { error: 'Unauthorized' }
     }
     await prisma.tag.delete({ where: { id: params.id } })
-    set.status = 204
-    return null
-  }, { auth: true })
-
-  // Comments
-  app.get('/api/comments', async ({ prisma, query }) => {
-    const postId = typeof query.postId === 'string' ? query.postId : undefined
-    const admin = query.admin === 'true'
-    return prisma.comment.findMany({
-      where: { postId, visible: admin ? undefined : true },
-      orderBy: { createdAt: 'desc' },
-    })
-  })
-
-  app.post('/api/comments', async ({ prisma, body, request, set }) => {
-    const data = commentCreateSchema.parse(body)
-    const post = await prisma.post.findUnique({ where: { id: data.postId } })
-    if (!post) {
-      set.status = 404
-      return { error: 'Post not found' }
-    }
-
-    const ip = getClientIp(request)
-    const ua = request.headers.get('user-agent') || ''
-    const { region, os, browser } = await resolveClientInfo(ip, ua)
-
-    const comment = await prisma.comment.create({
-      data: {
-        ...data,
-        website:
-          data.website && data.website.trim()
-            ? /^https?:\/\//i.test(data.website.trim())
-              ? data.website.trim()
-              : `https://${data.website.trim()}`
-            : null,
-        ip,
-        region,
-        os,
-        browser,
-        visible: true,
-      },
-    })
-    set.status = 201
-    return comment
-  })
-
-  app.patch('/api/comments/:id/visible', async ({ prisma, params, body, user, set }) => {
-    if (!user) {
-      set.status = 401
-      return { error: 'Unauthorized' }
-    }
-    const visible = typeof body === 'object' && body !== null && 'visible' in body ? Boolean(body.visible) : true
-    return prisma.comment.update({ where: { id: params.id }, data: { visible } })
-  }, { auth: true })
-
-  app.delete('/api/comments/:id', async ({ prisma, params, user, set }) => {
-    if (!user) {
-      set.status = 401
-      return { error: 'Unauthorized' }
-    }
-    await prisma.comment.delete({ where: { id: params.id } })
     set.status = 204
     return null
   }, { auth: true })

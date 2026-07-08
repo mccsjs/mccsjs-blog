@@ -6,7 +6,6 @@ import Posts from './pages/Posts';
 import PostEditor from './pages/PostEditor';
 import Categories from './pages/Categories';
 import Tags from './pages/Tags';
-import Comments from './pages/Comments';
 import Menus from './pages/Menus';
 import Settings from './pages/Settings';
 import Friends from './pages/Friends';
@@ -24,7 +23,6 @@ export default function App() {
           <Route path="posts/:slug/edit" element={<PostEditor />} />
           <Route path="categories" element={<Categories />} />
           <Route path="tags" element={<Tags />} />
-          <Route path="comments" element={<Comments />} />
           <Route path="menus" element={<Menus />} />
           <Route path="friends" element={<Friends />} />
           <Route path="visitor-logs" element={<VisitorLogs />} />

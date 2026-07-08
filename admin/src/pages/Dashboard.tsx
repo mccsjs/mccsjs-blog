@@ -11,7 +11,7 @@ import {
   Tooltip,
 } from 'recharts';
 import { api } from '../lib/api';
-import type { Post, Comment } from '../../../shared/src/index';
+import type { Post } from '../../../shared/src/index';
 import { Icon } from '@iconify/react';
 
 interface VisitorStats {
@@ -73,11 +73,6 @@ export default function Dashboard() {
     queryFn: () => api('/api/posts?admin=true'),
   });
 
-  const { data: comments = [] } = useQuery<Comment[]>({
-    queryKey: ['comments', 'admin'],
-    queryFn: () => api('/api/comments?admin=true'),
-  });
-
   const { data: visitorStats } = useQuery<VisitorStats>({
     queryKey: ['visitor-stats', 'dashboard'],
     queryFn: () => api('/api/admin/visitor-stats'),
@@ -100,7 +95,6 @@ export default function Dashboard() {
   }, [visitorStats]);
 
   const totalViews = posts.reduce((sum, post) => sum + (post.views || 0), 0);
-  const hiddenComments = comments.filter((c) => !c.visible).length;
 
   const stats = [
     {
@@ -109,13 +103,6 @@ export default function Dashboard() {
       icon: 'file-text',
       href: '/posts',
       gradient: 'from-indigo-500 to-violet-500',
-    },
-    {
-      label: '已隐藏评论',
-      value: hiddenComments,
-      icon: 'message-square',
-      href: '/comments',
-      gradient: 'from-amber-500 to-orange-500',
     },
     {
       label: '总阅读量',
@@ -129,7 +116,6 @@ export default function Dashboard() {
   const quickActions = [
     { label: '写文章', href: '/posts/new', icon: 'pen-tool' },
     { label: '管理文章', href: '/posts', icon: 'file-text' },
-    { label: '管理评论', href: '/comments', icon: 'message-square' },
   ];
 
   const maxPageCount = visitorStats

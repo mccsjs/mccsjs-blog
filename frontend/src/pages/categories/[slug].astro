@@ -2,9 +2,20 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import type { Post } from '../../types';
 
-// serverless 化：分类页按需渲染，新增分类零重建即可访问
-// 允许任意 slug 按需渲染（新分类免重建即可访问）
+// 静态站：构建期枚举全部分类生成详情页（纯静态 SSG 必须预先生成路径）
+// 配合后端 deploy webhook：管理端改/发分类后自动触发博客重建，内容实时更新
 export async function getStaticPaths() {
+  const API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_URL)
+    || (typeof process !== 'undefined' && process.env && process.env.PUBLIC_API_URL) || '';
+  try {
+    const res = await fetch(`${API_URL}/api/categories`);
+    if (res.ok) {
+      const items = await res.json();
+      return (items || []).map((c) => ({ params: { slug: c.slug } }));
+    }
+  } catch (e) {
+    console.error('[getStaticPaths categories] fetch failed:', e?.message || e);
+  }
   return [];
 }
 

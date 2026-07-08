@@ -3,6 +3,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import PostCard from '../components/PostCard.astro';
 import type { Post } from '../types';
 
+// serverless 化：首页按需渲染，最新文章实时可见
+export const prerender = false;
+
 const API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_URL)
   || (typeof process !== 'undefined' && process.env && process.env.PUBLIC_API_URL)
   || '';

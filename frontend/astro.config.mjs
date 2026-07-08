@@ -6,6 +6,9 @@ import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
+  // serverless 化：内容页按需渲染(prerender=false)，API 端点走服务端函数
+  // Astro 7 已移除 'hybrid'，'static' 现在内置按需渲染能力（prerender=false 即 SSR）
+  output: 'static',
   site: process.env.SITE_URL || "http://localhost:4321",
   integrations: [
     swup({

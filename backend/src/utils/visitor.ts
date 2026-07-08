@@ -62,7 +62,7 @@ export async function resolveClientInfo(ip: string | null, ua: string) {
   if (!ip) return result
 
   try {
-    const res = await fetch(`http://ip-api.com/json/${ip}?lang=zh-CN`, { signal: AbortSignal.timeout(3000) })
+    const res = await fetch(`https://ip-api.com/json/${ip}?lang=zh-CN`, { signal: AbortSignal.timeout(3000) })
     if (res.ok) {
       const data = await res.json() as { status: string; regionName?: string }
       if (data.status === 'success' && data.regionName) {

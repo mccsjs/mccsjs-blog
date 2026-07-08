@@ -2,15 +2,15 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import type { Post } from '../../types';
 
+// serverless 化：分类页按需渲染，新增分类零重建即可访问
+export const prerender = false;
+
+// 允许任意 slug 按需渲染（新分类免重建即可访问）
+export const dynamicParams = true;
+
+// hybrid 下动态路由仍需 getStaticPaths（返回空，零预渲染，由 dynamicParams 接管匹配）
 export async function getStaticPaths() {
-  const API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_URL)
-    || (typeof process !== 'undefined' && process.env && process.env.PUBLIC_API_URL)
-    || 'http://localhost:4000';
-  const response = await fetch((API_URL || '') + '/api/categories');
-  const categories = await response.json();
-  return categories.map((category: { slug: string }) => ({
-    params: { slug: category.slug },
-  }));
+  return [];
 }
 
 const { slug } = Astro.params;

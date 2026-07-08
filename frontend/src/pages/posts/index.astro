@@ -4,6 +4,9 @@ import PostCard from '../../components/PostCard.astro';
 import TabNav from '../../components/TabNav.astro';
 import type { Post } from '../../types';
 
+// serverless 化：文章列表按需渲染，新文章实时出现在列表
+export const prerender = false;
+
 const API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_URL)
   || (typeof process !== 'undefined' && process.env && process.env.PUBLIC_API_URL)
   || '';

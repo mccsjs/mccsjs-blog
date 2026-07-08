@@ -12,6 +12,9 @@ try {
   console.warn('highlight.js not available');
 }
 
+// serverless 化：友链页按需渲染，管理端加/删友链实时可见
+export const prerender = false;
+
 const API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_URL)
   || (typeof process !== 'undefined' && process.env && process.env.PUBLIC_API_URL)
   || '';

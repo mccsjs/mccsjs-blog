@@ -26,23 +26,18 @@ try {
   // 网络异常时使用默认值
 }
 
+// serverless 化：文章详情按需渲染，发/改文章零重建实时可见
+export const prerender = false;
+
+// 允许任意 slug 按需渲染（不依赖 getStaticPaths 枚举，新文章免重建即可访问）
+export const dynamicParams = true;
+
+// hybrid 下动态路由仍需 getStaticPaths（返回空，零预渲染，由 dynamicParams 接管匹配）
 export async function getStaticPaths() {
-  const API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_URL)
-  || (typeof process !== 'undefined' && process.env && process.env.PUBLIC_API_URL)
-  || '';
-  const response = await fetch(`${API_URL}/api/posts`);
-  if (!response.ok) {
-    throw new Error(`无法生成文章路由：${response.status}`);
-  }
-  const posts: Post[] = await response.json();
-  return posts.map((post) => ({
-    params: { slug: post.slug },
-    props: { postId: post.id },
-  }));
+  return [];
 }
 
 const { slug } = Astro.params;
-const { postId } = Astro.props;
 
 let post: Post | null = null;
 let allPosts: Post[] = [];

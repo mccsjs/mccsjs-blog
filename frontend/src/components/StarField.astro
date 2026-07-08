@@ -1,0 +1,159 @@
+---
+// 夜间模式星空背景
+// 复刻 butterfly 经典 canvas 星空：三类星点（大星/流星/普通星）+ fadeIn/fadeOut 闪烁动画。
+// 适配本项目：暗色模式以 <html class="dark"> 标识；用 MutationObserver 监听主题切换，
+// 仅在 dark 模式运行 RAF 动画，light 模式清空画布并停止，避免无谓重绘。
+---
+
+<canvas id="universe" class="pointer-events-none fixed inset-0 -z-10"></canvas>
+
+<script is:inline>
+  (function () {
+    const canvas = document.getElementById('universe');
+    if (!canvas) return;
+
+    const raf =
+      window.requestAnimationFrame ||
+      window.mozRequestAnimationFrame ||
+      window.webkitRequestAnimationFrame ||
+      window.msRequestAnimationFrame;
+
+    let n, e, i, h;
+    const t = 0.05;
+    const a = '180,184,240'; // 大星颜色
+    const r = '226,225,142'; // 普通星颜色
+    const d = '226,225,224'; // 流星颜色
+    const c = [];
+    let o = true; // 初始允许生成大星，50ms 后关闭（复刻原版行为）
+    let running = false;
+
+    function resize() {
+      n = window.innerWidth;
+      e = window.innerHeight;
+      i = Math.floor(0.216 * n); // 星星数量随屏宽缩放（复刻原版密度）
+      canvas.width = n;
+      canvas.height = e;
+    }
+
+    function clearStars() {
+      if (h) h.clearRect(0, 0, n, e);
+    }
+
+    function render() {
+      h.clearRect(0, 0, n, e);
+      for (let k = 0; k < c.length; k++) {
+        const s = c[k];
+        s.move();
+        s.fadeIn();
+        s.fadeOut();
+        s.draw();
+      }
+    }
+
+    function Star() {
+      this.reset = function () {
+        this.giant = m(3);
+        this.comet = !this.giant && !o && m(10);
+        this.x = l(0, n - 10);
+        this.y = l(0, e);
+        this.r = l(1.1, 2.6);
+        this.dx = l(t, 6 * t) + (this.comet + 1 - 1) * t * l(50, 120) + 2 * t;
+        this.dy = -l(t, 6 * t) - (this.comet + 1 - 1) * t * l(50, 120);
+        this.fadingOut = null;
+        this.fadingIn = true;
+        this.opacity = 0;
+        this.opacityTresh = l(0.2, 1 - 0.4 * (this.comet + 1 - 1));
+        this.do = l(5e-4, 0.002) + 0.001 * (this.comet + 1 - 1);
+      };
+      this.fadeIn = function () {
+        if (this.fadingIn) {
+          this.fadingIn = !(this.opacity > this.opacityTresh);
+          this.opacity += this.do;
+        }
+      };
+      this.fadeOut = function () {
+        if (this.fadingOut) {
+          this.fadingOut = !(this.opacity < 0);
+          this.opacity -= this.do / 2;
+          if (this.x > n || this.y < 0) {
+            this.fadingOut = false;
+            this.reset();
+          }
+        }
+      };
+      this.draw = function () {
+        h.beginPath();
+        if (this.giant) {
+          h.fillStyle = 'rgba(' + a + ',' + this.opacity + ')';
+          h.arc(this.x, this.y, 2, 0, 2 * Math.PI, false);
+        } else if (this.comet) {
+          h.fillStyle = 'rgba(' + d + ',' + this.opacity + ')';
+          h.arc(this.x, this.y, 1.5, 0, 2 * Math.PI, false);
+          for (let q = 0; q < 30; q++) {
+            h.fillStyle = 'rgba(' + d + ',' + (this.opacity - (this.opacity / 20) * q) + ')';
+            h.rect(this.x - (this.dx / 4) * q, this.y - (this.dy / 4) * q - 2, 2, 2);
+            h.fill();
+          }
+        } else {
+          h.fillStyle = 'rgba(' + r + ',' + this.opacity + ')';
+          h.rect(this.x, this.y, this.r, this.r);
+        }
+        h.closePath();
+        h.fill();
+      };
+      this.move = function () {
+        this.x += this.dx;
+        this.y += this.dy;
+        if (this.fadingOut === false) this.reset();
+        if (this.x > n - n / 4 || this.y < 0) this.fadingOut = true;
+      };
+    }
+
+    function m(v) {
+      return Math.floor(1e3 * Math.random()) + 1 < 10 * v;
+    }
+    function l(v, w) {
+      return Math.random() * (w - v) + v;
+    }
+
+    resize();
+    window.addEventListener('resize', resize, false);
+    h = canvas.getContext('2d');
+    for (let k = 0; k < i; k++) {
+      c[k] = new Star();
+      c[k].reset();
+    }
+    setTimeout(function () {
+      o = false;
+    }, 50);
+
+    const isDark = () => document.documentElement.classList.contains('dark');
+
+    function loop() {
+      if (!running) return;
+      if (isDark()) render();
+      else clearStars();
+      raf(loop);
+    }
+    function start() {
+      if (!running) {
+        running = true;
+        raf(loop);
+      }
+    }
+    function stop() {
+      running = false;
+      clearStars();
+    }
+
+    // 初始：根据当前主题决定是否启动
+    if (isDark()) start();
+    else clearStars();
+
+    // 监听 <html> 的 class 变化（主题切换）来启停动画
+    new MutationObserver(function () {
+      if (isDark()) start();
+      else stop();
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+  })();
+</script>

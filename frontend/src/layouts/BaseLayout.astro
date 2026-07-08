@@ -4,6 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Breadcrumb from '../components/Breadcrumb.astro';
 import FloatingBar from '../components/FloatingBar.astro';
+import StarField from '../components/StarField.astro';
 import type { SiteSettings, MenuItem } from '../types';
 
 const API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_URL)
@@ -163,6 +164,7 @@ const effectiveFontFamily = fontFamily
     {isHome && settings.backgroundImage && (
       <div class="fixed inset-0 bg-black/30 -z-10 md:hidden"></div>
     )}
+    <StarField />
     <div class="relative z-10 flex min-h-screen flex-col">
       <Header siteTitle={settings.siteTitle} siteLogo={settings.siteLogo} favicon={settings.favicon} menus={navMenus} aggregateMenus={aggregateMenus} />
       <main id="swup-container" class="transition-swup-main mx-auto w-full flex-1 px-4 pt-24 pb-12 md:pt-28 md:px-6 md:pb-16 overflow-x-clip" class:list={["max-w-5xl", wide && "max-w-6xl"]}>

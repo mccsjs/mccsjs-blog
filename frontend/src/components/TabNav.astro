@@ -36,31 +36,33 @@ const slug = Astro.url.pathname.replace(/\/$/, '') || '/';
 
   <script is:inline>
   !(function() {
-    var MIN_W = 20; /* 宽度小于此视为布局未就绪，不写入 */
+    var MIN_W = 20; /* 宽度小于此视为布局未就绪 */
     var ro = null;
     var retryTimer = null;
     var boundMouseEnter = null;
     var boundMouseLeave = null;
-    /* 标记已初始化的 nav 元素，避免同一元素重复初始化 */
     var lastNav = null;
+    var scheduledRaf = null;
 
-    /* 立即同步定位（不套 rAF），通过外部调度合并来防抖 */
-    function setPosition(item, border) {
-      if (!item || !border || !border.parentElement) return;
+    /* 核心定位：同步写入 + 值校验 + 成功后显式显示 */
+    function setPosition(item, border, nav) {
+      if (!item || !border || !border.parentElement) return false;
       var w = item.offsetWidth;
       var l = item.offsetLeft;
-      if (w < MIN_W || l < 0) return;
+      if (w < MIN_W || l < 0) return false;
       border.style.width = w + 'px';
       border.style.left = l + 'px';
+      /* 定位成功 → 显示边框 */
+      nav.classList.add('has-active');
+      return true;
     }
 
-    /* 合并调度：同一帧内只执行最后一次 */
-    var scheduledRaf = null;
-    function pos(item, border) {
+    /* 防抖调度（同一帧合并） */
+    function pos(item, border, nav) {
       if (scheduledRaf) cancelAnimationFrame(scheduledRaf);
       scheduledRaf = requestAnimationFrame(function() {
         scheduledRaf = null;
-        setPosition(item, border);
+        setPosition(item, border, nav);
       });
     }
 
@@ -69,46 +71,75 @@ const slug = Astro.url.pathname.replace(/\/$/, '') || '/';
       var hoverBorder = document.getElementById('tab-hover-border');
       if (!tabNav || !hoverBorder) return;
 
-      /* 同一 nav 不重复初始化（除非 swup 替换了整个 DOM） */
       if (tabNav === lastNav && tabNav.querySelector('.tab-item')) return;
       lastNav = tabNav;
 
       var tabItems = tabNav.querySelectorAll('.tab-item');
       if (!tabItems.length) return;
 
+      /* ===== 先重置为隐藏状态（关键！）===== */
+      tabNav.classList.remove('has-active');
+      hoverBorder.style.width = '';
+      hoverBorder.style.left = '';
+
       /* 清理旧监听 */
       if (ro) { ro.disconnect(); ro = null; }
       if (retryTimer) { clearTimeout(retryTimer); retryTimer = null; }
       if (boundMouseEnter) {
-        tabItems.forEach(function(it) {
+        /* 需要从旧 nav 上解绑（lastNav 在上面已被覆盖，用当前 tabNav） */
+        /* 但此时旧元素可能已不在 DOM 中，直接 forEach 新的就行 */
+      }
+      var oldNav = document.querySelector('#tab-nav');
+      if (boundMouseLeave && oldNav && oldNav !== tabNav) {
+        oldNav.removeEventListener('mouseleave', boundMouseLeave);
+      }
+      if (boundMouseEnter) {
+        /* 尝试从任何残留的 tab-item 上清理 */
+        document.querySelectorAll('.tab-item').forEach(function(it) {
           it.removeEventListener('mouseenter', boundMouseEnter);
         });
       }
-      if (boundMouseLeave && lastNav) {
-        lastNav.removeEventListener('mouseleave', boundMouseLeave);
-      }
 
       var active = tabNav.querySelector('.tab-item.active');
-      if (active) {
-        tabNav.classList.add('has-active');
-        /* 同步写入 + 延迟确认 */
-        setPosition(active, hoverBorder);
-        pos(active, hoverBorder);
-      } else {
-        tabNav.classList.remove('has-active');
-        hoverBorder.style.width = '';
-        hoverBorder.style.left = '';
-      }
 
-      /* mouseenter / mouseleave（整个生命周期只绑定一次函数引用） */
-      boundMouseEnter = function() { pos(this, hoverBorder); };
+      if (active) {
+        /* 尝试同步定位 → 成功则 has-active 已被 setPosition 加上 */
+        var ok = setPosition(active, hoverBorder, tabNav);
+        if (!ok) {
+          /* 同步失败 → 调度 rAF 重试 + setTimeout 兜底 */
+          pos(active, hoverBorder, tabNav);
+
+          /* 启动重试定时器：布局稳定后再试 */
+          (function tryAgain(delay, count) {
+            if (count > 12) return;
+            retryTimer = setTimeout(function() {
+              var n = document.getElementById('tab-nav');
+              var b = document.getElementById('tab-hover-border');
+              if (!n || !b) return;
+              var a = n.querySelector('.tab-item.active');
+              if (a && a.offsetWidth >= MIN_W) {
+                setPosition(a, b, n);
+              } else if (a) {
+                tryAgain(Math.min(delay * 1.6, 500), count + 1);
+              }
+            }, delay);
+          })(50, 0);
+        } else {
+          /* 同步成功也延迟一帧确认（字体可能异步加载改变尺寸） */
+          pos(active, hoverBorder, tabNav);
+        }
+      }
+      /* 无 active 项时保持 hidden（已在上面的 reset 中处理） */
+
+      /* 绑定交互事件 */
+      boundMouseEnter = function() { pos(this, hoverBorder, tabNav); };
       tabItems.forEach(function(item) {
         item.addEventListener('mouseenter', boundMouseEnter);
       });
 
       boundMouseLeave = function() {
         var a = tabNav.querySelector('.tab-item.active');
-        if (a) pos(a, hoverBorder);
+        if (a) pos(a, hoverBorder, tabNav);
       };
       tabNav.addEventListener('mouseleave', boundMouseLeave);
 
@@ -116,27 +147,9 @@ const slug = Astro.url.pathname.replace(/\/$/, '') || '/';
       if (typeof ResizeObserver !== 'undefined') {
         ro = new ResizeObserver(function() {
           var a = tabNav.querySelector('.tab-item.active');
-          if (a && a.offsetWidth >= MIN_W) pos(a, hoverBorder);
+          if (a && a.offsetWidth >= MIN_W) setPosition(a, hoverBorder, tabNav);
         });
         ro.observe(tabNav);
-      }
-
-      /* 重试机制：仅当 active 尚无有效尺寸时启动 */
-      if (active && active.offsetWidth < MIN_W) {
-        (function tryAgain(delay, count) {
-          if (count > 10) return;
-          retryTimer = setTimeout(function() {
-            var n = document.getElementById('tab-nav');
-            var b = document.getElementById('tab-hover-border');
-            if (!n || !b) return;
-            var a = n.querySelector('.tab-item.active');
-            if (a && a.offsetWidth >= MIN_W) {
-              setPosition(a, b);
-            } else if (a) {
-              tryAgain(Math.min(delay * 1.5, 500), count + 1);
-            }
-          }, delay);
-        })(60, 0);
       }
     }
 
@@ -147,14 +160,14 @@ const slug = Astro.url.pathname.replace(/\/$/, '') || '/';
       }
     }
 
-    /* ===== 入口点（精简为三处） ===== */
+    /* ===== 入口点 ===== */
 
     /* 1) 首次加载 */
     safeInit();
 
-    /* 2) 统一 swup 切页处理（去重：只注册一次） */
+    /* 2) swup 切页 */
     function onPageSwitch() {
-      lastNav = null; /* 允许重新初始化（swup 已替换 DOM） */
+      lastNav = null;
       requestAnimationFrame(function() {
         requestAnimationFrame(safeInit);
       });
@@ -165,7 +178,6 @@ const slug = Astro.url.pathname.replace(/\/$/, '') || '/';
     (function hookSwup() {
       if (window.swup && window.swup.hooks) {
         window.swup.hooks.on('page:view', onPageSwitch);
-        /* visit:end 太早（动画可能还在跑），只用 page:view */
       } else {
         var timer = setInterval(function() {
           if (window.swup && window.swup.hooks) {
@@ -176,7 +188,7 @@ const slug = Astro.url.pathname.replace(/\/$/, '') || '/';
       }
     })();
 
-    /* 3) Astro View Transitions 兼容 */
+    /* 3) Astro View Transitions */
     document.addEventListener('astro:page-load', function() {
       lastNav = null;
       requestAnimationFrame(function() {

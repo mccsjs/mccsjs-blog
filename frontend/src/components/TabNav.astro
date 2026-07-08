@@ -34,16 +34,14 @@ const slug = Astro.url.pathname.replace(/\/$/, '') || '/';
   /* TabNav 全局样式已集中在 src/styles/components.css，避免 SWUP 切换后样式丢失 */
 </style>
 
-<script is:inline>
+<script is:inline data-swup-reload-script>
 !(function() {
-  /* ===== 第四版：极简实现 =====
-   * 去掉所有防护/调度/重试/rAF/ResizeObserver/引用守卫
-   * 目的：排除过度工程化导致的 bug
-   * 如果这版能工作 → 说明之前是自作聪明搞坏了
-   * 如果还不行 → 问题在 CSS 层面或 DOM 结构，不是 JS 时序问题
-   */
+  function positionBorder(item, border) {
+    border.style.width = item.offsetWidth + 'px';
+    border.style.left = item.offsetLeft + 'px';
+  }
 
-  function init() {
+  function initTabNav() {
     var nav = document.getElementById('tab-nav');
     var border = document.getElementById('tab-hover-border');
     if (!nav || !border) return;
@@ -51,79 +49,59 @@ const slug = Astro.url.pathname.replace(/\/$/, '') || '/';
     var items = nav.querySelectorAll('.tab-item');
     if (!items.length) return;
 
-    /* 解绑旧事件 */
-    if (init._bound) {
-      items.forEach(function(it) { it.removeEventListener('mouseenter', init._bound); });
-      nav.removeEventListener('mouseleave', init._leave);
+    // 清理旧事件（防止 swup 重复执行时堆积监听器）
+    if (initTabNav._boundEnter) {
+      items.forEach(function(it) { it.removeEventListener('mouseenter', initTabNav._boundEnter); });
+    }
+    if (initTabNav._boundLeave) {
+      nav.removeEventListener('mouseleave', initTabNav._boundLeave);
     }
 
     var active = nav.querySelector('.tab-item.active');
 
     if (active) {
-      /* 直接同步写值，零防护 */
-      border.style.width = active.offsetWidth + 'px';
-      border.style.left = active.offsetLeft + 'px';
+      positionBorder(active, border);
       nav.classList.add('has-active');
     } else {
-      nav.classList.remove('has-active');
       border.style.width = '';
       border.style.left = '';
+      nav.classList.remove('has-active');
     }
 
-    /* hover 跟随 */
-    init._bound = function(e) {
-      var t = e.currentTarget;
-      border.style.width = t.offsetWidth + 'px';
-      border.style.left = t.offsetLeft + 'px';
+    // hover 跟随滑块
+    initTabNav._boundEnter = function() {
+      positionBorder(this, border);
     };
-    items.forEach(function(it) { it.addEventListener('mouseenter', init._bound); });
+    items.forEach(function(it) {
+      it.addEventListener('mouseenter', initTabNav._boundEnter);
+    });
 
-    /* leave 回弹 */
-    init._leave = function() {
+    // 鼠标离开回弹到激活项
+    initTabNav._boundLeave = function() {
       var a = nav.querySelector('.tab-item.active');
-      if (a) {
-        border.style.width = a.offsetWidth + 'px';
-        border.style.left = a.offsetLeft + 'px';
-      }
+      if (a) positionBorder(a, border);
     };
-    nav.addEventListener('mouseleave', init._leave);
+    nav.addEventListener('mouseleave', initTabNav._boundLeave);
 
-    /* 字体就绪后修正一次（自定义字体会改变文字宽度） */
+    // 自定义字体加载后修正尺寸（字体可能异步加载改变文字宽度）
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(function() {
         var n = document.getElementById('tab-nav');
         var b = document.getElementById('tab-hover-border');
         if (!n || !b) return;
         var a = n.querySelector('.tab-item.active');
-        if (a) {
-          b.style.width = a.offsetWidth + 'px';
-          b.style.left = a.offsetLeft + 'px';
-        }
+        if (a) positionBorder(a, b);
       });
     }
   }
 
-  /* 首次加载 */
-  init();
+  // 立即执行 + 字体就绪后再次执行
+  initTabNav();
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(initTabNav);
+  }
 
-  window.__initTabNav = init;
-  window.__refreshTabNav = init;
-
-  /* swup 切页后重新执行 */
-  (function hookSwup() {
-    function onSwitch() { init(); }
-    if (window.swup && window.swup.hooks) {
-      window.swup.hooks.on('page:view', onSwitch);
-    } else {
-      var t = setInterval(function() {
-        if (window.swup && window.swup.hooks) {
-          clearInterval(t);
-          window.swup.hooks.on('page:view', onSwitch);
-        }
-      }, 100);
-    }
-  })();
-
-  document.addEventListener('astro:page-load', init);
+  // 暴露给外部调用（兼容非 swup 场景）
+  window.__initTabNav = initTabNav;
 })();
 </script>

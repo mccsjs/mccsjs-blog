@@ -4,6 +4,20 @@ import { enrichFriendScreenshot, autoScreenshot } from '../utils/screenshot'
 import { discoverRSSFeed, refreshAllFeeds } from '../utils/feed'
 import { dualCheck } from '../utils/friend-check'
 
+// 辅助：根据 typeName 自动匹配或创建类型，返回 Prisma connect 对象
+async function resolveTypeId(prisma: any, typeId: string | null | undefined, typeName: string | null | undefined) {
+  if (typeName?.trim()) {
+    const name = typeName.trim()
+    let ft = await prisma.friendType.findFirst({ where: { name } })
+    if (!ft) {
+      ft = await prisma.friendType.create({ data: { name, sort: 0, isVisible: true } })
+    }
+    return { connect: { id: ft.id } }
+  }
+  if (typeId) return { connect: { id: typeId } }
+  return undefined
+}
+
 export function registerFriendRoutes(app: App) {
   // === Friend Types ===
   app.get('/api/admin/friend-types', async ({ prisma, user, set }) => {
@@ -67,7 +81,7 @@ export function registerFriendRoutes(app: App) {
   app.post('/api/admin/friends', async ({ prisma, body, user, set }) => {
     if (!user) { set.status = 401; return { error: 'Unauthorized' } }
     const data = friendSchema.parse(body)
-    const { typeId, ...rest } = data
+    const { typeId, typeName, ...rest } = data
     if (!rest.isInvalid && !rest.screenshot && rest.url) {
       rest.screenshot = autoScreenshot(rest.url)
     }
@@ -76,13 +90,14 @@ export function registerFriendRoutes(app: App) {
       const discovered = await discoverRSSFeed(rest.url)
       if (discovered) rest.rssUrl = discovered
     }
-    return prisma.friend.create({ data: { ...rest, type: typeId ? { connect: { id: typeId } } : undefined }, include: { type: true } })
+    const typeConnect = await resolveTypeId(prisma, typeId, typeName)
+    return prisma.friend.create({ data: { ...rest, type: typeConnect }, include: { type: true } })
   }, { auth: true })
 
   app.put('/api/admin/friends/:id', async ({ prisma, params, body, user, set }) => {
     if (!user) { set.status = 401; return { error: 'Unauthorized' } }
     const data = friendSchema.partial().parse(body)
-    const { typeId, ...rest } = data
+    const { typeId, typeName, ...rest } = data
     // 截图被清空时，若未标记失效且有 URL 则自动生成
     if (rest.screenshot === '' && !rest.isInvalid) {
       const friend = await prisma.friend.findUnique({ where: { id: params.id } })
@@ -97,9 +112,13 @@ export function registerFriendRoutes(app: App) {
         if (discovered) rest.rssUrl = discovered
       }
     }
+    // 类型的三种情况：传了 typeName → 自动匹配/创建；typeName 为空字符串 → 解除关联；都没传 → 保持原样
+    const typeConnect = typeName !== undefined
+      ? (typeName.trim() ? await resolveTypeId(prisma, typeId, typeName) : { disconnect: true })
+      : (typeId !== undefined ? (typeId ? { connect: { id: typeId } } : { disconnect: true }) : undefined)
     return prisma.friend.update({
       where: { id: params.id },
-      data: { ...rest, type: typeId !== undefined ? (typeId ? { connect: { id: typeId } } : { disconnect: true }) : undefined },
+      data: { ...rest, type: typeConnect },
       include: { type: true },
     })
   }, { auth: true })

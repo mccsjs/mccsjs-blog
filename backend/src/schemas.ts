@@ -115,5 +115,6 @@ export const friendSchema = z.object({
   isInvalid: z.boolean().default(false),
   recommended: z.boolean().default(false),
   typeId: z.string().nullable().optional(),
+  typeName: z.string().max(50).optional(),
   rssUrl: z.preprocess((val) => (val === '' ? null : val), z.string().url().nullable().optional()),
 })

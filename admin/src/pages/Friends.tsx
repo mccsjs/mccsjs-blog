@@ -41,7 +41,7 @@ interface FriendFormData {
   screenshot: string;
   sort: number;
   isInvalid: boolean;
-  typeId: string;
+  typeName: string;
 }
 
 interface TypeFormData {
@@ -99,7 +99,7 @@ export default function Friends() {
   const createFriend = useMutation({
     mutationFn: (data: FriendFormData) => api<void>('/api/admin/friends', { 
       method: 'POST', 
-      body: JSON.stringify({ ...data, typeId: data.typeId || null }) 
+      body: JSON.stringify({ ...data, typeName: data.typeName || undefined }) 
     }),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['friends'] }); setShowForm(false); setEditingFriend(null); },
   });
@@ -107,7 +107,7 @@ export default function Friends() {
   const updateFriend = useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<FriendFormData> }) => api<void>(`/api/admin/friends/${id}`, { 
       method: 'PUT', 
-      body: JSON.stringify({ ...data, typeId: data.typeId || null }) 
+      body: JSON.stringify({ ...data, typeName: data.typeName !== undefined ? data.typeName : undefined }) 
     }),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['friends'] }); setShowForm(false); setEditingFriend(null); },
   });
@@ -148,18 +148,18 @@ export default function Friends() {
   });
 
   // ===== Forms =====
-  const friendForm = useForm<FriendFormData>({ defaultValues: { name: '', url: '', description: '', avatar: '', screenshot: '', sort: 5, isInvalid: false, typeId: '' } });
+  const friendForm = useForm<FriendFormData>({ defaultValues: { name: '', url: '', description: '', avatar: '', screenshot: '', sort: 5, isInvalid: false, typeName: '' } });
   const typeForm = useForm<TypeFormData>({ defaultValues: { name: '', sort: 0, isVisible: true } });
 
   const openEditFriend = (friend: Friend) => {
     setEditingFriend(friend);
-    friendForm.reset({ name: friend.name, url: friend.url, description: friend.description, avatar: friend.avatar, screenshot: friend.screenshot, sort: friend.sort, isInvalid: friend.isInvalid, typeId: friend.typeId || '' });
+    friendForm.reset({ name: friend.name, url: friend.url, description: friend.description, avatar: friend.avatar, screenshot: friend.screenshot, sort: friend.sort, isInvalid: friend.isInvalid, typeName: friend.type?.name || '' });
     setShowForm(true);
   };
 
   const openNewFriend = () => {
     setEditingFriend(null);
-    friendForm.reset({ name: '', url: '', description: '', avatar: '', screenshot: '', sort: 5, isInvalid: false, typeId: '' });
+    friendForm.reset({ name: '', url: '', description: '', avatar: '', screenshot: '', sort: 5, isInvalid: false, typeName: '' });
     setShowForm(true);
   };
 
@@ -491,18 +491,13 @@ export default function Friends() {
                   <Input id="sort" type="number" min="1" max="10" {...friendForm.register('sort', { valueAsNumber: true })} />
                 </div>
                 <div>
-                  <Label htmlFor="typeId">类型</Label>
-                  <select 
-                    id="typeId"
-                    value={friendForm.watch('typeId')} 
-                    onChange={(e) => friendForm.setValue('typeId', e.target.value)}
-                    className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3.5 py-2.5 text-sm text-[var(--text-h)] outline-none transition-all hover:border-[var(--border-strong)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-bg)]"
-                  >
-                    <option value="">无类型</option>
+                  <Label htmlFor="typeName">类型</Label>
+                  <Input id="typeName" list="friend-type-list" placeholder="输入或选择类型（可自由填写）" {...friendForm.register('typeName')} />
+                  <datalist id="friend-type-list">
                     {types.map((t: FriendType) => (
-                      <option key={t.id} value={t.id}>{t.name}</option>
+                      <option key={t.id} value={t.name} />
                     ))}
-                  </select>
+                  </datalist>
                 </div>
               </div>
               {editingFriend && (

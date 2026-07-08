@@ -1,11 +1,11 @@
 {
   "name": "mccsjsblog-backend",
   "buildCommand": "npm run build",
-  "installCommand": "npm install",
+  "installCommand": "npm install --legacy-peer-deps",
   "outputDirectory": "dist",
   "cloudFunctions": {
     "nodejs": {
-      "entry": "node-functions/[[...slug]].ts"
+      "entry": "cloud-functions/[[default]].ts"
     }
   },
   "schedules": [

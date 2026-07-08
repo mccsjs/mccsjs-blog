@@ -25,12 +25,19 @@ try {
   error = err instanceof Error ? err.message : '未知错误';
 }
 
-// 获取网站标题（独立请求，失败不影响页面）
+// 获取网站设置（独立请求，失败不影响页面）
+let heroImage = '/hero.webp';
 try {
   const settingsRes = await fetch(`${API_URL}/api/settings`);
   if (settingsRes.ok) {
     const settings = await settingsRes.json();
     siteTitle = settings.siteTitle || 'mccsjs';
+    const rawHero = (settings.heroImage || '').trim();
+    heroImage = rawHero
+      ? (rawHero.startsWith('http') || rawHero.startsWith('/')
+          ? rawHero
+          : new URL(rawHero, Astro.url.origin).href)
+      : '/hero.webp';
   }
 } catch {
   // 获取失败使用默认值
@@ -42,7 +49,7 @@ const latestPosts = posts.slice(0, 6);
 <BaseLayout description={siteTitle + ' — 个人博客，分享技术文章与生活感悟'}>
   <section class="relative overflow-hidden rounded-3xl text-center sm:py-24">
     <img
-      src="/hero.webp"
+      src={heroImage}
       alt="Hero"
       class="absolute inset-0 h-full w-full object-cover"
       fetchpriority="high"

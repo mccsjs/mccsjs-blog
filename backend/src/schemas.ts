@@ -41,6 +41,7 @@ export const defaultSettings = {
   fontCssUrl: '',
   fontFamily: '',
   backgroundImage: '',
+  heroImage: '',
   linkMarkdown: '',
   showMotto: 'true',
   mottoTitle: '格言🧬',

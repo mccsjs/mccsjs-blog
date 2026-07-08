@@ -30,6 +30,7 @@ interface SettingsData {
   fontCssUrl: string;
   fontFamily: string;
   backgroundImage: string;
+  heroImage: string;
   linkMarkdown: string;
   // —— 页脚设置 ——
   showMotto: string;
@@ -57,6 +58,7 @@ const defaultValues: SettingsData = {
   fontCssUrl: '',
   fontFamily: '',
   backgroundImage: '',
+  heroImage: '',
   linkMarkdown: '',
   showMotto: 'true',
   mottoTitle: '格言🧬',
@@ -125,6 +127,34 @@ export default function Settings() {
   const removeBadge = (i: number) => {
     setBadges((prev) => prev.filter((_, idx) => idx !== i));
     setBadgesDirty(true);
+  };
+
+  // 上传 Hero 背景图到图床（复用 /api/imgbed/upload），成功后回填 URL
+  const onHeroUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const baseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
+      const form = new FormData();
+      form.append('file', file);
+      const res = await fetch(`${baseUrl}/api/imgbed/upload`, {
+        method: 'POST',
+        credentials: 'include',
+        body: form,
+      });
+      if (!res.ok) {
+        const msg = await res.text().catch(() => '');
+        throw new Error(msg || `上传失败 (${res.status})`);
+      }
+      const data = await res.json();
+      if (data?.url) {
+        setValue('heroImage', data.url, { shouldDirty: true });
+      }
+    } catch (err) {
+      alert(err instanceof Error ? err.message : '上传失败');
+    } finally {
+      e.target.value = '';
+    }
   };
 
   const tabBase =
@@ -215,6 +245,36 @@ export default function Settings() {
                   placeholder="https://example.com/bg.jpg"
                   {...register('backgroundImage')}
                 />
+              </Field>
+
+              <Field label="首页 Hero 背景图" className="md:col-span-2">
+                <div className="flex items-center gap-3">
+                  <Input
+                    id="heroImage"
+                    placeholder="https://example.com/hero.jpg"
+                    {...register('heroImage')}
+                  />
+                  <label className="flex cursor-pointer items-center gap-1 whitespace-nowrap rounded-md border border-[var(--border)] bg-[var(--bg-soft)] px-3 py-2 text-sm text-[var(--text)] transition-colors hover:border-[var(--accent)]">
+                    <Icon icon="lucide:upload" width={16} height={16} />
+                    上传图片
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={onHeroUpload}
+                    />
+                  </label>
+                </div>
+                {watch('heroImage') && (
+                  <img
+                    src={watch('heroImage')}
+                    alt="Hero 预览"
+                    className="mt-3 h-24 w-auto rounded-lg border border-[var(--border)] object-cover"
+                  />
+                )}
+                <p className="mt-1 text-xs text-[var(--text)]">
+                  首页顶部大图背景，留空使用默认 /hero.webp。可填写图片 URL，或点击「上传图片」传到图床后自动回填。
+                </p>
               </Field>
 
               <Field label="ICP 备案号" className="md:col-span-2">

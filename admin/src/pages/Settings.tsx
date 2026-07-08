@@ -251,29 +251,39 @@ export default function Settings() {
                 <div className="flex items-center gap-3">
                   <Input
                     id="heroImage"
-                    placeholder="https://example.com/hero.jpg"
+                    placeholder="https://example.com/hero.jpg 或 .mp4 视频"
                     {...register('heroImage')}
                   />
                   <label className="flex cursor-pointer items-center gap-1 whitespace-nowrap rounded-md border border-[var(--border)] bg-[var(--bg-soft)] px-3 py-2 text-sm text-[var(--text)] transition-colors hover:border-[var(--accent)]">
                     <Icon icon="lucide:upload" width={16} height={16} />
-                    上传图片
+                    上传图片/视频
                     <input
                       type="file"
-                      accept="image/*"
+                      accept="image/*,video/*"
                       className="hidden"
                       onChange={onHeroUpload}
                     />
                   </label>
                 </div>
                 {watch('heroImage') && (
-                  <img
-                    src={watch('heroImage')}
-                    alt="Hero 预览"
-                    className="mt-3 h-24 w-auto rounded-lg border border-[var(--border)] object-cover"
-                  />
+                  /\.(mp4|webm|ogg|ogv|mov|m4v)(\?.*)?$/i.test(watch('heroImage')) ? (
+                    <video
+                      src={watch('heroImage')}
+                      muted
+                      loop
+                      playsInline
+                      className="mt-3 h-24 w-auto rounded-lg border border-[var(--border)] object-cover"
+                    />
+                  ) : (
+                    <img
+                      src={watch('heroImage')}
+                      alt="Hero 预览"
+                      className="mt-3 h-24 w-auto rounded-lg border border-[var(--border)] object-cover"
+                    />
+                  )
                 )}
                 <p className="mt-1 text-xs text-[var(--text)]">
-                  首页顶部大图背景，留空使用默认 /hero.webp。可填写图片 URL，或点击「上传图片」传到图床后自动回填。
+                  首页顶部大图/视频背景，留空使用默认 /hero.webp。可填写图片或视频（mp4/webm/mov 等）URL，或点击「上传图片/视频」传到图床后自动回填。若图床不支持视频上传，请直接填写视频直链。
                 </p>
               </Field>
 

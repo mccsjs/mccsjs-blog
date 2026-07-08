@@ -43,17 +43,32 @@ try {
   // 获取失败使用默认值
 }
 
+// 判断 hero 资源是视频还是图片（视频用 <video> 渲染，图片用 <img>）
+const HERO_VIDEO_EXT = /\.(mp4|webm|ogg|ogv|mov|m4v)(\?.*)?$/i;
+const heroIsVideo = HERO_VIDEO_EXT.test(heroImage);
+
 const latestPosts = posts.slice(0, 6);
 ---
 
 <BaseLayout description={siteTitle + ' — 个人博客，分享技术文章与生活感悟'}>
   <section class="relative overflow-hidden rounded-3xl text-center sm:py-24">
-    <img
-      src={heroImage}
-      alt="Hero"
-      class="absolute inset-0 h-full w-full object-cover"
-      fetchpriority="high"
-    />
+    {heroIsVideo ? (
+      <video
+        src={heroImage}
+        autoplay
+        muted
+        loop
+        playsinline
+        class="absolute inset-0 h-full w-full object-cover"
+      ></video>
+    ) : (
+      <img
+        src={heroImage}
+        alt="Hero"
+        class="absolute inset-0 h-full w-full object-cover"
+        fetchpriority="high"
+      />
+    )}
     <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/60"></div>
     <div class="relative px-6 py-16">
       <h1 class="neon-text text-5xl font-extrabold tracking-tight text-white drop-shadow-lg">

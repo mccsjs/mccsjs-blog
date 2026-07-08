@@ -29,15 +29,19 @@ export function registerImgbedRoutes(app: App) {
       return { error: 'No file provided' }
     }
 
-    // 仅允许图片类型，限制 5MB（与本地 /api/upload 一致，友好拦截后再转发）
-    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
-    if (!allowed.includes(file.type)) {
+    // 允许图片与视频类型，分别限制大小（视频放宽到 50MB）
+    const imageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+    const videoTypes = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime', 'video/x-m4v']
+    const isImage = imageTypes.includes(file.type)
+    const isVideo = videoTypes.includes(file.type)
+    if (!isImage && !isVideo) {
       set.status = 400
-      return { error: '仅支持 jpeg / png / webp / gif 图片' }
+      return { error: '仅支持 jpeg / png / webp / gif 图片，或 mp4 / webm / ogg / mov 视频' }
     }
-    if (file.size > 5 * 1024 * 1024) {
+    const maxBytes = isVideo ? 50 * 1024 * 1024 : 5 * 1024 * 1024
+    if (file.size > maxBytes) {
       set.status = 400
-      return { error: '图片不能超过 5MB' }
+      return { error: isVideo ? '视频不能超过 50MB' : '图片不能超过 5MB' }
     }
 
     // 组装图床上传地址：保留用户在地址里填的 query（如 uploadChannel=cfr2），并强制 returnFormat=full
@@ -77,7 +81,7 @@ export function registerImgbedRoutes(app: App) {
     const url = (item?.publicUrl as string) || (item?.src as string)
     if (!url) {
       set.status = 502
-      return { error: '图床未返回图片地址' }
+      return { error: '图床未返回媒体地址' }
     }
 
     return { url }

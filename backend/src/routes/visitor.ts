@@ -6,9 +6,14 @@ export function registerVisitorRoutes(app: App) {
   // ============ 访客追踪（公开，无需登录） ============
 
   app.post('/api/collect', async ({ body, request, set }) => {
-    const data = collectSchema.parse(body)
+    const parsed = collectSchema.safeParse(body)
+    if (!parsed.success) {
+      console.error('[collect] invalid body:', body, parsed.error.issues)
+      set.status = 204
+      return null
+    }
     // 异步写入，快速返回 204
-    recordVisitFromCollect(data, request).catch(() => {})
+    recordVisitFromCollect(parsed.data, request).catch((e) => console.error('[collect] record error:', e))
     set.status = 204
     return null
   })

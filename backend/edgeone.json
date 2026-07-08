@@ -1,0 +1,16 @@
+{
+  "name": "mccsjsblog-backend",
+  "runtime": "nodejs18",
+  "entry": "edgeone-entry.ts",
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "triggers": {
+    "http": [
+      {
+        "path": "/*",
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+      }
+    ]
+  }
+}

@@ -2,21 +2,15 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import type { Post } from '../../types';
 
-// 静态站：构建期枚举全部标签生成详情页（纯静态 SSG 必须预先生成路径）
-// 配合后端 deploy webhook：管理端改/发标签后自动触发博客重建，内容实时更新
 export async function getStaticPaths() {
   const API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_URL)
-    || (typeof process !== 'undefined' && process.env && process.env.PUBLIC_API_URL) || '';
-  try {
-    const res = await fetch(`${API_URL}/api/tags`);
-    if (res.ok) {
-      const items = await res.json();
-      return (items || []).map((t) => ({ params: { slug: t.slug } }));
-    }
-  } catch (e) {
-    console.error('[getStaticPaths tags] fetch failed:', e?.message || e);
-  }
-  return [];
+    || (typeof process !== 'undefined' && process.env && process.env.PUBLIC_API_URL)
+    || 'http://localhost:4000';
+  const response = await fetch((API_URL || '') + '/api/tags');
+  const tags = await response.json();
+  return tags.map((tag: { slug: string }) => ({
+    params: { slug: tag.slug },
+  }));
 }
 
 const { slug } = Astro.params;

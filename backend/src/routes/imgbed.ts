@@ -60,7 +60,7 @@ export function registerImgbedRoutes(app: App) {
     const upstream = await fetch(target.toString(), {
       method: 'POST',
       headers: { Authorization: `Bearer ${imgbedToken}` },
-      body: form,
+      body: form as any,
     })
 
     if (!upstream.ok) {

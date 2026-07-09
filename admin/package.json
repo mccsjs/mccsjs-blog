@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node -e \"require('fs').copyFileSync('dist/index.html','dist/404.html')\"",
-    "typecheck": "tsc -b",
+    "build": "tsc -b && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -16,7 +15,6 @@
     "@iconify/react": "^6.0.2",
     "@tailwindcss/vite": "^4.3.2",
     "@tanstack/react-query": "^5.80.5",
-    "@vitejs/plugin-react": "^4.3.4",
     "better-auth": "^1.6.23",
     "markdown-it": "^14.2.0",
     "react": "^19.2.7",
@@ -25,7 +23,6 @@
     "react-router-dom": "^7.6.1",
     "recharts": "^2.15.2",
     "tailwindcss": "^4.3.2",
-    "vite": "^8.1.0",
     "zod": "^4.1.5"
   },
   "devDependencies": {
@@ -33,6 +30,8 @@
     "@types/node": "^26.0.1",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
-    "typescript": "~5.8.3"
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "~5.8.3",
+    "vite": "^8.1.0"
   }
 }

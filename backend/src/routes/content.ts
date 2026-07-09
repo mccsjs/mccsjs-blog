@@ -11,7 +11,6 @@ import {
   type SettingKey,
 } from '../schemas'
 import { generateUniqueSlug } from '../utils/visitor'
-import { triggerDeploy } from '../utils/deploy'
 
 export function registerContentRoutes(app: App) {
   // Posts
@@ -102,7 +101,6 @@ export function registerContentRoutes(app: App) {
       include: postListInclude,
     })
     set.status = 201
-    triggerDeploy() // 新建文章 → 触发博客重建
     return post
   }, { auth: true })
 
@@ -121,7 +119,6 @@ export function registerContentRoutes(app: App) {
       },
       include: postListInclude,
     })
-    triggerDeploy() // 修改文章 → 触发博客重建
     return post
   }, { auth: true })
 
@@ -132,7 +129,6 @@ export function registerContentRoutes(app: App) {
     }
     await prisma.post.delete({ where: { id: params.id } })
     set.status = 204
-    triggerDeploy() // 删除文章 → 触发博客重建
     return null
   }, { auth: true })
 
@@ -148,7 +144,6 @@ export function registerContentRoutes(app: App) {
     try {
       const category = await prisma.category.create({ data })
       set.status = 201
-      triggerDeploy() // 新建分类 → 触发博客重建
       return category
     } catch (e: any) {
       if (e?.code === 'P2002') {
@@ -165,7 +160,6 @@ export function registerContentRoutes(app: App) {
       return { error: 'Unauthorized' }
     }
     const data = categorySchema.partial().parse(body)
-    triggerDeploy() // 修改分类 → 触发博客重建
     return prisma.category.update({ where: { id: params.id }, data })
   }, { auth: true })
 
@@ -176,7 +170,6 @@ export function registerContentRoutes(app: App) {
     }
     await prisma.category.delete({ where: { id: params.id } })
     set.status = 204
-    triggerDeploy() // 删除分类 → 触发博客重建
     return null
   }, { auth: true })
 
@@ -192,7 +185,6 @@ export function registerContentRoutes(app: App) {
     try {
       const tag = await prisma.tag.create({ data })
       set.status = 201
-      triggerDeploy() // 新建标签 → 触发博客重建
       return tag
     } catch (e: any) {
       if (e?.code === 'P2002') {
@@ -209,7 +201,6 @@ export function registerContentRoutes(app: App) {
       return { error: 'Unauthorized' }
     }
     const data = tagSchema.partial().parse(body)
-    triggerDeploy() // 修改标签 → 触发博客重建
     return prisma.tag.update({ where: { id: params.id }, data })
   }, { auth: true })
 
@@ -220,7 +211,6 @@ export function registerContentRoutes(app: App) {
     }
     await prisma.tag.delete({ where: { id: params.id } })
     set.status = 204
-    triggerDeploy() // 删除标签 → 触发博客重建
     return null
   }, { auth: true })
 
@@ -260,7 +250,6 @@ export function registerContentRoutes(app: App) {
     const settings = Object.fromEntries(
       settingKeys.map((key) => [key, map.get(key) ?? defaultSettings[key]])
     ) as Record<SettingKey, string>
-    triggerDeploy() // 站点设置（含 hero 图）变更 → 触发博客重建
     return settings
   }, { auth: true })
 }

@@ -26,24 +26,23 @@ try {
   // 网络异常时使用默认值
 }
 
-// 静态站：构建期枚举全部已发布文章生成详情页（纯静态 SSG 必须预先生成路径）
-// 配合后端 deploy webhook：管理端改/发文章后自动触发博客重建，内容实时更新
 export async function getStaticPaths() {
   const API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_URL)
-    || (typeof process !== 'undefined' && process.env && process.env.PUBLIC_API_URL) || '';
-  try {
-    const res = await fetch(`${API_URL}/api/posts`);
-    if (res.ok) {
-      const posts = await res.json();
-      return (posts || []).map((p) => ({ params: { slug: p.slug } }));
-    }
-  } catch (e) {
-    console.error('[getStaticPaths posts] fetch failed:', e?.message || e);
+  || (typeof process !== 'undefined' && process.env && process.env.PUBLIC_API_URL)
+  || '';
+  const response = await fetch(`${API_URL}/api/posts`);
+  if (!response.ok) {
+    throw new Error(`无法生成文章路由：${response.status}`);
   }
-  return [];
+  const posts: Post[] = await response.json();
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { postId: post.id },
+  }));
 }
 
 const { slug } = Astro.params;
+const { postId } = Astro.props;
 
 let post: Post | null = null;
 let allPosts: Post[] = [];

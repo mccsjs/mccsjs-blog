@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "bun run --watch src/index.ts",
-    "build": "esbuild src/index.ts --bundle --platform=node --format=esm --target=node18 --outfile=dist/index.mjs --banner:js=\"import{Buffer}from'node:buffer';globalThis.Buffer=Buffer;import{createRequire as _cr}from'module';const require=_cr(import.meta.url);import{fileURLToPath as _fp}from'node:url';import{dirname as _dn}from'node:path';const __filename=_fp(import.meta.url);const __dirname=_dn(__filename)\"",
+    "build": "bun build src/index.ts --outdir dist",
     "start": "bun run src/index.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
@@ -16,9 +16,7 @@
     "@elysiajs/openapi": "^1",
     "@elysiajs/static": "^1.4.10",
     "@libsql/client": "^0.17.4",
-    "@prisma/adapter-libsql": "6.6.0",
     "@prisma/client": "6.6.0",
-    "@sinclair/typebox": "^0.34.0",
     "bcryptjs": "^3.0.3",
     "better-auth": "^1.6.23",
     "elysia": "^1.4.29",
@@ -30,8 +28,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@types/bun": "latest",
-    "esbuild": "^0.28.1"
+    "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5"

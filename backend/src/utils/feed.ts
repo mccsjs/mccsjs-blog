@@ -25,12 +25,14 @@ export async function discoverRSSFeed(siteUrl: string): Promise<string | null> {
     const matches = [...html.matchAll(linkRegex)]
 
     if (matches.length > 0) {
-      const href = matches[0][3]
-      // 相对路径转绝对路径
-      if (href.startsWith('http')) return href
-      const base = new URL(siteUrl)
-      if (href.startsWith('/')) return base.origin + href
-      return base.origin + '/' + href
+      const href = matches[0]?.[3]
+      if (href) {
+        // 相对路径转绝对路径
+        if (href.startsWith('http')) return href
+        const base = new URL(siteUrl)
+        if (href.startsWith('/')) return base.origin + href
+        return base.origin + '/' + href
+      }
     }
 
     // 2. 尝试常见 RSS 路径

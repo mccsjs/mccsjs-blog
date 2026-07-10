@@ -1,0 +1,45 @@
+---
+// 本站自研评论区：仅渲染静态骨架，数据加载 / 提交 / 回复 / 点赞逻辑在 BaseLayout 全局脚本中，
+// 以适配 swup 页面过渡（与 Twikoo 相同的初始化策略）。
+const API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_URL)
+  || (typeof process !== 'undefined' && process.env && process.env.PUBLIC_API_URL)
+  || '';
+
+interface Props {
+  postId: string;
+  emojiCdn?: string;
+}
+const { postId, emojiCdn = '' } = Astro.props;
+---
+
+<div id="self-comments" data-post-id={postId} data-api-url={API_URL} data-emoji-cdn={emojiCdn}>
+  <form class="sc-form" novalidate>
+    <div class="sc-meta">
+      <input class="sc-input" name="author" type="text" placeholder="昵称 *" maxlength="100" autocomplete="nickname" required />
+      <input class="sc-input" name="email" type="email" placeholder="邮箱 *（不会公开）" maxlength="200" autocomplete="email" required />
+      <input class="sc-input" name="website" type="text" placeholder="网站（可选）" maxlength="500" autocomplete="url" />
+    </div>
+    <textarea class="sc-textarea" name="content" placeholder="写下你的评论，支持 Markdown 语法…" maxlength="5000" rows="4" required></textarea>
+    <div class="sc-actions">
+      <button type="button" class="sc-emoji-btn" aria-label="插入表情" title="表情">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zM8.5 9a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm7 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM12 17.6c-2.3 0-4.3-1.5-5.1-3.6h10.2c-.8 2.1-2.8 3.6-5.1 3.6z"/></svg>
+      </button>
+      <button type="button" class="sc-admin-btn" aria-label="博主身份设置" title="以博主身份发言" hidden>
+        <iconify-icon icon="uil:setting"></iconify-icon>
+      </button>
+      <span class="sc-tip" role="status" aria-live="polite"></span>
+      <button class="sc-submit" type="submit">发表评论</button>
+    </div>
+    <div class="sc-admin-status" hidden></div>
+  </form>
+
+  <div class="sc-head">
+    <h3 class="sc-title">评论 <span class="sc-count">0</span></h3>
+  </div>
+
+  <div class="sc-list" aria-live="polite">
+    <div class="sc-loading">加载评论中…</div>
+  </div>
+
+  <nav class="sc-pager" aria-label="评论分页" hidden></nav>
+</div>

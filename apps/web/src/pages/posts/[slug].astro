@@ -1,0 +1,412 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TwikooComments from '../../components/TwikooComments.astro';
+import SelfComments from '../../components/SelfComments.astro';
+import CopyrightCard from '../../components/CopyrightCard.astro';
+import MarkdownIt from 'markdown-it';
+import type { Post } from '../../types';
+
+// 导入 highlight.js 用于服务端代码高亮
+import hljs from 'highlight.js';
+
+const API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_URL)
+  || (typeof process !== 'undefined' && process.env && process.env.PUBLIC_API_URL)
+  || '';
+const DEFAULT_TWIKOO_ENV_ID = 'https://twikoo.seln.cn';
+
+let twikooEnvId = DEFAULT_TWIKOO_ENV_ID;
+let siteTitle = 'My Blog';
+let commentProvider = 'twikoo';
+let commentEmojiCdn = '';
+try {
+  const settingsRes = await fetch(`${API_URL}/api/settings`);
+  if (settingsRes.ok) {
+    const settings = await settingsRes.json();
+    twikooEnvId = settings.twikooEnvId || DEFAULT_TWIKOO_ENV_ID;
+    siteTitle = settings.siteTitle || siteTitle;
+    commentProvider = settings.commentProvider || 'twikoo';
+    commentEmojiCdn = settings.commentEmojiCdn || '';
+  }
+} catch {
+  // 网络异常时使用默认值
+}
+
+export async function getStaticPaths() {
+  const API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_URL)
+  || (typeof process !== 'undefined' && process.env && process.env.PUBLIC_API_URL)
+  || '';
+  const response = await fetch(`${API_URL}/api/posts`);
+  if (!response.ok) {
+    throw new Error(`无法生成文章路由：${response.status}`);
+  }
+  const posts: Post[] = await response.json();
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { postId: post.id },
+  }));
+}
+
+const { slug } = Astro.params;
+const { postId } = Astro.props;
+
+let post: Post | null = null;
+let allPosts: Post[] = [];
+let error: string | null = null;
+
+try {
+  const [postRes, postsRes] = await Promise.all([
+    fetch(`${API_URL}/api/posts/${slug}`),
+    fetch(`${API_URL}/api/posts`),
+  ]);
+
+  if (!postRes.ok) {
+    throw new Error(`文章加载失败：${postRes.status}`);
+  }
+  post = await postRes.json();
+
+  if (postsRes.ok) {
+    allPosts = await postsRes.json();
+  }
+} catch (err) {
+  error = err instanceof Error ? err.message : '未知错误';
+}
+
+// 按创建时间排序，计算上一篇/下一篇
+const sortedPosts = allPosts
+  .slice()
+  .sort((a, b) => +new Date(a.createdAt) - +new Date(b.createdAt));
+const currentIndex = sortedPosts.findIndex((p) => p.slug === slug);
+const prev = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
+const next =
+  currentIndex >= 0 && currentIndex < sortedPosts.length - 1
+    ? sortedPosts[currentIndex + 1]
+    : null;
+
+const formatDate = (date: string) =>
+  new Date(date).toLocaleDateString('zh-CN', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
+// 估算阅读时间：中文按字、英文按词
+const getReadingTime = (content: string) => {
+  const chinese = (content.match(/[\u4e00-\u9fa5]/g) || []).length;
+  const words = (content.match(/[a-zA-Z0-9_]+/g) || []).length;
+  return Math.max(1, Math.ceil((chinese + words) / 300));
+};
+
+const readTime = post ? getReadingTime(post.content) : 0;
+
+// 初始化 markdown-it，图片渲染成 fancybox 链接
+const md = new MarkdownIt({
+  html: true,
+  linkify: true,
+  typographer: true,
+  breaks: true,
+  highlight(code, lang) {
+    if (lang && hljs.getLanguage(lang)) {
+      try { return hljs.highlight(code, { language: lang }).value; } catch {}
+    }
+    // 语言未识别时，使用自动检测回退
+    try { return hljs.highlightAuto(code).value; } catch {}
+    return '';
+  },
+});
+
+md.renderer.rules.image = (tokens, idx) => {
+  const token = tokens[idx];
+  const src = token.attrGet('src') || '';
+  const alt = token.content;
+  return `<a href="${src}" data-fancybox="gallery" data-caption="${alt}" class="block"><img src="${src}" alt="${alt}" loading="lazy" class="w-full rounded-xl" /></a>`;
+};
+
+const slugify = (text: string) =>
+  text
+    .trim()
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s-]/gu, '')
+    .replace(/\s+/g, '-');
+
+md.renderer.rules.heading_open = (tokens, idx, options, env, self) => {
+  const token = tokens[idx];
+  const contentToken = tokens[idx + 1];
+  if (contentToken && /^h[1-3]$/.test(token.tag)) {
+    const slug = slugify(contentToken.content);
+    if (slug) token.attrSet('id', slug);
+  }
+  return self.renderToken(tokens, idx, options);
+};
+
+// 渲染 Markdown 为 HTML；如果内容本身就是 HTML（旧文章），也兼容
+const renderContent = (content: string) => {
+  if (!content) return '';
+  const looksLikeHtml = /^\s*</.test(content) && /<\/[a-z]+>/i.test(content);
+  return looksLikeHtml ? content : md.render(content);
+};
+
+const contentHtml = post ? renderContent(post.content) : '';
+
+const escapeHtml = (str) =>
+  String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
+const withFancybox = (html) => {
+  if (!html) return html;
+  return html.replace(/<img\b[^>]*>/g, (match, offset) => {
+    if (match.includes('data-fancybox=') || match.includes('loading=')) return match;
+    const before = html.slice(0, offset);
+    const lastOpenA = before.lastIndexOf('<a');
+    const lastCloseA = before.lastIndexOf('</a>');
+    if (lastOpenA > lastCloseA) return match;
+    const srcMatch = match.match(/\ssrc=(".*?"|'.*?'|[^\s>]+)/);
+    const src = srcMatch ? srcMatch[1].replace(/^['"]|['"]$/g, '').replace(/`/g, '') : '';
+    if (!src) return match;
+    const altMatch = match.match(/\salt=(".*?"|'.*?'|[^\s>]+)/);
+    const alt = altMatch ? altMatch[1].replace(/^['"]|['"]$/g, '') : '';
+    const titleMatch = match.match(/\stitle=(".*?"|'.*?'|[^\s>]+)/);
+    const title = titleMatch ? titleMatch[1].replace(/^['"]|['"]$/g, '') : '';
+    const attrs = match.replace(/^<img\s*/, '').replace(/>$/, '').replace(/\s+$/, '');
+    const cleanAttrs = attrs.replace(/\ssrc=(".*?"|'.*?'|[^\s>]+)/g, '').replace(/\s+/g, ' ').trim();
+    const extraAttrs = cleanAttrs ? ' ' + cleanAttrs : '';
+    const safeSrc = escapeHtml(src);
+    const safeAlt = escapeHtml(alt);
+    const safeTitle = escapeHtml(title);
+    return `<a href="${safeSrc}" data-fancybox="gallery" data-caption="${safeAlt}" class="block"><img src="${safeSrc}" alt="${safeAlt}"${safeTitle ? ` title="${safeTitle}"` : ''} loading="lazy" class="w-full rounded-xl"${extraAttrs} /></a>`;
+  }).replace(/>\s*\/&gt;\s*</g, '><');
+};
+
+const contentHtmlReady = withFancybox(contentHtml);
+
+// JSON-LD 结构化数据
+const cleanDescription = (raw: string) =>
+  (raw || '')
+    .replace(/<[^>]+>/g, '')      // 去掉 HTML 标签
+    .replace(/\{%.*?%\}/g, '')    // 去掉 Jekyll 标签 {% ... %}
+    .replace(/`{1,3}[^`]*`{1,3}/g, '') // 去掉行内代码
+    .replace(/[#*_~\[\]()>|]/g, '')    // 去掉 Markdown 语法字符
+    .replace(/\n+/g, ' ')         // 换行转空格
+    .replace(/\s+/g, ' ')         // 压缩空白
+    .trim()
+    .slice(0, 200);
+const postUrl = post ? `${Astro.url.origin}/posts/${post.slug}` : '';
+const jsonLd = post ? {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.title,
+  description: cleanDescription(post.excerpt || post.content),
+  image: post.coverImage || undefined,
+  datePublished: post.createdAt,
+  dateModified: post.updatedAt,
+  author: {
+    '@type': 'Person',
+    name: post.author?.name || siteTitle,
+    url: Astro.url.origin,
+  },
+  publisher: {
+    '@type': 'Person',
+    name: post.author?.name || siteTitle,
+  },
+  keywords: post.tags?.map(t => t.name) || [],
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': postUrl,
+  },
+} : null;
+
+
+// 提取目录（h1/h2/h3）并构建 Butterfly 风格嵌套 ol/li 结构
+interface TocItem {
+  depth: number;
+  text: string;
+  slug: string;
+  children?: TocItem[];
+}
+
+const tocFlat: { depth: number; text: string; slug: string }[] = [];
+if (post && contentHtml) {
+  const headingRegex = /<h([123])[^>]*>(.*?)<\/h\1>/g;
+  let match;
+  while ((match = headingRegex.exec(contentHtml)) !== null) {
+    const depth = parseInt(match[1], 10);
+    const text = match[2].replace(/<[^>]+>/g, '');
+    const slug = slugify(text);
+    if (text && slug) tocFlat.push({ depth, text, slug });
+  }
+}
+
+function buildTocTree(items: typeof tocFlat): TocItem[] {
+  if (!items.length) return [];
+  const roots: TocItem[] = [];
+  const stack: TocItem[] = [{ depth: 0, text: '', slug: '', children: roots }];
+  for (const item of items) {
+    const node: TocItem = { depth: item.depth, text: item.text, slug: item.slug, children: [] };
+    while (stack.length > 1 && stack[stack.length - 1].depth >= node.depth) stack.pop();
+    const parent = stack[stack.length - 1];
+    if (!parent.children) parent.children = [];
+    parent.children.push(node);
+    stack.push(node);
+  }
+  return roots;
+}
+
+function renderTocOl(nodes: TocItem[]): string {
+  return nodes.map((item) => {
+    const hasChildren = item.children && item.children.length > 0;
+    let html = '<li class="toc-item toc-level-' + item.depth + '" data-toc-slug="' + item.slug + '">';
+    html += '<a href="#' + item.slug + '" class="toc-link">' + item.text + '</a>';
+    if (hasChildren) html += '<ol class="toc-child">' + renderTocOl(item.children!) + '</ol>';
+    html += '</li>';
+    return html;
+  }).join('');
+}
+
+const tocTree = buildTocTree(tocFlat);
+const tocHtmlStr = tocTree.length > 0 ? '<ol class="toc-list">' + renderTocOl(tocTree) + '</ol>' : '';
+---
+
+<BaseLayout
+  title={post?.title || '文章详情'}
+  wide={true}
+  postSlug={slug}
+  postCategory={post?.category?.name}
+  showToc={tocTree.length > 0}
+  ogType="article"
+  ogImage={post?.coverImage}
+>
+  {jsonLd && <Fragment slot="head"><script type="application/ld+json" set:html={JSON.stringify(jsonLd)} /></Fragment>}
+  {post && (
+    <Fragment slot="head">
+      <meta property="article:published_time" content={post.createdAt} />
+      <meta property="article:modified_time" content={post.updatedAt || post.createdAt} />
+      {post.category?.name && <meta property="article:section" content={post.category.name} />}
+      {post.tags?.map(tag => <meta property="article:tag" content={tag.name} />)}
+    </Fragment>
+  )}
+  {/* 阅读进度条 */}
+  <div class="reading-progress fixed left-0 top-0 z-50 h-1 bg-yellow-400" style="width: 0%;"></div>
+
+  {
+    error || !post ? (
+      <div class="rounded-xl border border-red-100 bg-red-50 p-8 text-center text-red-700">
+        <h1 class="text-xl font-bold">文章加载失败</h1>
+        <p class="mt-2 text-sm">{error || '未找到该文章'}</p>
+        <a href="/posts" class="mt-4 inline-block text-sm font-medium text-yellow-600 hover:underline">
+          返回文章列表
+        </a>
+      </div>
+    ) : (
+      <div class="w-full">
+        <a
+          href="/posts"
+          class="mb-6 inline-flex items-center gap-1 text-sm text-[rgb(var(--fg-muted))] hover:text-yellow-600 dark:text-[rgb(var(--fg-muted))] dark:hover:text-yellow-400 transition-colors"
+        >
+          <span>←</span>
+          返回文章列表
+        </a>
+
+        <div class={tocTree.length > 0 ? 'grid gap-8 lg:grid-cols-[2fr_280px] lg:gap-12' : 'mx-auto max-w-3xl'}>
+          <article class="post-article">
+            <header class="mb-8">
+              <div class="flex flex-wrap items-center gap-2 text-sm text-[rgb(var(--fg-muted))] dark:text-[rgb(var(--fg-muted))]">
+                <span class="rounded-full bg-yellow-50 px-2.5 py-1 font-medium text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">
+                  {post.category.name}
+                </span>
+                <span>·</span>
+                <time datetime={post.createdAt}>{formatDate(post.createdAt)}</time>
+                <span>·</span>
+                <span>{post.views} 次阅读</span>
+                <span>·</span>
+                <span>{readTime} 分钟</span>
+              </div>
+              <h1 class="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">{post.title}</h1>
+              {post.excerpt && (
+                <p class="mt-4 text-lg text-[rgb(var(--fg-soft))] leading-relaxed dark:text-[rgb(var(--fg-muted))]">{post.excerpt}</p>
+              )}
+            </header>
+
+            <div class="post-content prose prose-base max-w-none" set:html={contentHtmlReady}></div>
+
+            {
+              post.tags.length > 0 && (
+                <div class="mt-10 flex flex-wrap items-center gap-2 border-t pt-6 dark:border-[rgb(var(--card-border))]">
+                  <span class="text-sm font-medium text-[rgb(var(--fg-soft))] dark:text-[rgb(var(--fg-muted))]">标签：</span>
+                  {post.tags.map((tag) => (
+                    <span class="rounded-full border border-[rgb(var(--card-border))] px-3 py-1 text-sm text-[rgb(var(--fg-soft))] dark:border-[rgb(var(--card-border))] dark:text-[rgb(var(--fg-muted))]">#{tag.name}</span>
+                  ))}
+                </div>
+              )
+            }
+
+            {/* 上下篇 */}
+            <nav class="no-print mt-10 grid gap-4 sm:grid-cols-2">
+              {prev && (
+                <a
+                  href={`/posts/${prev.slug}`}
+                  class="group rounded-xl border border-[rgb(var(--card-border))] bg-[rgb(var(--card-bg))] p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-[rgb(var(--card-border))] dark:bg-[rgb(var(--card-bg))]"
+                >
+                  <div class="text-xs text-[rgb(var(--fg-muted))] dark:text-[rgb(var(--fg-muted))] mb-1">← 上一篇</div>
+                  <div class="font-medium text-[rgb(var(--fg))] group-hover:text-yellow-600 dark:text-[rgb(var(--fg))] dark:group-hover:text-yellow-400 line-clamp-2">
+                    {prev.title}
+                  </div>
+                </a>
+              )}
+              {next && (
+                <a
+                  href={`/posts/${next.slug}`}
+                  class={`group rounded-xl border border-[rgb(var(--card-border))] bg-[rgb(var(--card-bg))] p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-[rgb(var(--card-border))] dark:bg-[rgb(var(--card-bg))] text-right ${!prev ? 'sm:col-start-2' : ''}`}
+                >
+                  <div class="text-xs text-[rgb(var(--fg-muted))] dark:text-[rgb(var(--fg-muted))] mb-1">下一篇 →</div>
+                  <div class="font-medium text-[rgb(var(--fg))] group-hover:text-yellow-600 dark:text-[rgb(var(--fg))] dark:group-hover:text-yellow-400 line-clamp-2">
+                    {next.title}
+                  </div>
+                </a>
+              )}
+            </nav>
+
+            {/* 版权卡片 */}
+            <CopyrightCard
+              title={post.title}
+              authorName={siteTitle}
+              authorHref="/"
+              postUrl={`${Astro.url.origin}/posts/${post.slug}`}
+              publishedAt={formatDate(post.createdAt)}
+              licenseName="CC BY-NC-SA 4.0"
+            />
+
+            {/* 评论 */}
+            <section class="mt-14">
+              <h2 class="text-2xl font-bold">评论</h2>
+              <div class="mt-6">
+                {commentProvider === 'native' ? (
+                  <SelfComments postId={post.id} emojiCdn={commentEmojiCdn} />
+                ) : (
+                  <TwikooComments />
+                )}
+              </div>
+            </section>
+          </article>
+
+          {/* 文章目录 */}
+          {tocTree.length > 0 && (
+            <aside id="post-toc" class="hidden lg:block">
+              <div id="post-toc-inner" class="mt-20 w-[260px] max-h-[calc(100vh-10rem)] overflow-y-auto rounded-xl border border-[rgb(var(--card-border))] bg-[rgb(var(--card-bg))] p-5 shadow-sm dark:border-[rgb(var(--card-border))] dark:bg-[rgb(var(--card-bg))]">
+                <h4 class="mb-3 text-xs font-semibold uppercase tracking-wider text-yellow-600 dark:text-yellow-400">
+                  目录
+                </h4>
+                <nav id="toc-list" class="text-sm" set:html={tocHtmlStr} />
+              </div>
+            </aside>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  <link rel="stylesheet" href="/fancybox.css" />
+  <script is:inline src="/fancybox.umd.js"></script>
+</BaseLayout>

@@ -1,0 +1,26 @@
+/* ===== posts.css：/posts 文章列表卡片 + 切页动画 ===== */
+/* ========= /posts 文章列表卡片切页动画（全局，避免 swup 切换后样式丢失） ========= */
+#posts-grid {
+  transition: opacity 0.25s ease;
+}
+.post-item {
+  transition:
+    opacity 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.post-item.is-enter {
+  opacity: 0;
+  transform: translateY(18px);
+}
+@media (prefers-reduced-motion: reduce) {
+  #posts-grid,
+  .post-item {
+    transition: none !important;
+  }
+  .post-item.is-enter {
+    opacity: 1;
+    transform: none;
+  }
+}
+

@@ -1,0 +1,149 @@
+---
+interface TabItem {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  tabs: TabItem[];
+}
+
+const { tabs } = Astro.props;
+const slug = Astro.url.pathname.replace(/\/$/, '') || '/';
+const activeIdx = tabs.findIndex((tab) => {
+  const tabPath = tab.href.replace(/\/$/, '') || '/';
+  return slug === tabPath || (slug !== '/' && tabPath !== '/' && slug.startsWith(tabPath));
+});
+---
+
+<nav id="tab-nav" class={`tab-nav${activeIdx >= 0 ? ' has-active' : ''}`}>
+  <div id="tab-hover-border"></div>
+  {tabs.map((tab, i) => {
+    const tabPath = tab.href.replace(/\/$/, '') || '/';
+    const isActive = i === activeIdx;
+    return (
+      <a
+        href={tab.href}
+        class={`tab-item${isActive ? ' active' : ''}`}
+        role="tab"
+        aria-selected={isActive ? 'true' : 'false'}
+      >
+        {tab.label}
+      </a>
+    );
+  })}
+</nav>
+
+<style is:global>
+  /* TabNav 全局样式已集中在 src/styles/global.css，避免 SWUP 切换后样式丢失 */
+</style>
+
+  <script is:inline>
+  !(function() {
+    var resizeObserver = null;
+    var retryTimer = null;
+
+    // 批量读取布局属性，避免多次强制重排
+    function positionBorder(item, hoverBorder) {
+      // 使用 requestAnimationFrame 确保在同一帧内完成读写
+      requestAnimationFrame(function() {
+        var w = item.offsetWidth;
+        var l = item.offsetLeft;
+        if (w > 0) {
+          hoverBorder.style.width = w + 'px';
+          hoverBorder.style.left = l + 'px';
+        }
+      });
+    }
+
+    function initTabNav() {
+      var tabNav = document.getElementById('tab-nav');
+      var hoverBorder = document.getElementById('tab-hover-border');
+      if (!tabNav || !hoverBorder) return;
+
+      var tabItems = tabNav.querySelectorAll('.tab-item');
+
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+        resizeObserver = null;
+      }
+      if (retryTimer) {
+        clearTimeout(retryTimer);
+        retryTimer = null;
+      }
+
+      tabItems.forEach(function(item) {
+        if (item._tabMouseEnter) {
+          item.removeEventListener('mouseenter', item._tabMouseEnter);
+        }
+      });
+
+      function pos(item) {
+        positionBorder(item, hoverBorder);
+      }
+
+      var active = tabNav.querySelector('.tab-item.active');
+      if (active) {
+        tabNav.classList.add('has-active');
+        pos(active);
+        requestAnimationFrame(function() { pos(active); });
+      } else {
+        tabNav.classList.remove('has-active');
+      }
+
+      tabItems.forEach(function(item) {
+        item._tabMouseEnter = function() { pos(item); };
+        item.addEventListener('mouseenter', item._tabMouseEnter);
+      });
+
+      tabNav.addEventListener('mouseleave', function() {
+        var activeItem = tabNav.querySelector('.tab-item.active');
+        if (activeItem) pos(activeItem);
+      });
+
+      // 字体加载后重新定位（修正字体切换导致的偏移）
+      if (active) {
+        retryTimer = setTimeout(function() {
+          var cur = tabNav.querySelector('.tab-item.active');
+          if (cur) pos(cur);
+        }, 100);
+      }
+    }
+
+    // ===== 即时初始化（不等字体，首帧就可见） =====
+    initTabNav();
+
+    // 字体加载完成后再次微调位置
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function() { initTabNav(); });
+    }
+
+    function handleSwupEnd() {
+      requestAnimationFrame(function() {
+        initTabNav();
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(function() { initTabNav(); });
+        }
+      });
+    }
+
+    function hookTabNav() {
+      if (!window.swup || !window.swup.hooks) return;
+      if (window.__tabNavSwupHook && window.__tabNavSwupHook === window.swup) return;
+      window.swup.hooks.on('visit:end', handleSwupEnd);
+      window.swup.hooks.on('page:view', handleSwupEnd);
+      window.__tabNavSwupHook = window.swup;
+    }
+    hookTabNav();
+    if (!window.swup || !window.swup.hooks) {
+      var tabTimer = setInterval(function () {
+        if (window.swup && window.swup.hooks) {
+          clearInterval(tabTimer);
+          hookTabNav();
+        }
+      }, 50);
+    }
+
+    document.addEventListener('astro:page-load', handleSwupEnd);
+  })();
+</script>

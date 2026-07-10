@@ -1,0 +1,28 @@
+name = "mccsjsblog-api"
+main = "src/index.ts"
+compatibility_date = "2025-07-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+ADMIN_EMAIL = "admin@localhost"
+ASSETS_PUBLIC_URL = "https://assets.mccsjsblog.test"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "mccsjsblog"
+database_id = "00000000-0000-0000-0000-000000000000"
+
+[triggers]
+crons = ["0 0 * * *", "0 12 * * *", "0 3 * * *"]
+
+# 可选：启用 /api/upload 本地上传需要 R2 存储桶绑定。
+# 取消注释并创建对应 bucket 后即可使用（生产环境建议配置自定义域名或 r2.dev 公开访问）。
+# [[r2_buckets]]
+# binding = "BUCKET"
+# bucket_name = "mccsjsblog-assets"
+
+# 可选：友链自动测速走第三方 API（https://v2.xxapi.cn），留空则仅做直连可达性检测
+# XXAPI_TOKEN = ""
+
+[observability]
+enabled = true

@@ -1,0 +1,77 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TabNav from '../../components/TabNav.astro';
+
+const API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_URL)
+  || (typeof process !== 'undefined' && process.env && process.env.PUBLIC_API_URL)
+  || '';
+
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+}
+
+const palette = [
+  'bg-[#7a8ba3]',
+  'bg-[#b0ad7a]',
+  'bg-[#b892b2]',
+  'bg-[#7a9e8a]',
+  'bg-[#9a8f7e]',
+  'bg-[#8b9dc3]',
+  'bg-[#c4a28d]',
+  'bg-[#8fa3a3]',
+];
+
+let categories: Category[] = [];
+let error: string | null = null;
+
+try {
+  const response = await fetch(`${API_URL}/api/categories`);
+  if (!response.ok) throw new Error(`无法加载分类：${response.status}`);
+  categories = await response.json();
+} catch (err) {
+  error = err instanceof Error ? err.message : '未知错误';
+}
+---
+
+<BaseLayout title="分类" description="按分类浏览文章">
+  <section class="mb-10 text-center">
+    <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">分类</h1>
+    <p class="mt-3 text-[rgb(var(--fg-soft))] dark:text-[rgb(var(--fg-muted))]">共 {categories.length} 个分类</p>
+  </section>
+  <TabNav tabs={[
+    { label: '文章', href: '/posts' },
+    { label: '归档', href: '/archive' },
+    { label: '分类', href: '/categories' },
+    { label: '标签', href: '/tags' },
+  ]} />
+
+  {
+    error ? (
+      <div class="rounded-xl border border-red-100 bg-red-50 dark:bg-red-900/20 dark:border-red-800 dark:text-red-300 p-6 text-center text-red-700">
+        <p class="font-medium">加载分类失败</p>
+        <p class="mt-1 text-sm">{error}</p>
+      </div>
+    ) : categories.length === 0 ? (
+      <div class="rounded-xl border border-[rgb(var(--card-border))] bg-[rgb(var(--card-bg))] p-12 text-center text-[rgb(var(--fg-muted))] dark:border-[rgb(var(--card-border))] dark:bg-[rgb(var(--card-bg))] dark:text-[rgb(var(--fg-muted))]">
+        暂无分类
+      </div>
+    ) : (
+      <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-5">
+        {categories.map((category, idx) => {
+          const color = palette[idx % palette.length];
+          return (
+            <a
+              href={`/categories/${category.slug}`}
+              class={`group inline-flex min-w-[5rem] items-center justify-center rounded-xl px-5 py-2.5 text-base font-semibold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${color}`}
+            >
+              {category.name}
+            </a>
+          );
+        })}
+      </div>
+    )
+  }
+</BaseLayout>

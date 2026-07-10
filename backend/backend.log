@@ -1,0 +1,6 @@
+🦊 Backend running at localhost:4000
+[友链测速] 已安排定时任务：每天 0:00 / 12:00
+[RSS刷新] 定时任务已安排：每天 03:00
+2026-07-06T07:21:35.649Z WARN [Better Auth]: [better-auth] Warning: your BETTER_AUTH_SECRET should be at least 32 characters long for adequate security. Generate one with `npx auth secret` or `openssl rand -base64 32`.
+2026-07-06T07:21:35.649Z WARN [Better Auth]: [better-auth] Warning: your BETTER_AUTH_SECRET appears low-entropy. Use a randomly generated secret for production.
+🌱 默认图标已初始化（我的网站/友情链接）

@@ -1,0 +1,153 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import TabNav from '../../components/TabNav.astro';
+import type { Post } from '../../types';
+
+// serverless 化：文章列表按需渲染，新文章实时出现在列表
+const API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_URL)
+  || (typeof process !== 'undefined' && process.env && process.env.PUBLIC_API_URL)
+  || '';
+
+let postsPerPage = 10;
+try {
+  const sResp = await fetch(`${API_URL}/api/settings`);
+  if (sResp.ok) {
+    const settings = await sResp.json();
+    const n = parseInt(settings.postsPerPage, 10);
+    if (!isNaN(n) && n >= 1 && n <= 100) postsPerPage = n;
+  }
+} catch {}
+
+const PER_PAGE = postsPerPage;
+
+let posts: Post[] = [];
+let error: string | null = null;
+
+try {
+  const response = await fetch(`${API_URL}/api/posts`);
+  if (!response.ok) throw new Error(`无法加载文章：${response.status}`);
+  posts = await response.json();
+} catch (err) {
+  error = err instanceof Error ? err.message : '未知错误';
+}
+
+const totalPages = Math.max(1, Math.ceil(posts.length / PER_PAGE));
+
+// ====== SSR 分页条渲染（不依赖 JS） ======
+function pageList(cur: number, total: number): (number | '…')[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  const set = new Set([1, total, cur - 1, cur, cur + 1]);
+  const arr = [...set].filter((p) => p >= 1 && p <= total).sort((a, b) => a - b);
+  const out: (number | '…')[] = [];
+  let prev = 0;
+  for (const p of arr) { if (p - prev > 1) out.push('…'); out.push(p); prev = p; }
+  return out;
+}
+---
+
+<BaseLayout title="文章" description="浏览全部文章，按时间倒序排列">
+  <section class="mb-10 text-center">
+    <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">全部文章</h1>
+    <p class="mt-3 text-[rgb(var(--fg-soft))] dark:text-[rgb(var(--fg-muted))]">共 {posts.length} 篇文章</p>
+  </section>
+  <TabNav tabs={[
+    { label: '文章', href: '/posts' },
+    { label: '归档', href: '/archive' },
+    { label: '分类', href: '/categories' },
+    { label: '标签', href: '/tags' },
+  ]} />
+
+  {
+    error ? (
+      <div class="rounded-xl border border-red-100 bg-red-50 p-6 text-center text-red-700">
+        <p class="font-medium">加载文章失败</p>
+        <p class="mt-1 text-sm">{error}</p>
+      </div>
+    ) : posts.length === 0 ? (
+      <div class="rounded-xl border border-[rgb(var(--card-border))] bg-[rgb(var(--card-bg))] p-12 text-center text-[rgb(var(--fg-muted))]">
+        暂无文章，稍后再来吧
+      </div>
+    ) : (
+      <>
+        <div id="posts-grid" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {posts.map((post, i) => (
+            <div class={`post-item${i < PER_PAGE ? '' : ' hidden'}`} data-index={i}>
+              <PostCard post={post} />
+            </div>
+          ))}
+        </div>
+
+        {/* SSR 分页条 —— 即使 JS 不执行也保证可见 */}
+        {totalPages > 1 && (
+          <nav id="posts-pagination" class="mt-12 flex flex-wrap items-center justify-center gap-2" aria-label="分页导航">
+            <button type="button" data-page={0} disabled class="inline-flex h-10 min-w-10 items-center justify-center rounded-xl border px-3 text-sm font-medium transition-all duration-200 border-[rgb(var(--card-border))] text-[rgb(var(--fg))] hover:-translate-y-0.5 hover:border-[rgb(var(--primary))] hover:text-[rgb(var(--primary))] opacity-40 cursor-not-allowed">上一页</button>
+            {pageList(1, totalPages).map((p) =>
+              p === '…' ? (
+                <span class="inline-flex h-10 min-w-10 items-center justify-center rounded-xl border px-3 text-sm font-medium transition-all duration-200 border-transparent cursor-default">…</span>
+              ) : (
+                <button type="button" data-page={p} class={`inline-flex h-10 min-w-10 items-center justify-center rounded-xl border px-3 text-sm font-medium transition-all duration-200 ${p === 1 ? 'border-[rgb(var(--primary))] bg-[rgb(var(--primary))] text-white' : 'border-[rgb(var(--card-border))] text-[rgb(var(--fg))] hover:-translate-y-0.5 hover:border-[rgb(var(--primary))] hover:text-[rgb(var(--primary)))'}`}>{p}</button>
+              )
+            )}
+            <button type="button" data-page={2} class="inline-flex h-10 min-w-10 items-center justify-center rounded-xl border px-3 text-sm font-medium transition-all duration-200 border-[rgb(var(--card-border))] text-[rgb(var(--fg))] hover:-translate-y-0.5 hover:border-[rgb(var(--primary))] hover:text-[rgb(var(--primary))]">下一页</button>
+          </nav>
+        )}
+      </>
+    )
+  }
+</BaseLayout>
+
+<script define:vars={{ serializedPerPage: JSON.stringify(PER_PAGE), serializedTotalPages: JSON.stringify(totalPages) }}>
+  // JS 仅负责点击切页；分页条由 SSR 保证始终存在。用 document 委托，SWUP 替换 DOM 后依然有效
+  (function() {
+    var perPage = Number(serializedPerPage) || 10;
+    var animated = false;
+
+    function getState() {
+      var grid = document.getElementById('posts-grid');
+      var pager = document.getElementById('posts-pagination');
+      if (!grid || !pager) return null;
+      var items = grid.querySelectorAll('.post-item');
+      if (!items.length) return null;
+      var total = Math.max(1, Math.ceil(items.length / perPage));
+      return { grid: grid, pager: pager, items: items, total: total };
+    }
+
+    function setPage(page) {
+      var st = getState();
+      if (!st) return;
+      var current = Math.min(Math.max(1, page), st.total);
+      var start = (current - 1) * perPage;
+      var end = start + perPage;
+      for (var k = 0; k < st.items.length; k++) {
+        st.items[k].classList.toggle('hidden', Number(st.items[k].dataset.index) < start || Number(st.items[k].dataset.index) >= end);
+      }
+      // 更新按钮 active/disabled 状态
+      var btns = st.pager.querySelectorAll('button[data-page]');
+      var ACTIVE = 'border-[rgb(var(--primary))] bg-[rgb(var(--primary))] text-white';
+      var DISABLED = 'opacity-40 cursor-not-allowed';
+      for (var b = 0; b < btns.length; b++) {
+        var bp = Number(btns[b].dataset.page);
+        btns[b].className = btns[b].className
+          .replace(/border-\[rgb\(var\(--primary\)\)\] bg-\[rgb\(var\(--primary\)\)\] text-white/g, '')
+          .replace(/opacity-40 cursor-not-allowed/g, '')
+          .trim();
+        btns[b].disabled = false;
+        if (bp === current) { btns[b].classList.add('border-[rgb(var(--primary))]', 'bg-[rgb(var(--primary))]', 'text-white'); }
+        if ((bp === current - 1 && current === 1) || (bp === current + 1 && current === st.total)) {
+          btns[b].classList.add('opacity-40', 'cursor-not-allowed');
+          btns[b].disabled = true;
+        }
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // 事件委托到 document，SWUP 替换 DOM 后依然有效
+    document.addEventListener('click', function(e) {
+      var btn = e.target.closest('#posts-pagination button[data-page]');
+      if (!btn || btn.disabled) return;
+      e.preventDefault();
+      setPage(Number(btn.dataset.page));
+    });
+  })();
+</script>

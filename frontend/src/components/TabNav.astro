@@ -1,0 +1,107 @@
+---
+interface TabItem {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  tabs: TabItem[];
+}
+
+const { tabs } = Astro.props;
+const slug = Astro.url.pathname.replace(/\/$/, '') || '/';
+---
+
+<nav id="tab-nav" class="tab-nav">
+  <div id="tab-hover-border"></div>
+  {tabs.map((tab) => {
+    const tabPath = tab.href.replace(/\/$/, '') || '/';
+    const isActive = slug === tabPath || (slug !== '/' && tabPath !== '/' && slug.startsWith(tabPath));
+    return (
+      <a
+        href={tab.href}
+        class={`tab-item${isActive ? ' active' : ''}`}
+        role="tab"
+        aria-selected={isActive ? 'true' : 'false'}
+      >
+        {tab.label}
+      </a>
+    );
+  })}
+</nav>
+
+<style is:global>
+  /* TabNav 全局样式已集中在 src/styles/components.css，避免 SWUP 切换后样式丢失 */
+</style>
+
+<script is:inline data-swup-reload-script>
+!(function() {
+  function positionBorder(item, border) {
+    border.style.width = item.offsetWidth + 'px';
+    border.style.left = item.offsetLeft + 'px';
+  }
+
+  function initTabNav() {
+    var nav = document.getElementById('tab-nav');
+    var border = document.getElementById('tab-hover-border');
+    if (!nav || !border) return;
+
+    var items = nav.querySelectorAll('.tab-item');
+    if (!items.length) return;
+
+    // 清理旧事件（防止 swup 重复执行时堆积监听器）
+    if (initTabNav._boundEnter) {
+      items.forEach(function(it) { it.removeEventListener('mouseenter', initTabNav._boundEnter); });
+    }
+    if (initTabNav._boundLeave) {
+      nav.removeEventListener('mouseleave', initTabNav._boundLeave);
+    }
+
+    var active = nav.querySelector('.tab-item.active');
+
+    if (active) {
+      positionBorder(active, border);
+      nav.classList.add('has-active');
+    } else {
+      border.style.width = '';
+      border.style.left = '';
+      nav.classList.remove('has-active');
+    }
+
+    // hover 跟随滑块
+    initTabNav._boundEnter = function() {
+      positionBorder(this, border);
+    };
+    items.forEach(function(it) {
+      it.addEventListener('mouseenter', initTabNav._boundEnter);
+    });
+
+    // 鼠标离开回弹到激活项
+    initTabNav._boundLeave = function() {
+      var a = nav.querySelector('.tab-item.active');
+      if (a) positionBorder(a, border);
+    };
+    nav.addEventListener('mouseleave', initTabNav._boundLeave);
+
+    // 自定义字体加载后修正尺寸（字体可能异步加载改变文字宽度）
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function() {
+        var n = document.getElementById('tab-nav');
+        var b = document.getElementById('tab-hover-border');
+        if (!n || !b) return;
+        var a = n.querySelector('.tab-item.active');
+        if (a) positionBorder(a, b);
+      });
+    }
+  }
+
+  // 立即执行 + 字体就绪后再次执行
+  initTabNav();
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(initTabNav);
+  }
+
+  // 暴露给外部调用（兼容非 swup 场景）
+  window.__initTabNav = initTabNav;
+})();
+</script>

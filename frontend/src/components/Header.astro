@@ -1,0 +1,199 @@
+---
+import type { MenuItem } from '../types';
+import MenuIcon from './MenuIcon.astro';
+
+interface Props {
+  siteTitle?: string;
+  siteLogo?: string;
+  favicon?: string;
+  menus?: MenuItem[];
+  aggregateMenus?: MenuItem[];
+}
+
+const { siteTitle = 'mccsjs', siteLogo = '', favicon = '', menus = [], aggregateMenus = [] } = Astro.props;
+
+const visibleMenus = menus.filter((m) => m.visible);
+const visibleAggregateMenus = aggregateMenus.filter((m) => m.visible && m.children?.length);
+---
+
+<div id="nav-top-row">
+  <div id="nav-pill-wrapper">
+    <div id="nav-pill">
+      <!-- 毛玻璃层（滚动后显示） -->
+      <div id="nav-glass-layer"></div>
+
+      <div id="nav-inner">
+        <!-- Logo + 图标菜单 -->
+        <div id="nav-logo-wrapper" class="relative flex items-center gap-2">
+          {visibleAggregateMenus.length > 0 && (
+            <button id="nav-aggregate-trigger" class="flex shrink-0 items-center justify-center" aria-label="打开图标菜单">
+              {favicon ? (
+                <img src={favicon} alt={siteTitle} class="nav-logo-icon" />
+              ) : (
+                <iconify-icon icon="ep:menu" class="nav-logo-icon" width="20" height="20"></iconify-icon>
+              )}
+            </button>
+          )}
+          <a id="nav-logo" href="/">
+            <span class="nav-logo-text">{siteTitle}</span>
+          </a>
+
+          {visibleAggregateMenus.length > 0 && (
+            <div id="nav-aggregate-dropdown" class="nav-aggregate-dropdown">
+              {visibleAggregateMenus.map((group) => (
+                <div class="aggregate-group">
+                  <div class="aggregate-title">{group.label}</div>
+                  <div class="aggregate-grid">
+                    {group.children
+                      ?.filter((child) => child.visible)
+                      .map((child) => (
+                        <a
+                          href={child.href || '#'}
+                          target={child.target || undefined}
+                          class="aggregate-item"
+                        >
+                          {child.icon && <MenuIcon icon={child.icon} class="aggregate-icon" />}
+                          <span>{child.label}</span>
+                        </a>
+                      ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <!-- 居中导航菜单 -->
+        <div id="nav-center" class="nav-desktop-menu">
+          <div id="nav-hover-border"></div>
+
+          {visibleMenus.length > 0 ? (
+            visibleMenus.map((menu) => {
+              const visibleChildren = menu.children?.filter((c) => c.visible) ?? [];
+              return visibleChildren.length > 0 ? (
+                <div class="nav-dropdown-wrapper">
+                  <button class="nav-item nav-has-children" data-dropdown-trigger>
+                    {menu.icon && <MenuIcon icon={menu.icon} class="nav-icon" />}
+                    <span>{menu.label}</span>
+                    <svg class="nav-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                  </button>
+                  <div class="nav-dropdown-panel">
+                    {visibleChildren.map((child) => (
+                      <a href={child.href || '#'} target={child.target || undefined} class="nav-dropdown-item">
+                        {child.icon && <MenuIcon icon={child.icon} class="nav-icon" />}
+                        <span>{child.label}</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <a href={menu.href || '#'} target={menu.target || undefined} class="nav-item nav-link-item" data-nav-link>
+                  {menu.icon && <MenuIcon icon={menu.icon} class="nav-icon" />}
+                  <span>{menu.label}</span>
+                </a>
+              );
+            })
+          ) : (
+            <>
+              <a href="/" class="nav-item nav-link-item" data-nav-link><span>首页</span></a>
+              <a href="/posts" class="nav-item nav-link-item" data-nav-link><span>文章</span></a>
+              <a href="/archive" class="nav-item nav-link-item" data-nav-link><span>归档</span></a>
+              <a href="/link" class="nav-item nav-link-item" data-nav-link><span>友链</span></a>
+            </>
+          )}
+        </div>
+
+        <!-- 右侧工具栏 -->
+        <div id="nav-right">
+          <!-- 搜索 -->
+          <button id="nav-search-btn" class="nav-theme-btn" aria-label="搜索">
+            <iconify-icon icon="humbleicons:search" width="18" height="18"></iconify-icon>
+          </button>
+          <!-- 主题切换 -->
+          <button id="theme-toggle" class="nav-theme-btn" aria-label="切换主题">
+            <iconify-icon icon="line-md:moon" class="theme-icon theme-icon-dark" width="18" height="18"></iconify-icon>
+            <iconify-icon icon="solar:sun-broken" class="theme-icon theme-icon-light" width="18" height="18"></iconify-icon>
+          </button>
+          <!-- 移动端菜单开关 -->
+          <button id="nav-mobile-toggle" class="nav-desktop-hide" aria-label="菜单">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <line x1="4" y1="6" x2="20" y2="6" />
+              <line x1="4" y1="12" x2="20" y2="12" />
+              <line x1="4" y1="18" x2="20" y2="18" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 移动端抽屉 ========== -->
+<div id="nav-mobile-overlay"></div>
+<nav id="nav-mobile-drawer">
+  <div id="nav-mobile-header">
+    <span class="nav-mobile-title">导航</span>
+    <button id="nav-mobile-close" aria-label="关闭">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+      </svg>
+    </button>
+  </div>
+  <div id="nav-mobile-body">
+    {visibleMenus.length > 0 ? (
+      visibleMenus.map((menu, i) => {
+        const visibleChildren = menu.children?.filter((c) => c.visible) ?? [];
+        return (
+          <div class="nav-mobile-group" style={`--stagger: ${i}`}>
+            {visibleChildren.length > 0 ? (
+              <>
+                <div class="nav-mobile-parent">
+                  {menu.icon && <MenuIcon icon={menu.icon} class="nav-icon" />}
+                  <span>{menu.label}</span>
+                </div>
+                <div class="nav-mobile-children">
+                  {visibleChildren.map((child) => (
+                    <a href={child.href || '#'} target={child.target || undefined} class="nav-mobile-link">
+                      {child.icon && <MenuIcon icon={child.icon} class="nav-icon" />}
+                      <span>{child.label}</span>
+                    </a>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <a href={menu.href || '#'} target={menu.target || undefined} class="nav-mobile-link nav-mobile-parent-link">
+                {menu.icon && <MenuIcon icon={menu.icon} class="nav-icon" />}
+                <span>{menu.label}</span>
+              </a>
+            )}
+          </div>
+        );
+      })
+    ) : (
+      <>
+        <a href="/" class="nav-mobile-link nav-mobile-parent-link"><span>首页</span></a>
+        <a href="/posts" class="nav-mobile-link nav-mobile-parent-link"><span>文章</span></a>
+        <a href="/archive" class="nav-mobile-link nav-mobile-parent-link"><span>归档</span></a>
+        <a href="/link" class="nav-mobile-link nav-mobile-parent-link"><span>友链</span></a>
+      </>
+    )}
+  </div>
+</nav>
+
+<!-- ========== 搜索弹窗 ========== -->
+<div id="search-overlay" class="search-overlay">
+  <div class="search-container">
+    <div class="search-input-wrapper">
+      <iconify-icon icon="material-symbols:search-rounded" class="search-input-icon" width="20" height="20"></iconify-icon>
+      <input id="search-input" type="text" placeholder="搜索文章..." autocomplete="off" class="search-input" />
+      <button id="search-close" class="search-close-btn" aria-label="关闭">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+      </button>
+    </div>
+    <div id="search-results" class="search-results"></div>
+    <div id="search-hint" class="search-hint">
+      输入关键词搜索文章，按 <kbd>↑</kbd> <kbd>↓</kbd> 导航，<kbd>Enter</kbd> 打开，<kbd>Esc</kbd> 关闭
+    </div>
+  </div>
+</div>
+<script defer src="/scripts/header.js"></script>

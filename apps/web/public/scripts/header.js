@@ -413,7 +413,7 @@
       return '<a href="/posts/' + post.slug + '" class="search-result-item' + activeClass + '" data-idx="' + i + '">' +
         '<div class="search-result-title">' + highlight(post.title) + '</div>' +
         (post.excerpt ? '<div class="search-result-excerpt">' + highlight(post.excerpt) + '</div>' : '') +
-        '<div class="search-result-meta">' + new Date(post.createdAt).toLocaleDateString('zh-CN') + '</div>' +
+        '<div class="search-result-meta">' + new Date(+post.createdAt * 1000).toLocaleDateString('zh-CN') + '</div>' +
         '</a>';
     }).join('');
 

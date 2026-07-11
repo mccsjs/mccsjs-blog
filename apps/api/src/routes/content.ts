@@ -13,7 +13,7 @@ import {
   type SettingKey,
 } from '@blog/shared'
 import { generateCrc32Slug, getClientIp, resolveClientInfo } from '../utils'
-import { notifyOnNewComment } from '../utils/email'
+import { notifyOnNewComment, sendTestEmail } from '../utils/email'
 import { requireAuth, verifyPassword, hashPassword, signCommentAdminToken, verifyCommentAdminToken } from '../auth'
 import { renderCommentHtml } from '../markdown'
 import type { DB } from '../db'
@@ -524,6 +524,16 @@ export function contentRoutes() {
       adminPwHash
     )
     return c.json({ token, name: adminName, email: adminEmail })
+  })
+
+  // ============ 邮件通知测试（管理端）============
+  app.post('/api/admin/test-email', requireAuth, async (c) => {
+    const db: DB = c.get('db')
+    const body = await c.req.json<{ email?: string }>().catch(() => ({}))
+    const to = (body.email || '').trim()
+    if (!to) return c.json({ error: '请输入收件人邮箱地址' }, 400)
+    const result = await sendTestEmail(db, to)
+    return result.ok ? c.json({ ok: true, message: result.message }) : c.json({ ok: false, message: result.message }, 500)
   })
 
   return app

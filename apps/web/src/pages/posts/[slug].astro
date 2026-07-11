@@ -74,7 +74,7 @@ try {
 // 按创建时间排序，计算上一篇/下一篇
 const sortedPosts = allPosts
   .slice()
-  .sort((a, b) => +new Date(a.createdAt) - +new Date(b.createdAt));
+  .sort((a, b) => +new Date(+a.createdAt * 1000) - +new Date(+b.createdAt * 1000));
 const currentIndex = sortedPosts.findIndex((p) => p.slug === slug);
 const prev = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
 const next =
@@ -83,7 +83,7 @@ const next =
     : null;
 
 const formatDate = (date: string) =>
-  new Date(date).toLocaleDateString('zh-CN', {
+  new Date(+date * 1000).toLocaleDateString('zh-CN', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -200,8 +200,8 @@ const jsonLd = post ? {
   headline: post.title,
   description: cleanDescription(post.excerpt || post.content),
   image: post.coverImage || undefined,
-  datePublished: post.createdAt,
-  dateModified: post.updatedAt,
+  datePublished: new Date(+post.createdAt * 1000).toISOString(),
+  dateModified: post.updatedAt ? new Date(+post.updatedAt * 1000).toISOString() : undefined,
   author: {
     '@type': 'Person',
     name: post.author?.name || siteTitle,
@@ -281,8 +281,8 @@ const tocHtmlStr = tocTree.length > 0 ? '<ol class="toc-list">' + renderTocOl(to
   {jsonLd && <Fragment slot="head"><script type="application/ld+json" set:html={JSON.stringify(jsonLd)} /></Fragment>}
   {post && (
     <Fragment slot="head">
-      <meta property="article:published_time" content={post.createdAt} />
-      <meta property="article:modified_time" content={post.updatedAt || post.createdAt} />
+      <meta property="article:published_time" content={new Date(+post.createdAt * 1000).toISOString()} />
+      <meta property="article:modified_time" content={new Date(+(post.updatedAt || post.createdAt) * 1000).toISOString()} />
       {post.category?.name && <meta property="article:section" content={post.category.name} />}
       {post.tags?.map(tag => <meta property="article:tag" content={tag.name} />)}
     </Fragment>

@@ -84,8 +84,8 @@ const defaultValues: SettingsData = {
   mailSmtpPort: '465',
   mailSmtpUser: '',
   mailSmtpPass: '',
-  mailSmtpSecure: '1',
-  mailProvider: 'resend',
+  mailSmtpSecure: 'ssl',
+  mailProvider: 'none',
   mailApiKey: '',
   mailGatewayUrl: '',
   mailGatewayToken: '',
@@ -119,6 +119,31 @@ export default function Settings() {
   const [tab, setTab] = useState<'basic' | 'comment' | 'footer'>('basic');
   const [badges, setBadges] = useState<Badge[]>([]);
   const [badgesDirty, setBadgesDirty] = useState(false);
+
+  // 邮件通知测试状态
+  const [showTestEmail, setShowTestEmail] = useState(false);
+  const [testEmail, setTestEmail] = useState('');
+  const [testResult, setTestResult] = useState<{ ok: boolean; message: string } | null>(null);
+  const [testLoading, setTestLoading] = useState(false);
+
+  const handleTestEmail = async () => {
+    const to = testEmail.trim();
+    if (!to) return;
+    setTestLoading(true);
+    setTestResult(null);
+    try {
+      const res = await api<{ ok: boolean; message: string }>('/api/admin/test-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: to }),
+      });
+      setTestResult({ ok: !!res.ok, message: res.message || (res.ok ? '发送成功' : '发送失败') });
+    } catch (e: any) {
+      setTestResult({ ok: false, message: e?.message || '网络请求失败' });
+    } finally {
+      setTestLoading(false);
+    }
+  };
 
   const { data, isLoading } = useQuery<SettingsData>({
     queryKey: ['settings'],
@@ -393,17 +418,17 @@ export default function Settings() {
                     </Field>
                   </div>
 
-                  <label className="flex w-fit cursor-pointer items-center gap-2">
-                    <input
-                      type="checkbox"
-                      className="h-4 w-4 rounded border-[var(--border-strong)]"
-                      checked={watch('mailSmtpSecure') !== '0'}
-                      onChange={(e) =>
-                        setValue('mailSmtpSecure', e.target.checked ? '1' : '0', { shouldDirty: true })
-                      }
-                    />
-                    <span className="text-sm text-[var(--text)]">SSL 安全连接</span>
-                  </label>
+                  <Field label="加密方式">
+                    <select
+                      id="mailSmtpSecure"
+                      {...register('mailSmtpSecure')}
+                      className="w-full rounded-md border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] transition-colors focus:border-[var(--accent)] focus:outline-none"
+                    >
+                      <option value="ssl">SSL/TLS（端口 465）</option>
+                      <option value="starttls">STARTTLS（端口 587）</option>
+                      <option value="none">无加密（端口 25，不推荐）</option>
+                    </select>
+                  </Field>
 
                   <div className="border-t border-[var(--border)]" />
 
@@ -414,12 +439,13 @@ export default function Settings() {
                     <Field label="发件人名称">
                       <Input id="mailFromName" placeholder="站点名" {...register('mailFromName')} />
                     </Field>
-                    <Field label="网关类型">
+                    <Field label="备用网关类型">
                       <select
                         id="mailProvider"
                         {...register('mailProvider')}
                         className="w-full rounded-md border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] transition-colors focus:border-[var(--accent)] focus:outline-none"
                       >
+                        <option value="none">无（仅 SMTP 发信）</option>
                         <option value="resend">Resend</option>
                         <option value="gateway">通用 HTTP 网关</option>
                       </select>
@@ -475,6 +501,73 @@ export default function Settings() {
                       {...register('mailTemplateAdmin')}
                     />
                   </Field>
+
+                  {/* 邮件通知测试 */}
+                  <div className="border-t border-[var(--border)] pt-3">
+                    <button
+                      type="button"
+                      className="flex items-center gap-2 text-sm font-semibold text-[var(--text-h)] hover:text-[var(--accent)] transition-colors"
+                      onClick={() => setShowTestEmail((v) => !v)}
+                    >
+                      <Icon icon={showTestEmail ? 'lucide:chevron-down' : 'lucide:chevron-right'} width={16} height={16} />
+                      邮件通知测试
+                      {testResult && (
+                        <span
+                          className={`ml-1 inline-block h-2 w-2 rounded-full ${testResult.ok ? 'bg-green-500' : 'bg-red-500'}`}
+                          title={testResult.ok ? '成功' : '失败'}
+                        />
+                      )}
+                    </button>
+
+                    {showTestEmail && (
+                      <div className="mt-4 space-y-4 rounded-lg border border-[var(--border)] bg-[var(--card-bg)] p-5">
+                        <p className="text-sm text-[var(--text)]">输入一个邮箱地址，发送测试邮件</p>
+                        <div className="flex gap-3">
+                          <input
+                            type="email"
+                            value={testEmail}
+                            onChange={(e) => setTestEmail(e.target.value)}
+                            placeholder="example@qq.com"
+                            className="flex-1 rounded-md border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] transition-colors focus:border-[var(--accent)] focus:outline-none"
+                            disabled={testLoading}
+                          />
+                          <Button
+                            type="button"
+                            variant="primary"
+                            disabled={!testEmail.trim() || testLoading}
+                            onClick={handleTestEmail}
+                          >
+                            {testLoading ? '发送中...' : '发送测试邮件'}
+                          </Button>
+                        </div>
+
+                        {testResult && (
+                          <div>
+                            <p className="text-xs font-medium text-[var(--text-h)] mb-2">测试结果：</p>
+                            <pre className={`whitespace-pre-wrap break-words rounded-md p-3 text-xs leading-relaxed ${
+                              testResult.ok
+                                ? 'bg-green-100/80 text-green-900'
+                                : 'bg-red-100/80 text-red-900'
+                            }`}>
+                              {testResult.message}
+                            </pre>
+                            <div className="mt-2 flex gap-2">
+                              <Button type="button" variant="ghost"
+                                onClick={() => navigator.clipboard.writeText(testResult.message)}
+                              >
+                                复制
+                              </Button>
+                              <Button type="button" variant="ghost"
+                                onClick={() => { setTestResult(null); setTestEmail(''); }}
+                              >
+                                重置
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </section>
               )}
 

@@ -875,6 +875,46 @@
   }
 
   // 仅渲染指定分组的表情到面板（保证任意时刻只有一个分组的 img 在 DOM 中）
+  /* ===== 表情包悬停预览（放大浮层） ===== */
+  function scGetEmojiPreview() {
+    var el = document.getElementById('sc-emoji-preview');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'sc-emoji-preview';
+      el.className = 'sc-emoji-preview';
+      el.innerHTML =
+        '<div class="sc-emoji-preview-inner">' +
+          '<img class="sc-emoji-preview-img" alt="预览">' +
+        '</div>';
+      document.body.appendChild(el);
+    }
+    return el;
+  }
+  function scShowEmojiPreview(panel, btn, src) {
+    var pv = scGetEmojiPreview();
+    var img = pv.querySelector('.sc-emoji-preview-img');
+    img.src = src;
+    pv._panel = panel;
+    pv.classList.add('sc-emoji-preview-show');
+    scMoveEmojiPreview(panel, null, btn);
+  }
+  function scHideEmojiPreview(panel) {
+    var pv = document.getElementById('sc-emoji-preview');
+    if (!pv || pv._panel !== panel) return;
+    pv.classList.remove('sc-emoji-preview-show');
+    pv._panel = null;
+  }
+  function scMoveEmojiPreview(panel, evt, btn) {
+    var pv = document.getElementById('sc-emoji-preview');
+    if (!pv || !pv.classList.contains('sc-emoji-preview-show') || pv._panel !== panel) return;
+    var target = btn || (evt && evt.target && evt.target.closest ? evt.target.closest('.sc-emoji-item') : null);
+    if (!target) { scHideEmojiPreview(panel); return; }
+    var rect = target.getBoundingClientRect();
+    /* 大图预览：居中于表情项上方 */
+    pv.style.left = (rect.left + rect.width / 2) + 'px';
+    pv.style.top = (rect.top - 12) + 'px';   /* 负 margin + transform 会把它推到上方 */
+  }
+
   function scRenderEmojiPack(panel, gi, textarea) {
     var allGroups = panel._allGroups;
     if (!allGroups || !allGroups[gi]) return;
@@ -906,6 +946,12 @@
         } catch (e2) {}
         panel.hidden = true;
       });
+      /* ---- 悬停预览 ---- */
+      if (it.src) {
+        btn.addEventListener('mouseenter', function () { scShowEmojiPreview(panel, btn, it.src); });
+        btn.addEventListener('mouseleave', function () { scHideEmojiPreview(panel); });
+        btn.addEventListener('mousemove', function (e) { scMoveEmojiPreview(panel, e); });
+      }
       pack.appendChild(btn);
     });
     body.appendChild(pack);

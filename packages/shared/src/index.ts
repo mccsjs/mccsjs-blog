@@ -62,14 +62,14 @@ export const defaultSettings = {
   adminBadge: '博主', // 评论区「博主身份」徽章显示文字（可自定义，如：博主 / 站长 / 作者）
   // ============ 评论邮箱提醒（SMTP 优先 + HTTP 网关回退，对齐 cwd 架构） ============
   mailEnabled: 'false', // 'true' | 'false'（总开关）
-  // SMTP 直连配置（开启后优先使用；nodemailer → Worker nodejs_compat TCP 连接）
+  // SMTP 直连配置（开启后优先使用；基于 cloudflare:sockets 的 Worker 原生 TCP 连接）
   mailSmtpHost: 'smtp.qq.com', // SMTP 服务器（如 smtp.qq.com / smtp.163.com）
   mailSmtpPort: '465', // SMTP 端口（QQ 邮箱：465/SSL，587/STARTTLS）
   mailSmtpUser: '', // SMTP 登录邮箱（如 xxxx@qq.com）
   mailSmtpPass: '', // SMTP 密码 / 授权码（敏感字段，不随 GET 返回，空值表示不修改）
-  mailSmtpSecure: '1', // '1' = SSL/TLS 安全连接；'0' = 普通（一般保持 1）
+  mailSmtpSecure: 'ssl', // 'ssl'(465 隐式TLS) | 'starttls'(587 升级) | 'none'(25 明文)；兼容旧值 '1'→ssl、'0'→starttls
   // 备用 HTTP 邮件网关（SMTP 失败时自动回退）
-  mailProvider: 'resend', // 'resend' | 'gateway'（备用网关类型；SMTP 配置后优先 SMTP）
+  mailProvider: 'none', // 'none' | 'resend' | 'gateway'（备用网关类型；'none' 表示仅用 SMTP）
   mailApiKey: '', // Resend 的 API Key（provider=resend 时必填）
   mailGatewayUrl: '', // 通用 HTTP 邮件网关地址（provider=gateway 时必填）
   mailGatewayToken: '', // 网关鉴权 Token（provider=gateway 时必填）

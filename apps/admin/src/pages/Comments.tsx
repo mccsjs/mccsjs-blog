@@ -89,7 +89,7 @@ export default function Comments() {
                   </span>
                 </td>
                 <td className="hidden md:table-cell px-4 py-3 whitespace-nowrap text-xs text-[var(--text)]">
-                  {new Date(comment.createdAt).toLocaleString()}
+                  {new Date(Number(comment.createdAt) * 1000).toLocaleString()}
                 </td>
                 <td>
                   <div className="flex items-center justify-end gap-1">

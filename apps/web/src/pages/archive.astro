@@ -23,11 +23,11 @@ try {
 
 const sorted = posts
   .slice()
-  .sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt));
+  .sort((a, b) => +new Date(+b.createdAt * 1000) - +new Date(+a.createdAt * 1000));
 
 const totalPages = Math.max(1, Math.ceil(sorted.length / PER_PAGE));
 const grouped = sorted.reduce<Record<string, Post[]>>((acc, post) => {
-  const year = new Date(post.createdAt).getFullYear().toString();
+  const year = new Date(+post.createdAt * 1000).getFullYear().toString();
   if (!acc[year]) acc[year] = [];
   acc[year].push(post);
   return acc;
@@ -36,7 +36,7 @@ const grouped = sorted.reduce<Record<string, Post[]>>((acc, post) => {
 const years = Object.keys(grouped).sort((a, b) => +b - +a);
 
 const formatMonthDay = (date: string) =>
-  new Date(date).toLocaleDateString('zh-CN', {
+  new Date(+date * 1000).toLocaleDateString('zh-CN', {
     month: '2-digit',
     day: '2-digit',
   });
@@ -163,7 +163,7 @@ const serializedTotalPages = JSON.stringify(totalPages);
   }
 
   function formatMonthDay(date) {
-    const d = new Date(date);
+    const d = new Date(+date * 1000);
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');
     return `${month}-${day}`;
@@ -175,7 +175,7 @@ const serializedTotalPages = JSON.stringify(totalPages);
     const paged = posts.slice(start, start + perPage);
 
     const grouped = paged.reduce((acc, post) => {
-      const year = new Date(post.createdAt).getFullYear().toString();
+      const year = new Date(+post.createdAt * 1000).getFullYear().toString();
       if (!acc[year]) acc[year] = [];
       acc[year].push(post);
       return acc;

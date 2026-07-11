@@ -8,7 +8,7 @@ interface Props {
 const { post } = Astro.props;
 
 const formatDate = (date: string) =>
-  new Date(date).toLocaleDateString('zh-CN', {
+  new Date(+date * 1000).toLocaleDateString('zh-CN', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',

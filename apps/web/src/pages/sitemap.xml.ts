@@ -24,7 +24,7 @@ export const GET: APIRoute = async ({ url }) => {
       const posts = await res.json();
       postUrls = posts.map((p: any) => ({
         path: `posts/${p.slug}`,
-        lastmod: new Date(p.updatedAt || p.createdAt).toISOString(),
+        lastmod: new Date(+(p.updatedAt || p.createdAt) * 1000).toISOString(),
       }));
     }
   } catch {}

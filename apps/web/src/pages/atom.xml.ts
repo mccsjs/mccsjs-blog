@@ -14,18 +14,18 @@ export async function GET(context: APIContext) {
   const siteUrl = context.url.origin;
 
   const feedUpdated = posts.length > 0
-    ? new Date(posts[0].updatedAt || posts[0].createdAt).toISOString()
+    ? new Date(+(posts[0].updatedAt || posts[0].createdAt) * 1000).toISOString()
     : new Date().toISOString();
 
   const entries = posts.map((post) => {
     const url = `${siteUrl}/posts/${post.slug}`;
-    const updated = new Date(post.updatedAt || post.createdAt).toISOString();
+    const updated = new Date(+(post.updatedAt || post.createdAt) * 1000).toISOString();
     return `  <entry>
     <title>${escapeXml(post.title)}</title>
     <link href="${escapeXml(url)}" />
     <id>${escapeXml(url)}</id>
     <updated>${updated}</updated>
-    <published>${new Date(post.createdAt).toISOString()}</published>
+    <published>${new Date(+post.createdAt * 1000).toISOString()}</published>
     <author><name>mccsjs</name></author>
     ${post.excerpt ? `<summary type="html">${escapeXml(post.excerpt)}</summary>` : ''}
     ${post.tags?.map((t: any) => `<category term="${escapeXml(t.name)}" />`).join('\n    ') || ''}

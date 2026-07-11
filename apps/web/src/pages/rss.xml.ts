@@ -19,7 +19,7 @@ export async function GET(context: APIContext) {
     items: posts.map((post) => ({
       title: post.title,
       description: post.excerpt || '',
-      pubDate: new Date(post.createdAt),
+      pubDate: new Date(+post.createdAt * 1000),
       link: `/posts/${post.slug}`,
       categories: post.tags?.map((t: any) => t.name) || [],
     })),

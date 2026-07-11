@@ -16,12 +16,12 @@ export interface SmtpConfig {
   port: number
   user: string
   pass: string
-  secure: boolean
+  secure: 'none' | 'ssl' | 'starttls' // 加密方式：对齐参考项目 none/ssl/starttls
 }
 
 export interface MailConfig {
   smtp?: SmtpConfig // SMTP 直连配置（优先使用；仅 user+pass 都填才生效）
-  provider: 'resend' | 'gateway' // 备用网关类型（SMTP 失败时自动回退）
+  provider: 'resend' | 'gateway' | 'none' // 备用网关类型（'none' 表示仅用 SMTP）
   apiKey: string
   gatewayUrl: string
   gatewayToken: string

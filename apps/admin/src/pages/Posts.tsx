@@ -74,7 +74,7 @@ export default function Posts() {
                   </span>
                 </td>
                 <td className="hidden md:table-cell px-4 py-3">{post.views}</td>
-                <td className="hidden md:table-cell px-4 py-3 whitespace-nowrap">{new Date(post.updatedAt).toLocaleDateString()}</td>
+                <td className="hidden md:table-cell px-4 py-3 whitespace-nowrap">{new Date(Number(post.updatedAt) * 1000).toLocaleDateString()}</td>
                 <td>
                   <div className="flex items-center justify-end gap-1">
                     <Link

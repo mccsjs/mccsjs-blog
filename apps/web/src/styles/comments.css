@@ -681,15 +681,15 @@
 }
 #self-comments .sc-emoji-pack.sc-emoji-pack-active {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(34px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
   gap: 4px;
 }
 #self-comments .sc-emoji-item {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 48px;
+  height: 48px;
   padding: 3px;
   font-size: 1rem;
   line-height: 1;
@@ -705,8 +705,8 @@
   transform: scale(1.12);
 }
 #self-comments .sc-owo-opt {
-  width: 26px;
-  height: 26px;
+  width: 40px;
+  height: 40px;
   object-fit: contain;
   pointer-events: none;
 }
@@ -751,6 +751,40 @@
   vertical-align: -0.9em;
   border-radius: 4px;
   object-fit: contain;
+}
+
+/* ---- 表情包悬停预览浮层（挂载到 body，避免面板 overflow:hidden 裁剪） ---- */
+.sc-emoji-preview {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -100%) scale(0.92);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.sc-emoji-preview.sc-emoji-preview-show {
+  opacity: 1;
+  transform: translate(-50%, -100%) scale(1);
+}
+/* 大图预览卡片 */
+.sc-emoji-preview .sc-emoji-preview-inner {
+  background: rgb(var(--card-bg, #fff));
+  border: 1px solid rgb(var(--card-border, #e5e5e5));
+  border-radius: 12px;
+  box-shadow: 0 8px 28px -4px rgba(0, 0, 0, 0.18), 0 4px 12px -2px rgba(0, 0, 0, 0.08);
+  padding: 8px;
+  overflow: hidden;
+}
+.sc-emoji-preview .sc-emoji-preview-img {
+  display: block;
+  width: 94px;
+  height: 94px;
+  object-fit: contain;
+  border-radius: 8px;
 }
 
 /* ---- 移动端：面板高度收敛 ---- */

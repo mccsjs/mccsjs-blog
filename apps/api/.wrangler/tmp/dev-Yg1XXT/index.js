@@ -2688,10 +2688,10 @@ var require_default2 = __commonJS({
     function onIgnoreTagAttr(tag, name, value) {
     }
     __name(onIgnoreTagAttr, "onIgnoreTagAttr");
-    function escapeHtml(html) {
+    function escapeHtml2(html) {
       return html.replace(REGEXP_LT, "&lt;").replace(REGEXP_GT, "&gt;");
     }
-    __name(escapeHtml, "escapeHtml");
+    __name(escapeHtml2, "escapeHtml");
     function safeAttrValue(tag, name, value, cssFilter) {
       value = friendlyAttrValue(value);
       if (name === "href" || name === "src") {
@@ -2772,7 +2772,7 @@ var require_default2 = __commonJS({
     __name(friendlyAttrValue, "friendlyAttrValue");
     function escapeAttrValue(str) {
       str = escapeQuote(str);
-      str = escapeHtml(str);
+      str = escapeHtml2(str);
       return str;
     }
     __name(escapeAttrValue, "escapeAttrValue");
@@ -2868,7 +2868,7 @@ var require_default2 = __commonJS({
     exports.onTagAttr = onTagAttr;
     exports.onIgnoreTagAttr = onIgnoreTagAttr;
     exports.safeAttrValue = safeAttrValue;
-    exports.escapeHtml = escapeHtml;
+    exports.escapeHtml = escapeHtml2;
     exports.escapeQuote = escapeQuote;
     exports.unescapeQuote = unescapeQuote;
     exports.escapeHtmlEntities = escapeHtmlEntities;
@@ -2912,7 +2912,7 @@ var require_parser2 = __commonJS({
       return html.slice(0, 2) === "</";
     }
     __name(isClosing, "isClosing");
-    function parseTag(html, onTag, escapeHtml) {
+    function parseTag(html, onTag, escapeHtml2) {
       "use strict";
       var rethtml = "";
       var lastPos = 0;
@@ -2932,13 +2932,13 @@ var require_parser2 = __commonJS({
         } else {
           if (quoteStart === false) {
             if (c === "<") {
-              rethtml += escapeHtml(html.slice(lastPos, currentPos));
+              rethtml += escapeHtml2(html.slice(lastPos, currentPos));
               tagStart = currentPos;
               lastPos = currentPos;
               continue;
             }
             if (c === ">" || currentPos === len - 1) {
-              rethtml += escapeHtml(html.slice(lastPos, tagStart));
+              rethtml += escapeHtml2(html.slice(lastPos, tagStart));
               currentHtml = html.slice(tagStart, currentPos + 1);
               currentTagName = getTagName(currentHtml);
               rethtml += onTag(
@@ -2972,7 +2972,7 @@ var require_parser2 = __commonJS({
         }
       }
       if (lastPos < len) {
-        rethtml += escapeHtml(html.substr(lastPos));
+        rethtml += escapeHtml2(html.substr(lastPos));
       }
       return rethtml;
     }
@@ -3203,7 +3203,7 @@ var require_xss = __commonJS({
       var onTagAttr = options.onTagAttr;
       var onIgnoreTagAttr = options.onIgnoreTagAttr;
       var safeAttrValue = options.safeAttrValue;
-      var escapeHtml = options.escapeHtml;
+      var escapeHtml2 = options.escapeHtml;
       var attributeWrapSign = me2.attributeWrapSign;
       var cssFilter = me2.cssFilter;
       if (options.stripBlankChar) {
@@ -3262,10 +3262,10 @@ var require_xss = __commonJS({
           } else {
             ret = onIgnoreTag(tag, html2, info3);
             if (!isNull2(ret)) return ret;
-            return escapeHtml(html2);
+            return escapeHtml2(html2);
           }
         },
-        escapeHtml
+        escapeHtml2
       );
       if (stripIgnoreTagBody) {
         retHtml = stripIgnoreTagBody.remove(retHtml);
@@ -29363,6 +29363,8 @@ var categorySchema = external_exports.object({
 var tagSchema = categorySchema;
 var defaultSettings = {
   siteTitle: "My Blog",
+  siteUrl: "",
+  // 站点正式地址（用于邮件链接 / RSS 等；留空则退回请求来源域名）
   siteDescription: "\u4E00\u4E2A\u4F7F\u7528 Astro + React + Tailwind CSS \u6784\u5EFA\u7684\u73B0\u4EE3\u535A\u5BA2",
   siteLogo: "",
   favicon: "",
@@ -29382,6 +29384,28 @@ var defaultSettings = {
   adminPassword: "",
   adminBadge: "\u535A\u4E3B",
   // 评论区「博主身份」徽章显示文字（可自定义，如：博主 / 站长 / 作者）
+  // ============ 评论邮箱提醒（自研方案：CF Worker 无直连 SMTP，统一走 HTTP 邮件网关） ============
+  // 开启后，有新评论 / 回复时自动发邮件提醒。模板占位符用 {{var}}。
+  mailEnabled: "false",
+  // 'true' | 'false'
+  mailProvider: "resend",
+  // 'resend' | 'gateway'（gateway = 任意兼容 POST JSON 的 HTTP 邮件网关）
+  mailApiKey: "",
+  // Resend 的 API Key（provider=resend 时必填）
+  mailGatewayUrl: "",
+  // 通用 HTTP 邮件网关地址（provider=gateway 时必填）
+  mailGatewayToken: "",
+  // 网关鉴权 Token（provider=gateway 时必填）
+  mailFromEmail: "",
+  // 发件人邮箱（必填，需为已验证域名，如 ons@yourdomain.com）
+  mailFromName: "",
+  // 发件人显示名（可选，如 站点名）
+  // 回复通知模板（有人回复了某条评论时，发给被回复者）。可用变量：
+  // {{siteTitle}} {{postTitle}} {{author}} {{email}} {{content}} {{parentAuthor}} {{parentContent}} {{commentUrl}}
+  mailTemplateReply: "\u60A8\u6709\u4E00\u6761\u65B0\u56DE\u590D\uFF5C{{siteTitle}}\n\n{{parentAuthor}} \u4F60\u597D\uFF1A\n\n{{author}} \u5728\u300A{{postTitle}}\u300B\u4E2D\u56DE\u590D\u4E86\u4F60\u7684\u8BC4\u8BBA\u3002\n\nTa \u7684\u7559\u8A00\uFF1A\n{{content}}\n\n\u4F60\u539F\u6765\u7684\u8BC4\u8BBA\uFF1A\n{{parentContent}}\n\n\u67E5\u770B\u56DE\u590D\uFF1A{{commentUrl}}\n\n\u2014\u2014 {{siteTitle}}",
+  // 新评论通知模板（有人发表新评论时，发给博主）。可用变量：
+  // {{siteTitle}} {{postTitle}} {{author}} {{email}} {{content}} {{commentUrl}}
+  mailTemplateAdmin: "\u300A{{postTitle}}\u300B\u6536\u5230\u65B0\u8BC4\u8BBA\uFF5C{{siteTitle}}\n\n{{author}}\uFF08{{email}}\uFF09\u5728\u300A{{postTitle}}\u300B\u53D1\u8868\u4E86\u65B0\u8BC4\u8BBA\uFF1A\n\n{{content}}\n\n\u67E5\u770B\u8BC4\u8BBA\uFF1A{{commentUrl}}\n\n\u2014\u2014 {{siteTitle}}",
   imgbedUrl: "",
   imgbedToken: "",
   fontCssUrl: "",
@@ -29593,6 +29617,180 @@ function resolveClientInfo(ua) {
   }
 }
 __name(resolveClientInfo, "resolveClientInfo");
+
+// src/utils/email.ts
+init_modules_watch_stub();
+init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+init_performance2();
+
+// src/utils/email-notify.ts
+init_modules_watch_stub();
+init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+init_performance2();
+
+// src/utils/email-tpl.ts
+init_modules_watch_stub();
+init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
+init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
+init_performance2();
+var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$|^[^@\s]+@localhost$/i;
+function isValidEmail(email3) {
+  return EMAIL_RE.test((email3 || "").trim());
+}
+__name(isValidEmail, "isValidEmail");
+function escapeHtml(s) {
+  return (s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+__name(escapeHtml, "escapeHtml");
+function renderTemplate(tpl, vars) {
+  return (tpl || "").replace(
+    /\{\{\s*(\w+)\s*\}\}/g,
+    (_m, k) => Object.prototype.hasOwnProperty.call(vars, k) ? vars[k] : ""
+  );
+}
+__name(renderTemplate, "renderTemplate");
+function textToHtml(text2) {
+  const escaped = escapeHtml(text2 || "");
+  return escaped.split(/\n{2,}/).map((block) => `<p>${block.replace(/\n/g, "<br/>")}</p>`).join("");
+}
+__name(textToHtml, "textToHtml");
+var DEFAULT_REPLY_TPL = "\u60A8\u6709\u4E00\u6761\u65B0\u56DE\u590D\uFF5C{{siteTitle}}\n\n{{parentAuthor}} \u4F60\u597D\uFF1A\n\n{{author}} \u5728\u300A{{postTitle}}\u300B\u4E2D\u56DE\u590D\u4E86\u4F60\u7684\u8BC4\u8BBA\u3002\n\nTa \u7684\u7559\u8A00\uFF1A\n{{content}}\n\n\u4F60\u539F\u6765\u7684\u8BC4\u8BBA\uFF1A\n{{parentContent}}\n\n\u67E5\u770B\u56DE\u590D\uFF1A{{commentUrl}}\n\n\u2014\u2014 {{siteTitle}}";
+var DEFAULT_ADMIN_TPL = "\u300A{{postTitle}}\u300B\u6536\u5230\u65B0\u8BC4\u8BBA\uFF5C{{siteTitle}}\n\n{{author}}\uFF08{{email}}\uFF09\u5728\u300A{{postTitle}}\u300B\u53D1\u8868\u4E86\u65B0\u8BC4\u8BBA\uFF1A\n\n{{content}}\n\n\u67E5\u770B\u8BC4\u8BBA\uFF1A{{commentUrl}}\n\n\u2014\u2014 {{siteTitle}}";
+var REPLY_SUBJECT = "{{author}} \u56DE\u590D\u4E86\u4F60\u5728\u300A{{postTitle}}\u300B\u7684\u8BC4\u8BBA";
+var ADMIN_SUBJECT = "\u300A{{postTitle}}\u300B\u6536\u5230\u65B0\u8BC4\u8BBA";
+
+// src/utils/email-notify.ts
+function buildNotification(p, cfg) {
+  const baseUrl = (cfg.siteUrl || "").trim() || p.baseUrl;
+  const commentUrl = `${baseUrl.replace(/\/+$/, "")}/post/${p.post.slug}#comment-${p.comment.id}`;
+  const commonVars = {
+    siteTitle: cfg.siteTitle,
+    postTitle: p.post.title,
+    author: p.comment.author,
+    email: p.comment.email,
+    content: p.comment.content,
+    commentUrl
+  };
+  let to = "";
+  let tpl = "";
+  let subjectTpl = "";
+  const vars = { ...commonVars };
+  if (p.parent) {
+    if (!p.parent.email || !isValidEmail(p.parent.email)) return null;
+    to = p.parent.email;
+    tpl = cfg.templateReply;
+    subjectTpl = REPLY_SUBJECT;
+    vars.parentAuthor = p.parent.author;
+    vars.parentContent = p.parent.content;
+  } else {
+    to = cfg.adminEmail;
+    tpl = cfg.templateAdmin;
+    subjectTpl = ADMIN_SUBJECT;
+  }
+  if (!to || !isValidEmail(to)) return null;
+  if (to.trim().toLowerCase() === p.comment.email.trim().toLowerCase()) return null;
+  const text2 = renderTemplate(tpl, vars);
+  const html = textToHtml(text2);
+  return {
+    to,
+    subject: renderTemplate(subjectTpl, vars),
+    text: text2,
+    html
+  };
+}
+__name(buildNotification, "buildNotification");
+
+// src/utils/email.ts
+async function loadMailConfig(db) {
+  const keys = [
+    "mailEnabled",
+    "mailProvider",
+    "mailApiKey",
+    "mailGatewayUrl",
+    "mailGatewayToken",
+    "mailFromEmail",
+    "mailFromName",
+    "mailTemplateReply",
+    "mailTemplateAdmin",
+    "siteTitle",
+    "adminEmail",
+    "siteUrl"
+  ];
+  const rows = await db.select({ key: siteSettings.key, value: siteSettings.value }).from(siteSettings).where(inArray(siteSettings.key, keys));
+  const map2 = {};
+  for (const r of rows) map2[r.key] = r.value;
+  const enabled = (map2.mailEnabled ?? defaultSettings.mailEnabled) === "true";
+  if (!enabled) return null;
+  const provider = (map2.mailProvider ?? defaultSettings.mailProvider) === "gateway" ? "gateway" : "resend";
+  const fromEmail = map2.mailFromEmail ?? defaultSettings.mailFromEmail;
+  const apiKey = map2.mailApiKey ?? "";
+  const gatewayUrl = map2.mailGatewayUrl ?? "";
+  const gatewayToken = map2.mailGatewayToken ?? "";
+  if (!fromEmail || !isValidEmail(fromEmail)) return null;
+  if (provider === "resend" && !apiKey) return null;
+  if (provider === "gateway" && (!gatewayUrl || !gatewayToken)) return null;
+  return {
+    provider,
+    apiKey,
+    gatewayUrl,
+    gatewayToken,
+    fromEmail,
+    fromName: map2.mailFromName ?? defaultSettings.mailFromName,
+    templateReply: map2.mailTemplateReply || defaultSettings.mailTemplateReply || DEFAULT_REPLY_TPL,
+    templateAdmin: map2.mailTemplateAdmin || defaultSettings.mailTemplateAdmin || DEFAULT_ADMIN_TPL,
+    siteTitle: map2.siteTitle ?? defaultSettings.siteTitle,
+    adminEmail: map2.adminEmail ?? defaultSettings.adminEmail,
+    siteUrl: map2.siteUrl ?? defaultSettings.siteUrl
+  };
+}
+__name(loadMailConfig, "loadMailConfig");
+async function sendMail(cfg, input) {
+  const from = cfg.fromName ? `${cfg.fromName} <${cfg.fromEmail}>` : cfg.fromEmail;
+  if (cfg.provider === "resend") {
+    const res2 = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${cfg.apiKey}` },
+      body: JSON.stringify({
+        from,
+        to: [input.to],
+        subject: input.subject,
+        text: input.text,
+        html: input.html
+      })
+    });
+    if (!res2.ok) {
+      const body = await res2.text().catch(() => "");
+      throw new Error(`Resend \u90AE\u4EF6\u53D1\u9001\u5931\u8D25 (${res2.status}): ${body.slice(0, 200)}`);
+    }
+    return;
+  }
+  const res = await fetch(cfg.gatewayUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${cfg.gatewayToken}` },
+    body: JSON.stringify({
+      from,
+      to: input.to,
+      subject: input.subject,
+      text: input.text,
+      html: input.html
+    })
+  });
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    throw new Error(`\u90AE\u4EF6\u7F51\u5173\u53D1\u9001\u5931\u8D25 (${res.status}): ${body.slice(0, 200)}`);
+  }
+}
+__name(sendMail, "sendMail");
+async function notifyOnNewComment(db, p) {
+  const cfg = await loadMailConfig(db);
+  if (!cfg) return;
+  const built = buildNotification(p, cfg);
+  if (!built) return;
+  await sendMail(cfg, built);
+}
+__name(notifyOnNewComment, "notifyOnNewComment");
 
 // src/markdown.ts
 init_modules_watch_stub();
@@ -30926,6 +31124,7 @@ async function renderCommentHtml(md) {
 __name(renderCommentHtml, "renderCommentHtml");
 
 // src/routes/content.ts
+var SECRET_KEYS = ["adminPassword", "mailApiKey", "mailGatewayToken"];
 function shapePost(p) {
   const { tags: tags2, ...rest } = p;
   return { ...rest, tags: (tags2 ?? []).map((t) => t.tag ?? t) };
@@ -30962,9 +31161,9 @@ function contentRoutes() {
       if (allowedIds.length === 0) return c.json([]);
     }
     const result = await db.query.posts.findMany({
-      where: /* @__PURE__ */ __name((p, { and: and4, eq: eq2 }) => and4(
-        admin ? void 0 : eq2(p.published, true),
-        categoryId ? eq2(p.categoryId, categoryId) : void 0,
+      where: /* @__PURE__ */ __name((p, { and: and4, eq: eq3 }) => and4(
+        admin ? void 0 : eq3(p.published, true),
+        categoryId ? eq3(p.categoryId, categoryId) : void 0,
         allowedIds ? inArray(p.id, allowedIds) : void 0
       ), "where"),
       with: { author: true, category: true, tags: { with: { tag: true } } },
@@ -30980,7 +31179,7 @@ function contentRoutes() {
     const q2 = (c.req.query("q") ?? "").trim();
     if (!q2) return c.json([]);
     const result = await db.query.posts.findMany({
-      where: /* @__PURE__ */ __name((p, { and: and4, eq: eq2, or: or2, like: like4 }) => and4(eq2(p.published, true), or2(like4(p.title, `%${q2}%`), like4(p.content, `%${q2}%`))), "where"),
+      where: /* @__PURE__ */ __name((p, { and: and4, eq: eq3, or: or2, like: like4 }) => and4(eq3(p.published, true), or2(like4(p.title, `%${q2}%`), like4(p.content, `%${q2}%`))), "where"),
       with: { author: true, category: true, tags: { with: { tag: true } } },
       orderBy: /* @__PURE__ */ __name((p, { desc: desc2 }) => [desc2(p.createdAt)], "orderBy"),
       limit: 20
@@ -31172,9 +31371,13 @@ function contentRoutes() {
     const post = await db.query.posts.findFirst({ where: eq(posts.id, data.postId) });
     if (!post) return c.json({ error: "Post not found" }, 404);
     let parentId = data.parentId ?? null;
+    let parent = null;
     if (parentId) {
-      const parent = await db.query.comments.findFirst({ where: eq(comments.id, parentId) });
-      if (!parent || parent.postId !== data.postId) parentId = null;
+      parent = await db.query.comments.findFirst({ where: eq(comments.id, parentId) });
+      if (!parent || parent.postId !== data.postId) {
+        parentId = null;
+        parent = null;
+      }
     }
     const ip = getClientIp(c);
     const ua = data.ua?.trim() || c.req.header("user-agent") || "";
@@ -31219,6 +31422,16 @@ function contentRoutes() {
       visible: true,
       isAdmin
     }).returning();
+    try {
+      await notifyOnNewComment(db, {
+        comment,
+        post,
+        parent,
+        baseUrl: new URL(c.req.url).origin
+      });
+    } catch (e) {
+      console.error("[email notify] \u53D1\u9001\u5931\u8D25\uFF08\u5DF2\u5FFD\u7565\uFF09:", e);
+    }
     c.status(201);
     return c.json(comment);
   });
@@ -31255,7 +31468,7 @@ function contentRoutes() {
     const map2 = {};
     for (const r of rows) map2[r.key] = r.value;
     const settings = Object.fromEntries(settingKeys.map((key) => [key, map2[key] ?? defaultSettings[key]]));
-    const safe = Object.fromEntries(Object.entries(settings).filter(([k]) => k !== "adminPassword"));
+    const safe = Object.fromEntries(Object.entries(settings).filter(([k]) => !SECRET_KEYS.includes(k)));
     return c.json(safe);
   });
   app2.put("/api/settings", requireAuth, async (c) => {
@@ -31263,10 +31476,14 @@ function contentRoutes() {
     const data = settingsUpdateSchema.parse(await c.req.json());
     const entries = Object.entries(data).filter(([, v2]) => v2 !== void 0);
     for (const [key, value] of entries) {
-      if (key === "adminPassword") {
+      if (SECRET_KEYS.includes(key)) {
         if (!value) continue;
-        const hashed = await hashPassword(value);
-        await db.insert(siteSettings).values({ id: crypto.randomUUID(), key, value: hashed }).onConflictDoUpdate({ target: siteSettings.key, set: { value: hashed } });
+        if (key === "adminPassword") {
+          const hashed = await hashPassword(value);
+          await db.insert(siteSettings).values({ id: crypto.randomUUID(), key, value: hashed }).onConflictDoUpdate({ target: siteSettings.key, set: { value: hashed } });
+        } else {
+          await db.insert(siteSettings).values({ id: crypto.randomUUID(), key, value }).onConflictDoUpdate({ target: siteSettings.key, set: { value } });
+        }
         continue;
       }
       await db.insert(siteSettings).values({ id: crypto.randomUUID(), key, value }).onConflictDoUpdate({ target: siteSettings.key, set: { value } });
@@ -31275,7 +31492,7 @@ function contentRoutes() {
     const map2 = {};
     for (const r of rows) map2[r.key] = r.value;
     const settings = Object.fromEntries(settingKeys.map((key) => [key, map2[key] ?? defaultSettings[key]]));
-    const safe = Object.fromEntries(Object.entries(settings).filter(([k]) => k !== "adminPassword"));
+    const safe = Object.fromEntries(Object.entries(settings).filter(([k]) => !SECRET_KEYS.includes(k)));
     return c.json(safe);
   });
   app2.get("/api/comment-admin", async (c) => {

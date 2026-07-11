@@ -18,6 +18,7 @@ interface SettingsData {
   siteTitle: string;
   siteDescription: string;
   siteLogo: string;
+  siteUrl: string;
   favicon: string;
   icp: string;
   footerText: string;
@@ -32,6 +33,16 @@ interface SettingsData {
   adminName: string;
   adminPassword: string;
   adminBadge: string;
+  // —— 评论邮箱提醒（自研：CF Worker 无直连 SMTP，走 HTTP 邮件网关） ——
+  mailEnabled: string;
+  mailProvider: string;
+  mailApiKey: string;
+  mailGatewayUrl: string;
+  mailGatewayToken: string;
+  mailFromEmail: string;
+  mailFromName: string;
+  mailTemplateReply: string;
+  mailTemplateAdmin: string;
   imgbedUrl: string;
   imgbedToken: string;
   fontCssUrl: string;
@@ -52,6 +63,7 @@ const defaultValues: SettingsData = {
   siteTitle: '',
   siteDescription: '',
   siteLogo: '',
+  siteUrl: '',
   favicon: '',
   icp: '',
   footerText: '',
@@ -65,6 +77,15 @@ const defaultValues: SettingsData = {
   adminName: '',
   adminPassword: '',
   adminBadge: '',
+  mailEnabled: 'false',
+  mailProvider: 'resend',
+  mailApiKey: '',
+  mailGatewayUrl: '',
+  mailGatewayToken: '',
+  mailFromEmail: '',
+  mailFromName: '',
+  mailTemplateReply: '',
+  mailTemplateAdmin: '',
   imgbedUrl: '',
   imgbedToken: '',
   fontCssUrl: '',
@@ -207,6 +228,14 @@ export default function Settings() {
 
               <Field label="Logo URL" className="md:col-span-2">
                 <Input id="siteLogo" placeholder="https://example.com/logo.png" {...register('siteLogo')} />
+              </Field>
+
+              <Field label="站点地址 (Site URL)" className="md:col-span-2">
+                <Input
+                  id="siteUrl"
+                  placeholder="https://your-domain.com（用于邮件链接 / RSS，留空则退回请求域名）"
+                  {...register('siteUrl')}
+                />
               </Field>
 
               <Field label="Favicon URL" className="md:col-span-2">
@@ -361,7 +390,7 @@ export default function Settings() {
                   <p className="text-xs text-[var(--text)]">
                     表情包采用 OwO 格式，与 Twikoo 完全兼容。<b>留空</b>则使用站点自带的
                     <code className="mx-1 rounded bg-[var(--bg-soft)] px-1">/owo.json</code>
-                    （含颜文字 / Emoji / QQ / 贴吧 / B站 等 13 组）；也可填入你 Twikoo 使用的
+                    （含 QQ / 贴吧 / B站 / 黑盒 / mimi / 甜心兔 / 初音 / 星穹铁道 / 原神 / Heo / 滑稽 共 11 组）；也可填入你 Twikoo 使用的
                     owo.json 地址，实现两套评论系统共用同一份表情包。
                   </p>
 
@@ -404,6 +433,104 @@ export default function Settings() {
                     <p className="mt-1 text-xs text-[var(--text)]">
                       显示在「博主身份」评论旁的标识文字，留空默认为「博主」。
                     </p>
+                  </Field>
+
+                  <div className="border-t border-[var(--border)] pt-4" />
+                  <h2 className="text-base font-semibold text-[var(--text-h)]">评论邮箱提醒</h2>
+                  <p className="text-xs text-[var(--text)]">
+                    开启后，有新评论 / 回复时自动发送邮件提醒。当前 API 运行在 Cloudflare Worker，无法直连 SMTP，
+                    统一通过 <b>HTTP 邮件网关</b> 发送（推荐 Resend，或任意兼容 <code>POST JSON</code> 的网关）。
+                  </p>
+
+                  <label className="flex w-fit cursor-pointer items-center gap-2">
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4 rounded border-[var(--border-strong)]"
+                      checked={watch('mailEnabled') === 'true'}
+                      onChange={(e) =>
+                        setValue('mailEnabled', e.target.checked ? 'true' : 'false', { shouldDirty: true })
+                      }
+                    />
+                    <span className="text-sm text-[var(--text)]">启用评论邮箱提醒</span>
+                  </label>
+
+                  <Field label="邮件服务商">
+                    <select
+                      id="mailProvider"
+                      {...register('mailProvider')}
+                      className="w-full rounded-md border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] transition-colors focus:border-[var(--accent)] focus:outline-none"
+                    >
+                      <option value="resend">Resend（推荐，REST API）</option>
+                      <option value="gateway">通用 HTTP 邮件网关</option>
+                    </select>
+                  </Field>
+
+                  <div className="grid gap-6 md:grid-cols-2">
+                    <Field label="发件人邮箱">
+                      <Input
+                        id="mailFromEmail"
+                        type="email"
+                        placeholder="如 ons@yourdomain.com"
+                        {...register('mailFromEmail')}
+                      />
+                    </Field>
+                    <Field label="发件人名称">
+                      <Input
+                        id="mailFromName"
+                        placeholder="如 站点名 / 博主"
+                        {...register('mailFromName')}
+                      />
+                    </Field>
+                  </div>
+
+                  {watch('mailProvider') === 'resend' && (
+                    <Field label="Resend API Key">
+                      <Input
+                        id="mailApiKey"
+                        type="password"
+                        autoComplete="off"
+                        placeholder="re_xxxxxxxxxxxxxxxx（留空表示不修改）"
+                        {...register('mailApiKey')}
+                      />
+                    </Field>
+                  )}
+
+                  {watch('mailProvider') === 'gateway' && (
+                    <div className="grid gap-6 md:grid-cols-2">
+                      <Field label="网关地址 (URL)">
+                        <Input
+                          id="mailGatewayUrl"
+                          placeholder="https://mail.example.com/send"
+                          {...register('mailGatewayUrl')}
+                        />
+                      </Field>
+                      <Field label="网关 Token">
+                        <Input
+                          id="mailGatewayToken"
+                          type="password"
+                          autoComplete="off"
+                          placeholder="网关鉴权 Token（留空表示不修改）"
+                          {...register('mailGatewayToken')}
+                        />
+                      </Field>
+                    </div>
+                  )}
+
+                  <Field label="回复通知模板">
+                    <Textarea
+                      id="mailTemplateReply"
+                      rows={6}
+                      placeholder="可用变量：{{siteTitle}} {{postTitle}} {{author}} {{email}} {{content}} {{parentAuthor}} {{parentContent}} {{commentUrl}}"
+                      {...register('mailTemplateReply')}
+                    />
+                  </Field>
+                  <Field label="新评论通知模板">
+                    <Textarea
+                      id="mailTemplateAdmin"
+                      rows={6}
+                      placeholder="可用变量：{{siteTitle}} {{postTitle}} {{author}} {{email}} {{content}} {{commentUrl}}"
+                      {...register('mailTemplateAdmin')}
+                    />
                   </Field>
                 </section>
               )}

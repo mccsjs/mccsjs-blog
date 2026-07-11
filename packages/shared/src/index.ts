@@ -43,6 +43,7 @@ export const tagSchema = categorySchema
 
 export const defaultSettings = {
   siteTitle: 'My Blog',
+  siteUrl: '', // 站点正式地址（用于邮件链接 / RSS 等；留空则退回请求来源域名）
   siteDescription: '一个使用 Astro + React + Tailwind CSS 构建的现代博客',
   siteLogo: '',
   favicon: '',
@@ -59,6 +60,23 @@ export const defaultSettings = {
   adminName: '',
   adminPassword: '',
   adminBadge: '博主', // 评论区「博主身份」徽章显示文字（可自定义，如：博主 / 站长 / 作者）
+  // ============ 评论邮箱提醒（自研方案：CF Worker 无直连 SMTP，统一走 HTTP 邮件网关） ============
+  // 开启后，有新评论 / 回复时自动发邮件提醒。模板占位符用 {{var}}。
+  mailEnabled: 'false', // 'true' | 'false'
+  mailProvider: 'resend', // 'resend' | 'gateway'（gateway = 任意兼容 POST JSON 的 HTTP 邮件网关）
+  mailApiKey: '', // Resend 的 API Key（provider=resend 时必填）
+  mailGatewayUrl: '', // 通用 HTTP 邮件网关地址（provider=gateway 时必填）
+  mailGatewayToken: '', // 网关鉴权 Token（provider=gateway 时必填）
+  mailFromEmail: '', // 发件人邮箱（必填，需为已验证域名，如 ons@yourdomain.com）
+  mailFromName: '', // 发件人显示名（可选，如 站点名）
+  // 回复通知模板（有人回复了某条评论时，发给被回复者）。可用变量：
+  // {{siteTitle}} {{postTitle}} {{author}} {{email}} {{content}} {{parentAuthor}} {{parentContent}} {{commentUrl}}
+  mailTemplateReply:
+    '您有一条新回复｜{{siteTitle}}\n\n{{parentAuthor}} 你好：\n\n{{author}} 在《{{postTitle}}》中回复了你的评论。\n\nTa 的留言：\n{{content}}\n\n你原来的评论：\n{{parentContent}}\n\n查看回复：{{commentUrl}}\n\n—— {{siteTitle}}',
+  // 新评论通知模板（有人发表新评论时，发给博主）。可用变量：
+  // {{siteTitle}} {{postTitle}} {{author}} {{email}} {{content}} {{commentUrl}}
+  mailTemplateAdmin:
+    '《{{postTitle}}》收到新评论｜{{siteTitle}}\n\n{{author}}（{{email}}）在《{{postTitle}}》发表了新评论：\n\n{{content}}\n\n查看评论：{{commentUrl}}\n\n—— {{siteTitle}}',
   imgbedUrl: '',
   imgbedToken: '',
   fontCssUrl: '',

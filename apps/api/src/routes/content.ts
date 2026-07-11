@@ -13,9 +13,13 @@ import {
   type SettingKey,
 } from '@blog/shared'
 import { generateCrc32Slug, getClientIp, resolveClientInfo } from '../utils'
+import { notifyOnNewComment } from '../utils/email'
 import { requireAuth, verifyPassword, hashPassword, signCommentAdminToken, verifyCommentAdminToken } from '../auth'
 import { renderCommentHtml } from '../markdown'
 import type { DB } from '../db'
+
+// 绝不随设置接口返回 / 空值表示「不修改（保留原值）」的敏感字段
+const SECRET_KEYS = ['adminPassword', 'mailApiKey', 'mailGatewayToken']
 
 // 把关系查询结果转换成前端期望的形状：tags 取实际标签对象
 function shapePost(p: any) {
@@ -318,9 +322,13 @@ export function contentRoutes() {
 
     // 回复必须指向同一篇文章下已存在的评论
     let parentId: string | null = data.parentId ?? null
+    let parent: any = null
     if (parentId) {
-      const parent = await db.query.comments.findFirst({ where: eq(comments.id, parentId) })
-      if (!parent || parent.postId !== data.postId) parentId = null
+      parent = await db.query.comments.findFirst({ where: eq(comments.id, parentId) })
+      if (!parent || parent.postId !== data.postId) {
+        parentId = null
+        parent = null
+      }
     }
 
     const ip = getClientIp(c)
@@ -384,6 +392,19 @@ export function contentRoutes() {
         isAdmin,
       })
       .returning()
+
+    // 触发邮箱提醒（不阻断评论主流程：任何异常仅记录日志，不影响评论返回）
+    try {
+      await notifyOnNewComment(db, {
+        comment,
+        post,
+        parent,
+        baseUrl: new URL(c.req.url).origin,
+      })
+    } catch (e) {
+      console.error('[email notify] 发送失败（已忽略）:', e)
+    }
+
     c.status(201)
     return c.json(comment)
   })
@@ -431,8 +452,8 @@ export function contentRoutes() {
     const map: Record<string, string> = {}
     for (const r of rows) map[r.key] = r.value
     const settings = Object.fromEntries(settingKeys.map((key) => [key, map[key] ?? defaultSettings[key]])) as Record<SettingKey, string>
-    // 密码哈希绝不随设置接口返回
-    const safe = Object.fromEntries(Object.entries(settings).filter(([k]) => k !== 'adminPassword')) as Record<SettingKey, string>
+    // 密码哈希 / 邮件密钥绝不随设置接口返回
+    const safe = Object.fromEntries(Object.entries(settings).filter(([k]) => !SECRET_KEYS.includes(k))) as Record<SettingKey, string>
     return c.json(safe)
   })
 
@@ -441,14 +462,22 @@ export function contentRoutes() {
     const data = settingsUpdateSchema.parse(await c.req.json())
     const entries = Object.entries(data).filter(([, v]) => v !== undefined) as [SettingKey, string][]
     for (const [key, value] of entries) {
-      // 管理员密码：空字符串表示不修改；非空则哈希后存储
-      if (key === 'adminPassword') {
+      // 敏感字段（密码 / 邮件密钥）：空字符串表示「不修改（保留原值）」，直接跳过
+      if (SECRET_KEYS.includes(key)) {
         if (!value) continue
-        const hashed = await hashPassword(value)
-        await db
-          .insert(siteSettings)
-          .values({ id: crypto.randomUUID(), key, value: hashed })
-          .onConflictDoUpdate({ target: siteSettings.key, set: { value: hashed } })
+        if (key === 'adminPassword') {
+          const hashed = await hashPassword(value)
+          await db
+            .insert(siteSettings)
+            .values({ id: crypto.randomUUID(), key, value: hashed })
+            .onConflictDoUpdate({ target: siteSettings.key, set: { value: hashed } })
+        } else {
+          // mailApiKey / mailGatewayToken：明文存储（仅服务端发送使用，绝不随 GET 返回）
+          await db
+            .insert(siteSettings)
+            .values({ id: crypto.randomUUID(), key, value })
+            .onConflictDoUpdate({ target: siteSettings.key, set: { value } })
+        }
         continue
       }
       await db
@@ -460,7 +489,7 @@ export function contentRoutes() {
     const map: Record<string, string> = {}
     for (const r of rows) map[r.key] = r.value
     const settings = Object.fromEntries(settingKeys.map((key) => [key, map[key] ?? defaultSettings[key]])) as Record<SettingKey, string>
-    const safe = Object.fromEntries(Object.entries(settings).filter(([k]) => k !== 'adminPassword')) as Record<SettingKey, string>
+    const safe = Object.fromEntries(Object.entries(settings).filter(([k]) => !SECRET_KEYS.includes(k))) as Record<SettingKey, string>
     return c.json(safe)
   })
 

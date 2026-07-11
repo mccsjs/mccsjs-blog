@@ -8,7 +8,10 @@ import {
 } from 'drizzle-orm/sqlite-core'
 import { relations } from 'drizzle-orm'
 
-const now = () => Date.now()
+// 全站时间戳统一用「秒」级 Unix 时间戳（与 visitor / comment / content 等路由中
+// `new Date(createdAt * 1000)`、`Math.floor(date / 1000)` 的约定一致）。
+// 注意：曾误改为 Date.now()（毫秒），导致趋势/统计分桶全部失效（显示为 0）。
+const now = () => Math.floor(Date.now() / 1000)
 
 // ============ 用户 / 会话（自研鉴权，仅需 users + sessions） ============
 

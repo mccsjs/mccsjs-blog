@@ -1,651 +1,4 @@
 {
-  "颜文字": {
-    "type": "emoticon",
-    "container": [
-      { "icon": "OωO", "text": "Author: DIYgod" },
-      { "icon": "|´・ω・)ノ", "text": "Hi" },
-      { "icon": "ヾ(≧∇≦*)ゝ", "text": "开心" },
-      { "icon": "(☆ω☆)", "text": "星星眼" },
-      { "icon": "（╯‵□′）╯︵┴─┴", "text": "掀桌" },
-      { "icon": "￣﹃￣", "text": "流口水" },
-      { "icon": "(/ω＼)", "text": "捂脸" },
-      { "icon": "∠( ᐛ 」∠)＿", "text": "给跪" },
-      { "icon": "(๑•̀ㅁ•́ฅ)", "text": "Hi" },
-      { "icon": "→_→", "text": "斜眼" },
-      { "icon": "୧(๑•̀⌄•́๑)૭", "text": "加油" },
-      { "icon": "٩(ˊᗜˋ*)و", "text": "有木有WiFi" },
-      { "icon": "(ノ°ο°)ノ", "text": "前方高能预警" },
-      { "icon": "(´இ皿இ｀)", "text": "我从未见过如此厚颜无耻之人" },
-      { "icon": "⌇●﹏●⌇", "text": "吓死宝宝惹" },
-      { "icon": "(ฅ´ω`ฅ)", "text": "已阅留爪" },
-      { "icon": "(╯°A°)╯︵○○○", "text": "去吧大师球" },
-      { "icon": "φ(￣∇￣o)", "text": "太萌惹" },
-      { "icon": "ヾ(´･ ･｀｡)ノ\"", "text": "咦咦咦" },
-      { "icon": "( ง ᵒ̌皿ᵒ̌)ง⁼³₌₃", "text": "气呼呼" },
-      { "icon": "(ó﹏ò｡)", "text": "我受到了惊吓" },
-      { "icon": "Σ(っ °Д °;)っ", "text": "什么鬼" },
-      { "icon": "( ,,´･ω･)ﾉ\"(´っω･｀｡)", "text": "摸摸头" },
-      { "icon": "╮(╯▽╰)╭ ", "text": "无奈" },
-      { "icon": "o(*////▽////*)q ", "text": "脸红" },
-      { "icon": "＞﹏＜", "text": "" },
-      { "icon": "( ๑´•ω•) \"(ㆆᴗㆆ)", "text": "" }
-    ]
-  },
-
-  "Emoji": {
-    "type": "emoji",
-    "container": [
-      {
-        "icon": "😄",
-        "text": "大笑"
-      },
-      {
-        "icon": "😁",
-        "text": "嘻嘻"
-      },
-      {
-        "icon": "😅",
-        "text": "苦笑"
-      },
-      {
-        "icon": "🤣",
-        "text": "笑得满地打滚"
-      },
-      {
-        "icon": "😂",
-        "text": "笑哭了"
-      },
-      {
-        "icon": "🙂",
-        "text": "呵呵"
-      },
-      {
-        "icon": "🙃",
-        "text": "倒脸"
-      },
-      {
-        "icon": "😉",
-        "text": "眨眼"
-      },
-      {
-        "icon": "😊",
-        "text": "羞涩微笑"
-      },
-      {
-        "icon": "🥰",
-        "text": "喜笑颜开"
-      },
-      {
-        "icon": "😍",
-        "text": "花痴"
-      },
-      {
-        "icon": "🤩",
-        "text": "好崇拜哦"
-      },
-      {
-        "icon": "😘",
-        "text": "飞吻"
-      },
-      {
-        "icon": "😗",
-        "text": "亲亲"
-      },
-      {
-        "icon": "😚",
-        "text": "羞涩亲亲"
-      },
-      {
-        "icon": "😙",
-        "text": "微笑亲亲"
-      },
-      {
-        "icon": "😋",
-        "text": "好吃"
-      },
-      {
-        "icon": "😛",
-        "text": "吐舌"
-      },
-      {
-        "icon": "😜",
-        "text": "单眼吐舌"
-      },
-      {
-        "icon": "🤪",
-        "text": "滑稽"
-      },
-      {
-        "icon": "😝",
-        "text": "眯眼吐舌"
-      },
-      {
-        "icon": "🤗",
-        "text": "抱抱"
-      },
-      {
-        "icon": "🤭",
-        "text": "不说"
-      },
-      {
-        "icon": "🤫",
-        "text": "安静的脸"
-      },
-      {
-        "icon": "🤔",
-        "text": "想一想"
-      },
-      {
-        "icon": "🤐",
-        "text": "闭嘴"
-      },
-      {
-        "icon": "🤨",
-        "text": "挑眉"
-      },
-      {
-        "icon": "😐",
-        "text": "冷漠"
-      },
-      {
-        "icon": "😑",
-        "text": "无语"
-      },
-      {
-        "icon": "😶",
-        "text": "沉默"
-      },
-      {
-        "icon": "😏",
-        "text": "得意"
-      },
-      {
-        "icon": "😒",
-        "text": "不高兴"
-      },
-      {
-        "icon": "🙄",
-        "text": "翻白眼"
-      },
-      {
-        "icon": "😬",
-        "text": "龇牙咧嘴"
-      },
-      {
-        "icon": "🤥",
-        "text": "说谎"
-      },
-      {
-        "icon": "😶‍🌫️",
-        "text": "迷茫"
-      },
-      {
-        "icon": "😮‍💨",
-        "text": "呼气"
-      },
-      {
-        "icon": "😌",
-        "text": "松了口气"
-      },
-      {
-        "icon": "😔",
-        "text": "沉思"
-      },
-      {
-        "icon": "😪",
-        "text": "困"
-      },
-      {
-        "icon": "🤤",
-        "text": "流口水"
-      },
-      {
-        "icon": "😴",
-        "text": "睡着了"
-      },
-      {
-        "icon": "😷",
-        "text": "感冒"
-      },
-      {
-        "icon": "🤒",
-        "text": "发烧"
-      },
-      {
-        "icon": "🤕",
-        "text": "受伤"
-      },
-      {
-        "icon": "🤢",
-        "text": "恶心"
-      },
-      {
-        "icon": "🤮",
-        "text": "呕吐"
-      },
-      {
-        "icon": "🤧",
-        "text": "打喷嚏"
-      },
-      {
-        "icon": "🥵",
-        "text": "脸发烧"
-      },
-      {
-        "icon": "🥶",
-        "text": "冷脸"
-      },
-      {
-        "icon": "🥴",
-        "text": "头昏眼花"
-      },
-      {
-        "icon": "😵",
-        "text": "晕头转向"
-      },
-      {
-        "icon": "🤯",
-        "text": "爆炸头"
-      },
-      {
-        "icon": "😵‍💫",
-        "text": "晕"
-      },
-      {
-        "icon": "🤠",
-        "text": "牛仔帽脸"
-      },
-      {
-        "icon": "🥳",
-        "text": "聚会笑脸"
-      },
-      {
-        "icon": "😎",
-        "text": "墨镜笑脸"
-      },
-      {
-        "icon": "🤓",
-        "text": "书呆子脸"
-      },
-      {
-        "icon": "🧐",
-        "text": "带单片眼镜的脸"
-      },
-      {
-        "icon": "😕",
-        "text": "困扰"
-      },
-      {
-        "icon": "😟",
-        "text": "担心"
-      },
-      {
-        "icon": "🙁",
-        "text": "微微不满"
-      },
-      {
-        "icon": "☹️",
-        "text": "不满"
-      },
-      {
-        "icon": "😮",
-        "text": "吃惊"
-      },
-      {
-        "icon": "😯",
-        "text": "缄默"
-      },
-      {
-        "icon": "😲",
-        "text": "震惊"
-      },
-      {
-        "icon": "😳",
-        "text": "脸红"
-      },
-      {
-        "icon": "🥺",
-        "text": "恳求的脸"
-      },
-      {
-        "icon": "😦",
-        "text": "啊"
-      },
-      {
-        "icon": "😧",
-        "text": "极度痛苦"
-      },
-      {
-        "icon": "😨",
-        "text": "害怕"
-      },
-      {
-        "icon": "😰",
-        "text": "冷汗"
-      },
-      {
-        "icon": "😥",
-        "text": "失望但如释重负"
-      },
-      {
-        "icon": "😢",
-        "text": "哭"
-      },
-      {
-        "icon": "😭",
-        "text": "放声大哭"
-      },
-      {
-        "icon": "😱",
-        "text": "吓死了"
-      },
-      {
-        "icon": "😖",
-        "text": "困惑"
-      },
-      {
-        "icon": "😣",
-        "text": "痛苦"
-      },
-      {
-        "icon": "😞",
-        "text": "失望"
-      },
-      {
-        "icon": "😓",
-        "text": "汗"
-      },
-      {
-        "icon": "😩",
-        "text": "累死了"
-      },
-      {
-        "icon": "😫",
-        "text": "累"
-      },
-      {
-        "icon": "🥱",
-        "text": "打呵欠"
-      },
-      {
-        "icon": "😤",
-        "text": "傲慢"
-      },
-      {
-        "icon": "😡",
-        "text": "怒火中烧"
-      },
-      {
-        "icon": "😠",
-        "text": "生气"
-      },
-      {
-        "icon": "🤬",
-        "text": "嘴上有符号的脸"
-      },
-      {
-        "icon": "💩",
-        "text": "大便"
-      },
-      {
-        "icon": "🤡",
-        "text": "小丑脸"
-      },
-      {
-        "icon": "👻",
-        "text": "鬼"
-      },
-      {
-        "icon": "👽",
-        "text": "外星人"
-      },
-      {
-        "icon": "🤖",
-        "text": "机器人"
-      },
-      {
-        "icon": "😺",
-        "text": "大笑的猫"
-      },
-      {
-        "icon": "😸",
-        "text": "微笑的猫"
-      },
-      {
-        "icon": "😹",
-        "text": "笑出眼泪的猫"
-      },
-      {
-        "icon": "😻",
-        "text": "花痴的猫"
-      },
-      {
-        "icon": "😼",
-        "text": "奸笑的猫"
-      },
-      {
-        "icon": "😽",
-        "text": "亲亲猫"
-      },
-      {
-        "icon": "🙀",
-        "text": "疲倦的猫"
-      },
-      {
-        "icon": "😿",
-        "text": "哭泣的猫"
-      },
-      {
-        "icon": "😾",
-        "text": "生气的猫"
-      },
-      {
-        "icon": "🙈",
-        "text": "非礼勿视"
-      },
-      {
-        "icon": "🙉",
-        "text": "非礼勿听"
-      },
-      {
-        "icon": "🙊",
-        "text": "非礼勿言"
-      },
-      {
-        "icon": "💋",
-        "text": "唇印"
-      },
-      {
-        "icon": "💖",
-        "text": "闪亮的心"
-      },
-      {
-        "icon": "💔",
-        "text": "心碎"
-      },
-      {
-        "icon": "❤️",
-        "text": "红心"
-      },
-      {
-        "icon": "💯",
-        "text": "一百分"
-      },
-      {
-        "icon": "💢",
-        "text": "怒"
-      },
-      {
-        "icon": "💥",
-        "text": "爆炸"
-      },
-      {
-        "icon": "💫",
-        "text": "头晕"
-      },
-      {
-        "icon": "💦",
-        "text": "汗滴"
-      },
-      {
-        "icon": "💤",
-        "text": "睡着"
-      },
-      {
-        "icon": "👋",
-        "text": "挥手"
-      },
-      {
-        "icon": "🖐️",
-        "text": "手掌"
-      },
-      {
-        "icon": "👌",
-        "text": "OK"
-      },
-      {
-        "icon": "🤏",
-        "text": "捏合的手势"
-      },
-      {
-        "icon": "✌️",
-        "text": "胜利手势"
-      },
-      {
-        "icon": "🤘",
-        "text": "摇滚"
-      },
-      {
-        "icon": "🖕",
-        "text": "竖中指"
-      },
-      {
-        "icon": "👍",
-        "text": "拇指向上"
-      },
-      {
-        "icon": "👊",
-        "text": "出拳"
-      },
-      {
-        "icon": "👏",
-        "text": "鼓掌"
-      },
-      {
-        "icon": "🤝",
-        "text": "握手"
-      },
-      {
-        "icon": "💪",
-        "text": "肌肉"
-      },
-      {
-        "icon": "👀",
-        "text": "双眼"
-      },
-      {
-        "icon": "🦋",
-        "text": "蝴蝶"
-      },
-      {
-        "icon": "💐",
-        "text": "花束"
-      },
-      {
-        "icon": "🌸",
-        "text": "樱花"
-      },
-      {
-        "icon": "🌹",
-        "text": "玫瑰"
-      },
-      {
-        "icon": "🍉",
-        "text": "西瓜"
-      },
-      {
-        "icon": "🥭",
-        "text": "芒果"
-      },
-      {
-        "icon": "🍗",
-        "text": "家禽的腿"
-      },
-      {
-        "icon": "🥩",
-        "text": "肉块"
-      },
-      {
-        "icon": "🍔",
-        "text": "汉堡"
-      },
-      {
-        "icon": "🍟",
-        "text": "薯条"
-      },
-      {
-        "icon": "🍕",
-        "text": "披萨"
-      },
-      {
-        "icon": "🌭",
-        "text": "热狗"
-      },
-      {
-        "icon": "🥚",
-        "text": "蛋"
-      },
-      {
-        "icon": "🍲",
-        "text": "一锅食物"
-      },
-      {
-        "icon": "🍡",
-        "text": "团子"
-      },
-      {
-        "icon": "🥟",
-        "text": "饺子"
-      },
-      {
-        "icon": "🍦",
-        "text": "圆筒冰激凌"
-      },
-      {
-        "icon": "🍧",
-        "text": "刨冰"
-      },
-      {
-        "icon": "🍨",
-        "text": "冰淇淋"
-      },
-      {
-        "icon": "🎂",
-        "text": "生日蛋糕"
-      },
-      {
-        "icon": "🧁",
-        "text": "纸杯蛋糕"
-      },
-      {
-        "icon": "🍭",
-        "text": "棒棒糖"
-      },
-      {
-        "icon": "☕",
-        "text": "热饮"
-      },
-      {
-        "icon": "🍺",
-        "text": "啤酒"
-      },
-      {
-        "icon": "🍻",
-        "text": "干杯"
-      }
-    ]
-  },
-
   "QQ": {
     "type": "image",
     "container": [
@@ -1019,7 +372,6 @@
       }
     ]
   },
-
   "贴吧": {
     "type": "image",
     "container": [
@@ -1461,7 +813,6 @@
       }
     ]
   },
-
   "b站": {
     "type": "image",
     "container": [
@@ -1643,7 +994,6 @@
       }
     ]
   },
-
   "黑盒": {
     "type": "image",
     "container": [
@@ -2033,7 +1383,6 @@
       }
     ]
   },
-
   "mimi": {
     "type": "image",
     "container": [
@@ -2199,7 +1548,6 @@
       }
     ]
   },
-
   "甜心兔": {
     "type": "image",
     "container": [
@@ -2365,7 +1713,6 @@
       }
     ]
   },
-
   "初音": {
     "type": "image",
     "container": [
@@ -2531,819 +1878,1008 @@
       }
     ]
   },
-    "星穹铁道": {
-        "type": "image",
-        "container": [{
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a33424c7.png\">",
-            "text": "瓶装白矮心-风堇"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a3355325.png\">",
-            "text": "瓶装白矮心-魔术技巧-打鼓"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a335e262.png\">",
-            "text": "瓶装白矮心-阿格莱雅-哭"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a335e20b.png\">",
-            "text": "瓶装白矮心-遐蝶-哭"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a335e144.png\">",
-            "text": "瓶装白矮心-符玄青雀"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a336e439.png\">",
-            "text": "瓶装白矮心-赛飞儿-舔"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a335e02d.png\">",
-            "text": "瓶装白矮心-遐蝶-睡觉"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a33620a5.png\">",
-            "text": "瓶装白矮心-姬子-高兴"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a335d398.png\">",
-            "text": "瓶装白矮心-青雀打牌"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a3368325.png\">",
-            "text": "瓶装白矮心-长夜月-高兴"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a3457bb2.png\">",
-            "text": "瓶装白矮心-阿格莱雅-高兴"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a3478415.png\">",
-            "text": "瓶装白矮心-腾荒"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a347ec27.png\">",
-            "text": "瓶装白矮心-芙芙"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a3495198.png\">",
-            "text": "瓶装白矮心-长夜月-挡水"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a34b3fca.png\">",
-            "text": "瓶装白矮心-姬子咖啡"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a34dc36c.png\">",
-            "text": "瓶装白矮心-星期日"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a351c999.png\">",
-            "text": "瓶装白矮心-萨姆冒火"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a351bdf1.png\">",
-            "text": "瓶装白矮心-星-遐蝶"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a3534156.png\">",
-            "text": "瓶装白矮心-流荧星"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a355ce7d.png\">",
-            "text": "瓶装白矮心-白厄-金苹果"
-        }]
-    },
-    "原神": {
-        "type": "image",
-        "container": [{
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061656b9cda.png\">",
-            "text": "瓶装白矮心-丝柯克"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061656bfb98.png\">",
-            "text": "瓶装白矮心-诶嘿"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061656c085d.png\">",
-            "text": "瓶装白矮心-芙芙舔舔"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061656c7dc4.png\">",
-            "text": "瓶装白矮心-刻猫猫"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061656bf0c8.png\">",
-            "text": "瓶装白矮心-荧-舔"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061656bb93e.png\">",
-            "text": "瓶装白矮心-芙芙-哭"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061656bce23.png\">",
-            "text": "瓶装白矮心-胡桃-高兴"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061656bc495.png\">",
-            "text": "瓶装白矮心-丝柯克-高兴"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061656c94a5.png\">",
-            "text": "瓶装白矮心-荧"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061657bdc3b.png\">",
-            "text": "瓶装白矮心-仆芙"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061657e180f.png\">",
-            "text": "瓶装白矮心-芙芙-高兴"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061657e5833.png\">",
-            "text": "瓶装白矮心-达达鸭-哭"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/6906165810dc9.png\">",
-            "text": "瓶装白矮心-小草神-高兴"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/6906165837754.png\">",
-            "text": "瓶装白矮心-芙芙"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061658435c1.png\">",
-            "text": "瓶装白矮心-绮良良"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/6906165881711.png\">",
-            "text": "瓶装白矮心-少女-歌唱"
-        }, {
-            "icon": "<img src=\"https://bu.dusays.com/2025/11/01/690616589887c.png\">",
-            "text": "瓶装白矮心-玛薇卡-冲浪"
-        }]
-    },
-   "Heo": {
-        "type": "image",
-        "container": [{
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/3d眼镜.png\">",
-            "text": "heo-3d眼镜"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/EDG.png\">",
-            "text": "heo-EDG"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/LPL.png\">",
-            "text": "heo-LPL"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/beluga.png\">",
-            "text": "heo-beluga"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/不好意思.png\">",
-            "text": "heo-不好意思"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/不服吗.png\">",
-            "text": "heo-不服吗"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/亲亲.png\">",
-            "text": "heo-亲亲"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/伞兵.png\">",
-            "text": "heo-伞兵"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/倚墙笑.png\">",
-            "text": "heo-倚墙笑"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/值得肯定.png\">",
-            "text": "heo-值得肯定"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/偷偷看.png\">",
-            "text": "heo-偷偷看"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/傻笑.png\">",
-            "text": "heo-傻笑"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/再见.png\">",
-            "text": "heo-再见"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/出家人.png\">",
-            "text": "heo-出家人"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/击剑.png\">",
-            "text": "heo-击剑"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/加班.png\">",
-            "text": "heo-加班"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/勉强笑.png\">",
-            "text": "heo-勉强笑"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/危险.png\">",
-            "text": "heo-危险"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/发红包.png\">",
-            "text": "heo-发红包"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/吃手.png\">",
-            "text": "heo-吃手"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/吃瓜.png\">",
-            "text": "heo-吃瓜"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/吐血.png\">",
-            "text": "heo-吐血"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/吵架.png\">",
-            "text": "heo-吵架"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/呦吼.png\">",
-            "text": "heo-呦吼"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/呲牙笑.png\">",
-            "text": "heo-呲牙笑"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/哈士奇.png\">",
-            "text": "heo-哈士奇"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/哈士奇失去意识.png\">",
-            "text": "heo-哈士奇失去意识"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/哈士奇失望.png\">",
-            "text": "heo-哈士奇失望"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/哭泣.png\">",
-            "text": "heo-哭泣"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/唱歌.png\">",
-            "text": "heo-唱歌"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/喜欢.png\">",
-            "text": "heo-喜欢"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/嘿哈.png\">",
-            "text": "heo-嘿哈"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/大笑.png\">",
-            "text": "heo-大笑"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/失去信号.png\">",
-            "text": "heo-失去信号"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/失望.png\">",
-            "text": "heo-失望"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/头秃.png\">",
-            "text": "heo-头秃"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/奋斗.png\">",
-            "text": "heo-奋斗"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/好奇.png\">",
-            "text": "heo-好奇"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/好的.png\">",
-            "text": "heo-好的"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/害羞.png\">",
-            "text": "heo-害羞"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/小丑.png\">",
-            "text": "heo-小丑"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/小偷.png\">",
-            "text": "heo-小偷"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/尬笑.png\">",
-            "text": "heo-尬笑"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/尴尬.png\">",
-            "text": "heo-尴尬"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/应援.png\">",
-            "text": "heo-应援"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/开心.png\">",
-            "text": "heo-开心"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/引起不适.png\">",
-            "text": "heo-引起不适"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/微笑.png\">",
-            "text": "heo-微笑"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/思考.png\">",
-            "text": "heo-思考"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/恶心.png\">",
-            "text": "heo-恶心"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/恶魔.png\">",
-            "text": "heo-恶魔"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/恶魔恐惧.png\">",
-            "text": "heo-恶魔恐惧"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/惊吓.png\">",
-            "text": "heo-惊吓"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/惊吓白眼.png\">",
-            "text": "heo-惊吓白眼"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/惊讶.png\">",
-            "text": "heo-惊讶"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/惬意.png\">",
-            "text": "heo-惬意"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/感动.png\">",
-            "text": "heo-感动"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/愤怒.png\">",
-            "text": "heo-愤怒"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/我看好你.png\">",
-            "text": "heo-我看好你"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/手机相机.png\">",
-            "text": "heo-手机相机"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/打咩.png\">",
-            "text": "heo-打咩"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/打牌.png\">",
-            "text": "heo-打牌"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/托腮.png\">",
-            "text": "heo-托腮"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/扶额.png\">",
-            "text": "heo-扶额"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/抠鼻.png\">",
-            "text": "heo-抠鼻"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/抬眼镜.png\">",
-            "text": "heo-抬眼镜"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/拜托.png\">",
-            "text": "heo-拜托"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/捂嘴笑.png\">",
-            "text": "heo-捂嘴笑"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/捂脸.png\">",
-            "text": "heo-捂脸"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/擦汗.png\">",
-            "text": "heo-擦汗"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/放鞭炮.png\">",
-            "text": "heo-放鞭炮"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/敬礼.png\">",
-            "text": "heo-敬礼"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/整理发型.png\">",
-            "text": "heo-整理发型"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/斗鸡眼.png\">",
-            "text": "heo-斗鸡眼"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/智慧的眼神.png\">",
-            "text": "heo-智慧的眼神"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/月饼.png\">",
-            "text": "heo-月饼"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/有没有搞错.png\">",
-            "text": "heo-有没有搞错"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/正确.png\">",
-            "text": "heo-正确"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/没招.png\">",
-            "text": "heo-没招"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/波吉.png\">",
-            "text": "heo-波吉"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/泪奔.png\">",
-            "text": "heo-泪奔"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/流汗微笑.png\">",
-            "text": "heo-流汗微笑"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/流鼻涕.png\">",
-            "text": "heo-流鼻涕"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/深思.png\">",
-            "text": "heo-深思"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/滑稽.png\">",
-            "text": "heo-滑稽"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/滑稽吃瓜.png\">",
-            "text": "heo-滑稽吃瓜"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/滑稽喝水.png\">",
-            "text": "heo-滑稽喝水"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/滑稽奶茶.png\">",
-            "text": "heo-滑稽奶茶"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/滑稽柠檬.png\">",
-            "text": "heo-滑稽柠檬"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/滑稽狂汗.png\">",
-            "text": "heo-滑稽狂汗"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/滑稽被子.png\">",
-            "text": "heo-滑稽被子"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/烦恼.png\">",
-            "text": "heo-烦恼"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/熊熊.png\">",
-            "text": "heo-熊熊"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/熊猫.png\">",
-            "text": "heo-熊猫"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/熊猫唱歌.png\">",
-            "text": "heo-熊猫唱歌"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/熊猫喜欢.png\">",
-            "text": "heo-熊猫喜欢"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/熊猫失望.png\">",
-            "text": "heo-熊猫失望"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/熊猫意外.png\">",
-            "text": "heo-熊猫意外"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/熬夜.png\">",
-            "text": "heo-熬夜"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/爆炸.png\">",
-            "text": "heo-爆炸"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/牛年进宝.png\">",
-            "text": "heo-牛年进宝"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/狂热.png\">",
-            "text": "heo-狂热"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/狗头.png\">",
-            "text": "heo-狗头"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/狗头围脖.png\">",
-            "text": "heo-狗头围脖"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/狗头失望.png\">",
-            "text": "heo-狗头失望"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/狗头意外.png\">",
-            "text": "heo-狗头意外"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/狗头胖次.png\">",
-            "text": "heo-狗头胖次"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/狗头花.png\">",
-            "text": "heo-狗头花"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/狗头草.png\">",
-            "text": "heo-狗头草"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/猪头.png\">",
-            "text": "heo-猪头"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/猪头意外.png\">",
-            "text": "heo-猪头意外"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/生病.png\">",
-            "text": "heo-生病"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/电话.png\">",
-            "text": "heo-电话"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/疑问.png\">",
-            "text": "heo-疑问"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/疼痛.png\">",
-            "text": "heo-疼痛"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/痛哭.png\">",
-            "text": "heo-痛哭"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/看穿一切.png\">",
-            "text": "heo-看穿一切"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/眩晕.png\">",
-            "text": "heo-眩晕"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/睡觉.png\">",
-            "text": "heo-睡觉"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/禁言.png\">",
-            "text": "heo-禁言"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/笑哭.png\">",
-            "text": "heo-笑哭"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/纠结.png\">",
-            "text": "heo-纠结"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/绿帽.png\">",
-            "text": "heo-绿帽"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/缺牙笑.png\">",
-            "text": "heo-缺牙笑"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/翻白眼.png\">",
-            "text": "heo-翻白眼"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/老虎意外.png\">",
-            "text": "heo-老虎意外"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/耍酷.png\">",
-            "text": "heo-耍酷"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/胡子.png\">",
-            "text": "heo-胡子"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/菜狗.png\">",
-            "text": "heo-菜狗"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/菜狗花.png\">",
-            "text": "heo-菜狗花"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/蒙面滑稽.png\">",
-            "text": "heo-蒙面滑稽"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/虎年进宝.png\">",
-            "text": "heo-虎年进宝"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/被打.png\">",
-            "text": "heo-被打"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/裂开.png\">",
-            "text": "heo-裂开"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/警告.png\">",
-            "text": "heo-警告"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/读书.png\">",
-            "text": "heo-读书"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/财神红包.png\">",
-            "text": "heo-财神红包"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/超爱.png\">",
-            "text": "heo-超爱"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/这是啥.png\">",
-            "text": "heo-这是啥"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/送福.png\">",
-            "text": "heo-送福"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/送花.png\">",
-            "text": "heo-送花"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/错误.png\">",
-            "text": "heo-错误"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/阴险.png\">",
-            "text": "heo-阴险"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/难以置信.png\">",
-            "text": "heo-难以置信"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/面具.png\">",
-            "text": "heo-面具"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/饥渴.png\">",
-            "text": "heo-饥渴"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/鬼脸.png\">",
-            "text": "heo-鬼脸"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/黑线.png\">",
-            "text": "heo-黑线"
-        }, {
-            "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/鼓掌.png\">",
-            "text": "heo-鼓掌"
+  "星穹铁道": {
+    "type": "image",
+    "container": [
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a33424c7.png\">",
+        "text": "瓶装白矮心-风堇"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a3355325.png\">",
+        "text": "瓶装白矮心-魔术技巧-打鼓"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a335e262.png\">",
+        "text": "瓶装白矮心-阿格莱雅-哭"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a335e20b.png\">",
+        "text": "瓶装白矮心-遐蝶-哭"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a335e144.png\">",
+        "text": "瓶装白矮心-符玄青雀"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a336e439.png\">",
+        "text": "瓶装白矮心-赛飞儿-舔"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a335e02d.png\">",
+        "text": "瓶装白矮心-遐蝶-睡觉"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a33620a5.png\">",
+        "text": "瓶装白矮心-姬子-高兴"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a335d398.png\">",
+        "text": "瓶装白矮心-青雀打牌"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a3368325.png\">",
+        "text": "瓶装白矮心-长夜月-高兴"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a3457bb2.png\">",
+        "text": "瓶装白矮心-阿格莱雅-高兴"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a3478415.png\">",
+        "text": "瓶装白矮心-腾荒"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a347ec27.png\">",
+        "text": "瓶装白矮心-芙芙"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a3495198.png\">",
+        "text": "瓶装白矮心-长夜月-挡水"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a34b3fca.png\">",
+        "text": "瓶装白矮心-姬子咖啡"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a34dc36c.png\">",
+        "text": "瓶装白矮心-星期日"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a351c999.png\">",
+        "text": "瓶装白矮心-萨姆冒火"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a351bdf1.png\">",
+        "text": "瓶装白矮心-星-遐蝶"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a3534156.png\">",
+        "text": "瓶装白矮心-流荧星"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061a355ce7d.png\">",
+        "text": "瓶装白矮心-白厄-金苹果"
+      }
+    ]
+  },
+  "原神": {
+    "type": "image",
+    "container": [
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061656b9cda.png\">",
+        "text": "瓶装白矮心-丝柯克"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061656bfb98.png\">",
+        "text": "瓶装白矮心-诶嘿"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061656c085d.png\">",
+        "text": "瓶装白矮心-芙芙舔舔"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061656c7dc4.png\">",
+        "text": "瓶装白矮心-刻猫猫"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061656bf0c8.png\">",
+        "text": "瓶装白矮心-荧-舔"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061656bb93e.png\">",
+        "text": "瓶装白矮心-芙芙-哭"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061656bce23.png\">",
+        "text": "瓶装白矮心-胡桃-高兴"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061656bc495.png\">",
+        "text": "瓶装白矮心-丝柯克-高兴"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061656c94a5.png\">",
+        "text": "瓶装白矮心-荧"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061657bdc3b.png\">",
+        "text": "瓶装白矮心-仆芙"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061657e180f.png\">",
+        "text": "瓶装白矮心-芙芙-高兴"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061657e5833.png\">",
+        "text": "瓶装白矮心-达达鸭-哭"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/6906165810dc9.png\">",
+        "text": "瓶装白矮心-小草神-高兴"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/6906165837754.png\">",
+        "text": "瓶装白矮心-芙芙"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/69061658435c1.png\">",
+        "text": "瓶装白矮心-绮良良"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/6906165881711.png\">",
+        "text": "瓶装白矮心-少女-歌唱"
+      },
+      {
+        "icon": "<img src=\"https://bu.dusays.com/2025/11/01/690616589887c.png\">",
+        "text": "瓶装白矮心-玛薇卡-冲浪"
+      }
+    ]
+  },
+  "Heo": {
+    "type": "image",
+    "container": [
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/3d眼镜.png\">",
+        "text": "heo-3d眼镜"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/EDG.png\">",
+        "text": "heo-EDG"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/LPL.png\">",
+        "text": "heo-LPL"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/beluga.png\">",
+        "text": "heo-beluga"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/不好意思.png\">",
+        "text": "heo-不好意思"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/不服吗.png\">",
+        "text": "heo-不服吗"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/亲亲.png\">",
+        "text": "heo-亲亲"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/伞兵.png\">",
+        "text": "heo-伞兵"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/倚墙笑.png\">",
+        "text": "heo-倚墙笑"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/值得肯定.png\">",
+        "text": "heo-值得肯定"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/偷偷看.png\">",
+        "text": "heo-偷偷看"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/傻笑.png\">",
+        "text": "heo-傻笑"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/再见.png\">",
+        "text": "heo-再见"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/出家人.png\">",
+        "text": "heo-出家人"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/击剑.png\">",
+        "text": "heo-击剑"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/加班.png\">",
+        "text": "heo-加班"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/勉强笑.png\">",
+        "text": "heo-勉强笑"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/危险.png\">",
+        "text": "heo-危险"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/发红包.png\">",
+        "text": "heo-发红包"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/吃手.png\">",
+        "text": "heo-吃手"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/吃瓜.png\">",
+        "text": "heo-吃瓜"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/吐血.png\">",
+        "text": "heo-吐血"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/吵架.png\">",
+        "text": "heo-吵架"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/呦吼.png\">",
+        "text": "heo-呦吼"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/呲牙笑.png\">",
+        "text": "heo-呲牙笑"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/哈士奇.png\">",
+        "text": "heo-哈士奇"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/哈士奇失去意识.png\">",
+        "text": "heo-哈士奇失去意识"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/哈士奇失望.png\">",
+        "text": "heo-哈士奇失望"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/哭泣.png\">",
+        "text": "heo-哭泣"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/唱歌.png\">",
+        "text": "heo-唱歌"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/喜欢.png\">",
+        "text": "heo-喜欢"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/嘿哈.png\">",
+        "text": "heo-嘿哈"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/大笑.png\">",
+        "text": "heo-大笑"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/失去信号.png\">",
+        "text": "heo-失去信号"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/失望.png\">",
+        "text": "heo-失望"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/头秃.png\">",
+        "text": "heo-头秃"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/奋斗.png\">",
+        "text": "heo-奋斗"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/好奇.png\">",
+        "text": "heo-好奇"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/好的.png\">",
+        "text": "heo-好的"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/害羞.png\">",
+        "text": "heo-害羞"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/小丑.png\">",
+        "text": "heo-小丑"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/小偷.png\">",
+        "text": "heo-小偷"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/尬笑.png\">",
+        "text": "heo-尬笑"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/尴尬.png\">",
+        "text": "heo-尴尬"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/应援.png\">",
+        "text": "heo-应援"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/开心.png\">",
+        "text": "heo-开心"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/引起不适.png\">",
+        "text": "heo-引起不适"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/微笑.png\">",
+        "text": "heo-微笑"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/思考.png\">",
+        "text": "heo-思考"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/恶心.png\">",
+        "text": "heo-恶心"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/恶魔.png\">",
+        "text": "heo-恶魔"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/恶魔恐惧.png\">",
+        "text": "heo-恶魔恐惧"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/惊吓.png\">",
+        "text": "heo-惊吓"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/惊吓白眼.png\">",
+        "text": "heo-惊吓白眼"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/惊讶.png\">",
+        "text": "heo-惊讶"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/惬意.png\">",
+        "text": "heo-惬意"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/感动.png\">",
+        "text": "heo-感动"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/愤怒.png\">",
+        "text": "heo-愤怒"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/我看好你.png\">",
+        "text": "heo-我看好你"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/手机相机.png\">",
+        "text": "heo-手机相机"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/打咩.png\">",
+        "text": "heo-打咩"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/打牌.png\">",
+        "text": "heo-打牌"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/托腮.png\">",
+        "text": "heo-托腮"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/扶额.png\">",
+        "text": "heo-扶额"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/抠鼻.png\">",
+        "text": "heo-抠鼻"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/抬眼镜.png\">",
+        "text": "heo-抬眼镜"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/拜托.png\">",
+        "text": "heo-拜托"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/捂嘴笑.png\">",
+        "text": "heo-捂嘴笑"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/捂脸.png\">",
+        "text": "heo-捂脸"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/擦汗.png\">",
+        "text": "heo-擦汗"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/放鞭炮.png\">",
+        "text": "heo-放鞭炮"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/敬礼.png\">",
+        "text": "heo-敬礼"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/整理发型.png\">",
+        "text": "heo-整理发型"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/斗鸡眼.png\">",
+        "text": "heo-斗鸡眼"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/智慧的眼神.png\">",
+        "text": "heo-智慧的眼神"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/月饼.png\">",
+        "text": "heo-月饼"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/有没有搞错.png\">",
+        "text": "heo-有没有搞错"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/正确.png\">",
+        "text": "heo-正确"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/没招.png\">",
+        "text": "heo-没招"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/波吉.png\">",
+        "text": "heo-波吉"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/泪奔.png\">",
+        "text": "heo-泪奔"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/流汗微笑.png\">",
+        "text": "heo-流汗微笑"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/流鼻涕.png\">",
+        "text": "heo-流鼻涕"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/深思.png\">",
+        "text": "heo-深思"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/滑稽.png\">",
+        "text": "heo-滑稽"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/滑稽吃瓜.png\">",
+        "text": "heo-滑稽吃瓜"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/滑稽喝水.png\">",
+        "text": "heo-滑稽喝水"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/滑稽奶茶.png\">",
+        "text": "heo-滑稽奶茶"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/滑稽柠檬.png\">",
+        "text": "heo-滑稽柠檬"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/滑稽狂汗.png\">",
+        "text": "heo-滑稽狂汗"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/滑稽被子.png\">",
+        "text": "heo-滑稽被子"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/烦恼.png\">",
+        "text": "heo-烦恼"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/熊熊.png\">",
+        "text": "heo-熊熊"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/熊猫.png\">",
+        "text": "heo-熊猫"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/熊猫唱歌.png\">",
+        "text": "heo-熊猫唱歌"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/熊猫喜欢.png\">",
+        "text": "heo-熊猫喜欢"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/熊猫失望.png\">",
+        "text": "heo-熊猫失望"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/熊猫意外.png\">",
+        "text": "heo-熊猫意外"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/熬夜.png\">",
+        "text": "heo-熬夜"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/爆炸.png\">",
+        "text": "heo-爆炸"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/牛年进宝.png\">",
+        "text": "heo-牛年进宝"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/狂热.png\">",
+        "text": "heo-狂热"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/狗头.png\">",
+        "text": "heo-狗头"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/狗头围脖.png\">",
+        "text": "heo-狗头围脖"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/狗头失望.png\">",
+        "text": "heo-狗头失望"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/狗头意外.png\">",
+        "text": "heo-狗头意外"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/狗头胖次.png\">",
+        "text": "heo-狗头胖次"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/狗头花.png\">",
+        "text": "heo-狗头花"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/狗头草.png\">",
+        "text": "heo-狗头草"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/猪头.png\">",
+        "text": "heo-猪头"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/猪头意外.png\">",
+        "text": "heo-猪头意外"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/生病.png\">",
+        "text": "heo-生病"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/电话.png\">",
+        "text": "heo-电话"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/疑问.png\">",
+        "text": "heo-疑问"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/疼痛.png\">",
+        "text": "heo-疼痛"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/痛哭.png\">",
+        "text": "heo-痛哭"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/看穿一切.png\">",
+        "text": "heo-看穿一切"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/眩晕.png\">",
+        "text": "heo-眩晕"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/睡觉.png\">",
+        "text": "heo-睡觉"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/禁言.png\">",
+        "text": "heo-禁言"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/笑哭.png\">",
+        "text": "heo-笑哭"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/纠结.png\">",
+        "text": "heo-纠结"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/绿帽.png\">",
+        "text": "heo-绿帽"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/缺牙笑.png\">",
+        "text": "heo-缺牙笑"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/翻白眼.png\">",
+        "text": "heo-翻白眼"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/老虎意外.png\">",
+        "text": "heo-老虎意外"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/耍酷.png\">",
+        "text": "heo-耍酷"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/胡子.png\">",
+        "text": "heo-胡子"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/菜狗.png\">",
+        "text": "heo-菜狗"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/菜狗花.png\">",
+        "text": "heo-菜狗花"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/蒙面滑稽.png\">",
+        "text": "heo-蒙面滑稽"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/虎年进宝.png\">",
+        "text": "heo-虎年进宝"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/被打.png\">",
+        "text": "heo-被打"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/裂开.png\">",
+        "text": "heo-裂开"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/警告.png\">",
+        "text": "heo-警告"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/读书.png\">",
+        "text": "heo-读书"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/财神红包.png\">",
+        "text": "heo-财神红包"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/超爱.png\">",
+        "text": "heo-超爱"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/这是啥.png\">",
+        "text": "heo-这是啥"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/送福.png\">",
+        "text": "heo-送福"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/送花.png\">",
+        "text": "heo-送花"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/错误.png\">",
+        "text": "heo-错误"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/阴险.png\">",
+        "text": "heo-阴险"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/难以置信.png\">",
+        "text": "heo-难以置信"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/面具.png\">",
+        "text": "heo-面具"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/饥渴.png\">",
+        "text": "heo-饥渴"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/鬼脸.png\">",
+        "text": "heo-鬼脸"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/黑线.png\">",
+        "text": "heo-黑线"
+      },
+      {
+        "icon": "<img src=\"https://cdn.jsdelivr.net/npm/sticker-heo@2022.7.5/Sticker-100/鼓掌.png\">",
+        "text": "heo-鼓掌"
       }
     ]
   },
   "滑稽": {
     "type": "image",
     "container": [
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/Ghost.png'>",
-            "text": "Ghost"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/一时滑稽.jpg'>",
-            "text": "一时滑稽"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/不得行.jpg'>",
-            "text": "不得行"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/别看丢人.jpg'>",
-            "text": "别看丢人"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/原味稽.png'>",
-            "text": "原味稽"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/去世稽.jpg'>",
-            "text": "去世稽"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/又不是不能用.jpg'>",
-            "text": "又不是不能用"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/可这和我的帅有什么关系.jpg'>",
-            "text": "可这和我的帅有什么关系"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/吃鱼摆摆.gif'>",
-            "text": "吃鱼摆摆"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/哎.jpg'>",
-            "text": "哎"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/啊哈哈.jpg'>",
-            "text": "啊哈哈"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/喝嘤料.jpg'>",
-            "text": "喝嘤料"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/喝酒.jpg'>",
-            "text": "喝酒"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/嘤雄豪稽.jpg'>",
-            "text": "嘤雄豪稽"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/地稽.jpg'>",
-            "text": "地稽"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/地稽_2.jpg'>",
-            "text": "地稽_2"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/地稽_3.jpg'>",
-            "text": "地稽_3"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/地稽委屈.jpg'>",
-            "text": "地稽委屈"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/地稽抚摸.gif'>",
-            "text": "地稽抚摸"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/地稽锤打.gif'>",
-            "text": "地稽锤打"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/将稽就稽.gif'>",
-            "text": "将稽就稽"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/少儿不宜.jpg'>",
-            "text": "少儿不宜"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/当场去世.jpg'>",
-            "text": "当场去世"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/微笑默叹以为妙绝.png'>",
-            "text": "微笑默叹以为妙绝"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/惊稽.jpg'>",
-            "text": "惊稽"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/惊稽_2.png'>",
-            "text": "惊稽_2"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/惊稽左右.gif'>",
-            "text": "惊稽左右"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/扶墙.gif'>",
-            "text": "扶墙"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/扶墙怂.jpg'>",
-            "text": "扶墙怂"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/摇摆稽.gif'>",
-            "text": "摇摆稽"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/无法接受.jpg'>",
-            "text": "无法接受"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/无稽可奈.jpg'>",
-            "text": "无稽可奈"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/无话可说.jpg'>",
-            "text": "无话可说"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/暗中观察.jpg'>",
-            "text": "暗中观察"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/束手无稽.jpg'>",
-            "text": "束手无稽"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/梆.jpg'>",
-            "text": "梆"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/气稽败坏.jpg'>",
-            "text": "气稽败坏"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/满脑子骚操作.gif'>",
-            "text": "满脑子骚操作"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/狱稽.jpg'>",
-            "text": "狱稽"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/相视双稽.jpg'>",
-            "text": "相视双稽"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/稽之舞.gif'>",
-            "text": "稽之舞"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/稽日可期.jpg'>",
-            "text": "稽日可期"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/稽皮发麻.jpg'>",
-            "text": "稽皮发麻"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/突然滑稽.jpg'>",
-            "text": "突然滑稽"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/紧张.jpg'>",
-            "text": "紧张"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/绝望.jpg'>",
-            "text": "绝望"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/老哥，稳.jpg'>",
-            "text": "老哥，稳"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/老实巴交.jpg'>",
-            "text": "老实巴交"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/老衲摆摊算命.gif'>",
-            "text": "老衲摆摊算命"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/老阔有点扣.gif'>",
-            "text": "老阔有点扣"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/自闭稽.jpg'>",
-            "text": "自闭稽"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/蓝纹稽.jpg'>",
-            "text": "蓝纹稽"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/蠕动.gif'>",
-            "text": "蠕动"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/跃跃欲试.jpg'>",
-            "text": "跃跃欲试"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/跃跃欲试_2.jpg'>",
-            "text": "跃跃欲试_2"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/跃跃欲试_3.gif'>",
-            "text": "跃跃欲试_3"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/还是算了.png'>",
-            "text": "还是算了"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/阔以.jpg'>",
-            "text": "阔以"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/随稽应变.jpg'>",
-            "text": "随稽应变"
-        },
-        {
-            "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/高兴.jpg'>",
-            "text": "高兴"
-        }]
-    }
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/Ghost.png'>",
+        "text": "Ghost"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/一时滑稽.jpg'>",
+        "text": "一时滑稽"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/不得行.jpg'>",
+        "text": "不得行"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/别看丢人.jpg'>",
+        "text": "别看丢人"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/原味稽.png'>",
+        "text": "原味稽"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/去世稽.jpg'>",
+        "text": "去世稽"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/又不是不能用.jpg'>",
+        "text": "又不是不能用"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/可这和我的帅有什么关系.jpg'>",
+        "text": "可这和我的帅有什么关系"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/吃鱼摆摆.gif'>",
+        "text": "吃鱼摆摆"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/哎.jpg'>",
+        "text": "哎"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/啊哈哈.jpg'>",
+        "text": "啊哈哈"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/喝嘤料.jpg'>",
+        "text": "喝嘤料"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/喝酒.jpg'>",
+        "text": "喝酒"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/嘤雄豪稽.jpg'>",
+        "text": "嘤雄豪稽"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/地稽.jpg'>",
+        "text": "地稽"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/地稽_2.jpg'>",
+        "text": "地稽_2"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/地稽_3.jpg'>",
+        "text": "地稽_3"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/地稽委屈.jpg'>",
+        "text": "地稽委屈"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/地稽抚摸.gif'>",
+        "text": "地稽抚摸"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/地稽锤打.gif'>",
+        "text": "地稽锤打"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/将稽就稽.gif'>",
+        "text": "将稽就稽"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/少儿不宜.jpg'>",
+        "text": "少儿不宜"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/当场去世.jpg'>",
+        "text": "当场去世"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/微笑默叹以为妙绝.png'>",
+        "text": "微笑默叹以为妙绝"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/惊稽.jpg'>",
+        "text": "惊稽"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/惊稽_2.png'>",
+        "text": "惊稽_2"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/惊稽左右.gif'>",
+        "text": "惊稽左右"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/扶墙.gif'>",
+        "text": "扶墙"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/扶墙怂.jpg'>",
+        "text": "扶墙怂"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/摇摆稽.gif'>",
+        "text": "摇摆稽"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/无法接受.jpg'>",
+        "text": "无法接受"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/无稽可奈.jpg'>",
+        "text": "无稽可奈"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/无话可说.jpg'>",
+        "text": "无话可说"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/暗中观察.jpg'>",
+        "text": "暗中观察"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/束手无稽.jpg'>",
+        "text": "束手无稽"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/梆.jpg'>",
+        "text": "梆"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/气稽败坏.jpg'>",
+        "text": "气稽败坏"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/满脑子骚操作.gif'>",
+        "text": "满脑子骚操作"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/狱稽.jpg'>",
+        "text": "狱稽"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/相视双稽.jpg'>",
+        "text": "相视双稽"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/稽之舞.gif'>",
+        "text": "稽之舞"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/稽日可期.jpg'>",
+        "text": "稽日可期"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/稽皮发麻.jpg'>",
+        "text": "稽皮发麻"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/突然滑稽.jpg'>",
+        "text": "突然滑稽"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/紧张.jpg'>",
+        "text": "紧张"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/绝望.jpg'>",
+        "text": "绝望"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/老哥，稳.jpg'>",
+        "text": "老哥，稳"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/老实巴交.jpg'>",
+        "text": "老实巴交"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/老衲摆摊算命.gif'>",
+        "text": "老衲摆摊算命"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/老阔有点扣.gif'>",
+        "text": "老阔有点扣"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/自闭稽.jpg'>",
+        "text": "自闭稽"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/蓝纹稽.jpg'>",
+        "text": "蓝纹稽"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/蠕动.gif'>",
+        "text": "蠕动"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/跃跃欲试.jpg'>",
+        "text": "跃跃欲试"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/跃跃欲试_2.jpg'>",
+        "text": "跃跃欲试_2"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/跃跃欲试_3.gif'>",
+        "text": "跃跃欲试_3"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/还是算了.png'>",
+        "text": "还是算了"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/阔以.jpg'>",
+        "text": "阔以"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/随稽应变.jpg'>",
+        "text": "随稽应变"
+      },
+      {
+        "icon": "<img src='https://cdn.jsdelivr.net/gh/qwqcode/huaji@master/高兴.jpg'>",
+        "text": "高兴"
+      }
+    ]
+  }
 }

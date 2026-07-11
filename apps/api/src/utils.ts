@@ -1,37 +1,49 @@
 import Bowser from 'bowser'
 
-// 轻量工具：slug 生成（替代原 Prisma 版的 generateUniqueSlug，原实现依赖 CRC32）
-// 这里用时间 + 随机后缀生成短 slug，保证本地可跑且不引入额外依赖。
+// slug 自动生成规则：
+// - 不填写：按 CRC32 + hex 自动生成（crc32(title + 时间戳) → 8 位小写十六进制）
+// - 填写：严格使用用户填写的值（唯一性校验在路由层处理，绝不二次改写）
 
-function randomSuffix(len = 6): string {
-  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
-  let s = ''
-  for (let i = 0; i < len; i++) s += chars[Math.floor(Math.random() * chars.length)]
-  return s
+// CRC32 查表（IEEE 802.3 标准多项式 0xEDB88320）
+const CRC_TABLE: number[] = (() => {
+  const t = new Array(256)
+  for (let n = 0; n < 256; n++) {
+    let c = n
+    for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1
+    t[n] = c >>> 0
+  }
+  return t
+})()
+
+function crc32(input: string): number {
+  // 按 UTF-8 字节计算，与通用 crc32 工具（zlib 等）语义一致
+  const bytes = new TextEncoder().encode(input)
+  let crc = 0xffffffff
+  for (let i = 0; i < bytes.length; i++) {
+    crc = CRC_TABLE[(crc ^ bytes[i]) & 0xff] ^ (crc >>> 8)
+  }
+  return (crc ^ 0xffffffff) >>> 0
 }
 
-function slugify(input: string): string {
-  return input
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9一-龥]+/g, '-') // 保留中文，其余非字母数字替换为连字符
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 60)
+// 返回 8 位小写十六进制字符串（如 "a1b2c3d4"）
+export function crc32Hex(input: string): string {
+  return crc32(input).toString(16).padStart(8, '0')
 }
 
-// 生成基于标题的 slug；若已存在则追加随机后缀
-export async function generateUniqueSlug(
+// 不填写 slug 时：CRC32 + hex 自动生成。输入含时间戳以保证唯一；
+// 极小概率碰撞时追加自增序号（仍为 hex 风格）。
+export async function generateCrc32Slug(
   exists: (slug: string) => Promise<boolean>,
   base: string
 ): Promise<string> {
-  let slug = slugify(base) || 'post'
+  const seed = `${base || 'post'}-${Date.now()}`
+  const slug = crc32Hex(seed)
   if (!(await exists(slug))) return slug
-  // 已存在，加后缀重试几次
-  for (let i = 0; i < 5; i++) {
-    const candidate = `${slug}-${randomSuffix(4)}`
+  for (let i = 1; i < 10; i++) {
+    const candidate = crc32Hex(`${seed}-${i}`)
     if (!(await exists(candidate))) return candidate
   }
-  return `${slug}-${randomSuffix(8)}`
+  return crc32Hex(`${seed}-${Math.floor(Math.random() * 0xffff)}`)
 }
 
 // 客户端信息解析（访客日志/评论用）。本地优先用 x-forwarded-for，

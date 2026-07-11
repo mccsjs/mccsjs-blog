@@ -12,7 +12,7 @@ import {
   settingKeys,
   type SettingKey,
 } from '@blog/shared'
-import { generateUniqueSlug, getClientIp, resolveClientInfo } from '../utils'
+import { generateCrc32Slug, getClientIp, resolveClientInfo } from '../utils'
 import { requireAuth, verifyPassword, hashPassword, signCommentAdminToken, verifyCommentAdminToken } from '../auth'
 import { renderCommentHtml } from '../markdown'
 import type { DB } from '../db'
@@ -119,8 +119,10 @@ export function contentRoutes() {
     const data = postCreateSchema.parse(await c.req.json())
     let slug = data.slug
     if (!slug) {
-      slug = await generateUniqueSlug(async (s) => !!(await db.query.posts.findFirst({ where: eq(posts.slug, s) })), `${data.title}-${Date.now()}`)
+      // 不填写：按 CRC32 + hex 自动生成
+      slug = await generateCrc32Slug(async (s) => !!(await db.query.posts.findFirst({ where: eq(posts.slug, s) })), data.title)
     } else {
+      // 填写：严格按照填写的来，仅校验唯一性
       const existing = await db.query.posts.findFirst({ where: eq(posts.slug, slug) })
       if (existing) return c.json({ error: 'Slug already exists' }, 409)
     }

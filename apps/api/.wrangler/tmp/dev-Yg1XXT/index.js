@@ -29518,27 +29518,39 @@ init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_process();
 init_virtual_unenv_global_polyfill_cloudflare_unenv_preset_node_console();
 init_performance2();
 var import_bowser = __toESM(require_es5(), 1);
-function randomSuffix(len = 6) {
-  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-  let s = "";
-  for (let i = 0; i < len; i++) s += chars[Math.floor(Math.random() * chars.length)];
-  return s;
+var CRC_TABLE = (() => {
+  const t = new Array(256);
+  for (let n = 0; n < 256; n++) {
+    let c = n;
+    for (let k = 0; k < 8; k++) c = c & 1 ? 3988292384 ^ c >>> 1 : c >>> 1;
+    t[n] = c >>> 0;
+  }
+  return t;
+})();
+function crc32(input) {
+  const bytes = new TextEncoder().encode(input);
+  let crc = 4294967295;
+  for (let i = 0; i < bytes.length; i++) {
+    crc = CRC_TABLE[(crc ^ bytes[i]) & 255] ^ crc >>> 8;
+  }
+  return (crc ^ 4294967295) >>> 0;
 }
-__name(randomSuffix, "randomSuffix");
-function slugify2(input) {
-  return input.toLowerCase().trim().replace(/[^a-z0-9一-龥]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60);
+__name(crc32, "crc32");
+function crc32Hex(input) {
+  return crc32(input).toString(16).padStart(8, "0");
 }
-__name(slugify2, "slugify");
-async function generateUniqueSlug(exists2, base) {
-  let slug = slugify2(base) || "post";
+__name(crc32Hex, "crc32Hex");
+async function generateCrc32Slug(exists2, base) {
+  const seed = `${base || "post"}-${Date.now()}`;
+  const slug = crc32Hex(seed);
   if (!await exists2(slug)) return slug;
-  for (let i = 0; i < 5; i++) {
-    const candidate = `${slug}-${randomSuffix(4)}`;
+  for (let i = 1; i < 10; i++) {
+    const candidate = crc32Hex(`${seed}-${i}`);
     if (!await exists2(candidate)) return candidate;
   }
-  return `${slug}-${randomSuffix(8)}`;
+  return crc32Hex(`${seed}-${Math.floor(Math.random() * 65535)}`);
 }
-__name(generateUniqueSlug, "generateUniqueSlug");
+__name(generateCrc32Slug, "generateCrc32Slug");
 function getClientIp(c) {
   const xff = c.req.header("x-forwarded-for");
   if (xff) return xff.split(",")[0].trim();
@@ -30998,7 +31010,7 @@ function contentRoutes() {
     const data = postCreateSchema.parse(await c.req.json());
     let slug = data.slug;
     if (!slug) {
-      slug = await generateUniqueSlug(async (s) => !!await db.query.posts.findFirst({ where: eq(posts.slug, s) }), `${data.title}-${Date.now()}`);
+      slug = await generateCrc32Slug(async (s) => !!await db.query.posts.findFirst({ where: eq(posts.slug, s) }), data.title);
     } else {
       const existing = await db.query.posts.findFirst({ where: eq(posts.slug, slug) });
       if (existing) return c.json({ error: "Slug already exists" }, 409);

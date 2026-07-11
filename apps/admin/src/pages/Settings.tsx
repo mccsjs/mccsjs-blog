@@ -33,8 +33,13 @@ interface SettingsData {
   adminName: string;
   adminPassword: string;
   adminBadge: string;
-  // —— 评论邮箱提醒（自研：CF Worker 无直连 SMTP，走 HTTP 邮件网关） ——
+  // —— 评论邮箱提醒（SMTP 优先 + HTTP 网关回退） ——
   mailEnabled: string;
+  mailSmtpHost: string;
+  mailSmtpPort: string;
+  mailSmtpUser: string;
+  mailSmtpPass: string;
+  mailSmtpSecure: string;
   mailProvider: string;
   mailApiKey: string;
   mailGatewayUrl: string;
@@ -78,6 +83,11 @@ const defaultValues: SettingsData = {
   adminPassword: '',
   adminBadge: '',
   mailEnabled: 'false',
+  mailSmtpHost: 'smtp.qq.com',
+  mailSmtpPort: '465',
+  mailSmtpUser: '',
+  mailSmtpPass: '',
+  mailSmtpSecure: '1',
   mailProvider: 'resend',
   mailApiKey: '',
   mailGatewayUrl: '',
@@ -438,8 +448,8 @@ export default function Settings() {
                   <div className="border-t border-[var(--border)] pt-4" />
                   <h2 className="text-base font-semibold text-[var(--text-h)]">评论邮箱提醒</h2>
                   <p className="text-xs text-[var(--text)]">
-                    开启后，有新评论 / 回复时自动发送邮件提醒。当前 API 运行在 Cloudflare Worker，无法直连 SMTP，
-                    统一通过 <b>HTTP 邮件网关</b> 发送（推荐 Resend，或任意兼容 <code>POST JSON</code> 的网关）。
+                    开启后，有新评论 / 回复时自动发送邮件提醒。
+                    <b>优先 SMTP 直连</b>（nodemailer → Cloudflare Worker TCP），失败自动回退到备用 HTTP 网关。
                   </p>
 
                   <label className="flex w-fit cursor-pointer items-center gap-2">
@@ -454,7 +464,72 @@ export default function Settings() {
                     <span className="text-sm text-[var(--text)]">启用评论邮箱提醒</span>
                   </label>
 
-                  <Field label="邮件服务商">
+                  {/* ====== SMTP 直连（优先） ====== */}
+                  <h3 className="text-sm font-semibold text-[var(--text-h)]">SMTP 直连（优先）</h3>
+                  <p className="text-xs text-[var(--text)]">
+                    填写 SMTP 邮箱与授权码后优先通过它发信。若发送失败则自动回退到下方备用网关。
+                    推荐 QQ 邮箱（smtp.qq.com:465，授权码在 QQ 邮箱→设置→账户→POP3/SMTP 服务中获取）。
+                  </p>
+
+                  <div className="grid gap-6 md:grid-cols-2">
+                    <Field label="SMTP 服务器">
+                      <Input id="mailSmtpHost" placeholder="smtp.qq.com" {...register('mailSmtpHost')} />
+                    </Field>
+                    <Field label="SMTP 端口">
+                      <Input
+                        id="mailSmtpPort"
+                        type="number"
+                        placeholder="465"
+                        {...register('mailSmtpPort')}
+                      />
+                    </Field>
+                  </div>
+
+                  <div className="grid gap-6 md:grid-cols-2">
+                    <Field label="SMTP 邮箱">
+                      <Input
+                        id="mailSmtpUser"
+                        type="email"
+                        placeholder="xxxx@qq.com"
+                        {...register('mailSmtpUser')}
+                      />
+                    </Field>
+                    <Field label="SMTP 授权码（密码）">
+                      <Input
+                        id="mailSmtpPass"
+                        type="password"
+                        autoComplete="off"
+                        placeholder="QQ 邮箱授权码（16位，留空表示不修改）"
+                        {...register('mailSmtpPass')}
+                      />
+                    </Field>
+                  </div>
+
+                  <label className="flex w-fit cursor-pointer items-center gap-2">
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4 rounded border-[var(--border-strong)]"
+                      checked={watch('mailSmtpSecure') !== '0'}
+                      onChange={(e) =>
+                        setValue('mailSmtpSecure', e.target.checked ? '1' : '0', { shouldDirty: true })
+                      }
+                    />
+                    <span className="text-sm text-[var(--text)]">SSL 安全连接（端口 465 时必须开启，一般保持勾选）</span>
+                  </label>
+
+                  <div className="border-t border-[var(--border)] pt-4" />
+                  {/* ====== 备用 HTTP 网关（SMTP 失败时自动回退） ====== */}
+                  <h3 className="text-sm font-semibold text-[var(--text-h)]">备用网关（可选，SMTP 失败时自动回退）</h3>
+
+                  <Field label="发件人名称（网关用）">
+                    <Input
+                      id="mailFromName"
+                      placeholder="如 站点名 / 博主"
+                      {...register('mailFromName')}
+                    />
+                  </Field>
+
+                  <Field label="网关类型">
                     <select
                       id="mailProvider"
                       {...register('mailProvider')}
@@ -464,24 +539,6 @@ export default function Settings() {
                       <option value="gateway">通用 HTTP 邮件网关</option>
                     </select>
                   </Field>
-
-                  <div className="grid gap-6 md:grid-cols-2">
-                    <Field label="发件人邮箱">
-                      <Input
-                        id="mailFromEmail"
-                        type="email"
-                        placeholder="如 ons@yourdomain.com"
-                        {...register('mailFromEmail')}
-                      />
-                    </Field>
-                    <Field label="发件人名称">
-                      <Input
-                        id="mailFromName"
-                        placeholder="如 站点名 / 博主"
-                        {...register('mailFromName')}
-                      />
-                    </Field>
-                  </div>
 
                   {watch('mailProvider') === 'resend' && (
                     <Field label="Resend API Key">
@@ -515,6 +572,10 @@ export default function Settings() {
                       </Field>
                     </div>
                   )}
+
+                  <div className="border-t border-[var(--border)] pt-4" />
+                  {/* ====== 模板 ====== */}
+                  <h3 className="text-sm font-semibold text-[var(--text-h)]">邮件模板</h3>
 
                   <Field label="回复通知模板">
                     <Textarea

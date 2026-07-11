@@ -11,8 +11,17 @@ import {
 } from './email-tpl'
 
 // 邮件配置（由 loadMailConfig 从 siteSettings 组装）
+export interface SmtpConfig {
+  host: string
+  port: number
+  user: string
+  pass: string
+  secure: boolean
+}
+
 export interface MailConfig {
-  provider: 'resend' | 'gateway'
+  smtp?: SmtpConfig // SMTP 直连配置（优先使用；仅 user+pass 都填才生效）
+  provider: 'resend' | 'gateway' // 备用网关类型（SMTP 失败时自动回退）
   apiKey: string
   gatewayUrl: string
   gatewayToken: string

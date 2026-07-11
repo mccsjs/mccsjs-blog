@@ -17,11 +17,13 @@
     "drizzle-orm": "^0.44.0",
     "hono": "^4.7.0",
     "marked": "^18.0.6",
+    "nodemailer": "^9.0.3",
     "xss": "^1.0.15",
     "zod": "^4.0.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.0.0",
+    "@types/nodemailer": "^8.0.1",
     "typescript": "^5.6.0",
     "wrangler": "^4.0.0"
   }

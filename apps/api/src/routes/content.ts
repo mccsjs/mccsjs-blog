@@ -19,7 +19,7 @@ import { renderCommentHtml } from '../markdown'
 import type { DB } from '../db'
 
 // 绝不随设置接口返回 / 空值表示「不修改（保留原值）」的敏感字段
-const SECRET_KEYS = ['adminPassword', 'mailApiKey', 'mailGatewayToken']
+const SECRET_KEYS = ['adminPassword', 'mailApiKey', 'mailGatewayToken', 'mailSmtpPass']
 
 // 把关系查询结果转换成前端期望的形状：tags 取实际标签对象
 function shapePost(p: any) {
@@ -396,7 +396,7 @@ export function contentRoutes() {
     // 触发邮箱提醒（不阻断评论主流程：任何异常仅记录日志，不影响评论返回）
     try {
       await notifyOnNewComment(db, {
-        comment,
+        comment: comment as { id: string; author: string; email: string; content: string },
         post,
         parent,
         baseUrl: new URL(c.req.url).origin,

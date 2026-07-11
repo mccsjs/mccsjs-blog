@@ -22,3 +22,5 @@ scripts/*.mjs
 backend/.backend.log
 *.log.bak
 *.log
+.wrangler/
+_tmp_*

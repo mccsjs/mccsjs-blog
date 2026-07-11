@@ -9,6 +9,8 @@
     "typecheck": "pnpm -r typecheck"
   },
   "devDependencies": {
+    "chokidar": "^5.0.0",
+    "sql.js": "^1.14.1",
     "typescript": "^5.6.0"
   }
 }

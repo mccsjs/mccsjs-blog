@@ -16,6 +16,9 @@ const { execSync } = require('child_process');
 const ROOT = 'D:\\codex\\mccsjsblog';
 const LOG_PATH = path.join(ROOT, '.backup', 'git-auto-push.log');
 
+// 是否推送到远程仓库：默认开启（true）。设置 GIT_PUSH=false 则只 commit 不 push。
+const PUSH_ENABLED = (process.env.GIT_PUSH || 'true').toLowerCase() !== 'false';
+
 // 跳过的目录
 const IGNORE_DIRS = new Set([
   'node_modules', '.git', '.astro', 'dist', 'build', '.workbuddy', '.qoder', '.backup',
@@ -88,6 +91,13 @@ function runGitPush() {
       log('📝 存在已提交但未推送的改动，直接推送...');
     }
 
+    // git pull + push（仅当开启远程推送时）
+    if (!PUSH_ENABLED) {
+      log('🔒 已按配置关闭远程推送（GIT_PUSH=false），仅保留本地 commit');
+      log('✅ Git 自动备份（本地）完成！\n');
+      return;
+    }
+
     // git pull
     log('📥 拉取远程更新...');
     try {
@@ -136,6 +146,7 @@ function main() {
   console.log('\n👀 Git 自动推送监听已启动');
   console.log(`   项目目录: ${ROOT}`);
   console.log(`   防抖延迟: ${DEBOUNCE_DELAY / 60000} 分钟`);
+  console.log(`   远程推送: ${PUSH_ENABLED ? '开启' : '关闭（仅本地 commit）'}`);
   console.log(`   日志文件: ${LOG_PATH}`);
   console.log('   Ctrl+C 停止\n');
 
@@ -166,8 +177,12 @@ function main() {
         statusClean = execSync('git status -s', { cwd: ROOT, encoding: 'utf8' }).trim() === '';
       } catch { /* ignore */ }
       if (statusClean && getAheadCount() > 0) {
-        log('🔄 启动兜底：检测到本地有未推送提交，补推中...');
-        runGitPush();
+        if (PUSH_ENABLED) {
+          log('🔄 启动兜底：检测到本地有未推送提交，补推中...');
+          runGitPush();
+        } else {
+          log('🔒 远程推送已关闭，本地存在未推送提交，已跳过');
+        }
       }
     })
     .on('add', (filePath) => {

@@ -8,7 +8,7 @@ import {
 } from 'drizzle-orm/sqlite-core'
 import { relations } from 'drizzle-orm'
 
-const now = () => Math.floor(Date.now() / 1000)
+const now = () => Date.now()
 
 // ============ 用户 / 会话（自研鉴权，仅需 users + sessions） ============
 

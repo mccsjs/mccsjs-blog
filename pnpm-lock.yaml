@@ -8,6 +8,12 @@ importers:
 
   .:
     devDependencies:
+      chokidar:
+        specifier: ^5.0.0
+        version: 5.0.0
+      sql.js:
+        specifier: ^1.14.1
+        version: 1.14.1
       typescript:
         specifier: ^5.6.0
         version: 5.9.3
@@ -95,7 +101,7 @@ importers:
         version: 2.14.1
       drizzle-orm:
         specifier: ^0.44.0
-        version: 0.44.7(@cloudflare/workers-types@4.20260702.1)
+        version: 0.44.7(@cloudflare/workers-types@4.20260702.1)(sql.js@1.14.1)
       hono:
         specifier: ^4.7.0
         version: 4.12.28
@@ -178,7 +184,7 @@ importers:
     dependencies:
       drizzle-orm:
         specifier: ^0.44.0
-        version: 0.44.7(@cloudflare/workers-types@4.20260702.1)
+        version: 0.44.7(@cloudflare/workers-types@4.20260702.1)(sql.js@1.14.1)
     devDependencies:
       drizzle-kit:
         specifier: ^0.31.0
@@ -4325,6 +4331,9 @@ packages:
   space-separated-tokens@2.0.2:
     resolution: {integrity: sha512-PEGlAwrG8yXGXRjW32fGbg66JAlOAwbObuqVoJpv/mRgoWDQfgH1wDPvtzWyUSNAXBGSk8h755YDbbcEy3SH2Q==}
 
+  sql.js@1.14.1:
+    resolution: {integrity: sha512-gcj8zBWU5cFsi9WUP+4bFNXAyF1iRpA3LLyS/DP5xlrNzGmPIizUeBggKa8DbDwdqaKwUcTEnChtd2grWo/x/A==}
+
   stable@0.1.8:
     resolution: {integrity: sha512-ji9qxRnOVfcuLDySj9qzhGSEFVobyt1kIOSkj1qZzYLzq7Tos/oUUWvotUPQLlrsidqsK6tBH89Bc9kL5zHA6w==}
     deprecated: 'Modern JS already guarantees Array#sort() is a stable sort, so this library is deprecated. See the compatibility table on MDN: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#browser_compatibility'
@@ -7295,9 +7304,10 @@ snapshots:
       esbuild: 0.25.12
       tsx: 4.23.0
 
-  drizzle-orm@0.44.7(@cloudflare/workers-types@4.20260702.1):
+  drizzle-orm@0.44.7(@cloudflare/workers-types@4.20260702.1)(sql.js@1.14.1):
     optionalDependencies:
       '@cloudflare/workers-types': 4.20260702.1
+      sql.js: 1.14.1
 
   dset@3.1.4: {}
 
@@ -9025,6 +9035,8 @@ snapshots:
   sourcemap-codec@1.4.8: {}
 
   space-separated-tokens@2.0.2: {}
+
+  sql.js@1.14.1: {}
 
   stable@0.1.8: {}
 

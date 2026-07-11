@@ -17,113 +17,107 @@ const visibleAggregateMenus = aggregateMenus.filter((m) => m.visible && m.childr
 ---
 
 <div id="nav-top-row">
-  <div id="nav-pill-wrapper">
-    <div id="nav-pill">
-      <!-- 毛玻璃层（滚动后显示） -->
-      <div id="nav-glass-layer"></div>
+  <div id="nav-segments">
+    <!-- 左段胶囊：图标 + 网站标题 -->
+    <div class="nav-seg nav-seg--left">
+      <div id="nav-logo-wrapper" class="flex items-center gap-2">
+        {visibleAggregateMenus.length > 0 && (
+          <button id="nav-aggregate-trigger" class="flex shrink-0 items-center justify-center" aria-label="打开图标菜单">
+            {favicon ? (
+              <img src={favicon} alt={siteTitle} class="nav-logo-icon" />
+            ) : (
+              <iconify-icon icon="ep:menu" class="nav-logo-icon" width="20" height="20"></iconify-icon>
+            )}
+          </button>
+        )}
+        <a id="nav-logo" href="/">
+          <span class="nav-logo-text">{siteTitle}</span>
+        </a>
 
-      <div id="nav-inner">
-        <!-- Logo + 图标菜单 -->
-        <div id="nav-logo-wrapper" class="relative flex items-center gap-2">
-          {visibleAggregateMenus.length > 0 && (
-            <button id="nav-aggregate-trigger" class="flex shrink-0 items-center justify-center" aria-label="打开图标菜单">
-              {favicon ? (
-                <img src={favicon} alt={siteTitle} class="nav-logo-icon" />
-              ) : (
-                <iconify-icon icon="ep:menu" class="nav-logo-icon" width="20" height="20"></iconify-icon>
-              )}
-            </button>
-          )}
-          <a id="nav-logo" href="/">
-            <span class="nav-logo-text">{siteTitle}</span>
-          </a>
-
-          {visibleAggregateMenus.length > 0 && (
-            <div id="nav-aggregate-dropdown" class="nav-aggregate-dropdown">
-              {visibleAggregateMenus.map((group) => (
-                <div class="aggregate-group">
-                  <div class="aggregate-title">{group.label}</div>
-                  <div class="aggregate-grid">
-                    {group.children
-                      ?.filter((child) => child.visible)
-                      .map((child) => (
-                        <a
-                          href={child.href || '#'}
-                          target={child.target || undefined}
-                          class="aggregate-item"
-                        >
-                          {child.icon && <MenuIcon icon={child.icon} class="aggregate-icon" />}
-                          <span>{child.label}</span>
-                        </a>
-                      ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <!-- 居中导航菜单 -->
-        <div id="nav-center" class="nav-desktop-menu">
-          <div id="nav-hover-border"></div>
-
-          {visibleMenus.length > 0 ? (
-            visibleMenus.map((menu) => {
-              const visibleChildren = menu.children?.filter((c) => c.visible) ?? [];
-              return visibleChildren.length > 0 ? (
-                <div class="nav-dropdown-wrapper">
-                  <button class="nav-item nav-has-children" data-dropdown-trigger>
-                    {menu.icon && <MenuIcon icon={menu.icon} class="nav-icon" />}
-                    <span>{menu.label}</span>
-                    <svg class="nav-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-                  </button>
-                  <div class="nav-dropdown-panel">
-                    {visibleChildren.map((child) => (
-                      <a href={child.href || '#'} target={child.target || undefined} class="nav-dropdown-item">
-                        {child.icon && <MenuIcon icon={child.icon} class="nav-icon" />}
+        {visibleAggregateMenus.length > 0 && (
+          <div id="nav-aggregate-dropdown" class="nav-aggregate-dropdown">
+            {visibleAggregateMenus.map((group) => (
+              <div class="aggregate-group">
+                <div class="aggregate-title">{group.label}</div>
+                <div class="aggregate-grid">
+                  {group.children
+                    ?.filter((child) => child.visible)
+                    .map((child) => (
+                      <a
+                        href={child.href || '#'}
+                        target={child.target || undefined}
+                        class="aggregate-item"
+                      >
+                        {child.icon && <MenuIcon icon={child.icon} class="aggregate-icon" />}
                         <span>{child.label}</span>
                       </a>
                     ))}
-                  </div>
                 </div>
-              ) : (
-                <a href={menu.href || '#'} target={menu.target || undefined} class="nav-item nav-link-item" data-nav-link>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+
+    <!-- 中段胶囊：导航菜单 -->
+    <div class="nav-seg nav-seg--center">
+      <div id="nav-center" class="nav-desktop-menu">
+        <div id="nav-hover-border"></div>
+
+        {visibleMenus.length > 0 ? (
+          visibleMenus.map((menu) => {
+            const visibleChildren = menu.children?.filter((c) => c.visible) ?? [];
+            return visibleChildren.length > 0 ? (
+              <div class="nav-dropdown-wrapper">
+                <button class="nav-item nav-has-children" data-dropdown-trigger>
                   {menu.icon && <MenuIcon icon={menu.icon} class="nav-icon" />}
                   <span>{menu.label}</span>
-                </a>
-              );
-            })
-          ) : (
-            <>
-              <a href="/" class="nav-item nav-link-item" data-nav-link><span>首页</span></a>
-              <a href="/posts" class="nav-item nav-link-item" data-nav-link><span>文章</span></a>
-              <a href="/archive" class="nav-item nav-link-item" data-nav-link><span>归档</span></a>
-              <a href="/link" class="nav-item nav-link-item" data-nav-link><span>友链</span></a>
-            </>
-          )}
-        </div>
-
-        <!-- 右侧工具栏 -->
-        <div id="nav-right">
-          <!-- 搜索 -->
-          <button id="nav-search-btn" class="nav-theme-btn" aria-label="搜索">
-            <iconify-icon icon="humbleicons:search" width="18" height="18"></iconify-icon>
-          </button>
-          <!-- 主题切换 -->
-          <button id="theme-toggle" class="nav-theme-btn" aria-label="切换主题">
-            <iconify-icon icon="line-md:moon" class="theme-icon theme-icon-dark" width="18" height="18"></iconify-icon>
-            <iconify-icon icon="solar:sun-broken" class="theme-icon theme-icon-light" width="18" height="18"></iconify-icon>
-          </button>
-          <!-- 移动端菜单开关 -->
-          <button id="nav-mobile-toggle" class="nav-desktop-hide" aria-label="菜单">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-              <line x1="4" y1="6" x2="20" y2="6" />
-              <line x1="4" y1="12" x2="20" y2="12" />
-              <line x1="4" y1="18" x2="20" y2="18" />
-            </svg>
-          </button>
-        </div>
+                  <svg class="nav-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                </button>
+                <div class="nav-dropdown-panel">
+                  {visibleChildren.map((child) => (
+                    <a href={child.href || '#'} target={child.target || undefined} class="nav-dropdown-item">
+                      {child.icon && <MenuIcon icon={child.icon} class="nav-icon" />}
+                      <span>{child.label}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <a href={menu.href || '#'} target={menu.target || undefined} class="nav-item nav-link-item" data-nav-link>
+                {menu.icon && <MenuIcon icon={menu.icon} class="nav-icon" />}
+                <span>{menu.label}</span>
+              </a>
+            );
+          })
+        ) : (
+          <>
+            <a href="/" class="nav-item nav-link-item" data-nav-link><span>首页</span></a>
+            <a href="/posts" class="nav-item nav-link-item" data-nav-link><span>文章</span></a>
+            <a href="/archive" class="nav-item nav-link-item" data-nav-link><span>归档</span></a>
+            <a href="/link" class="nav-item nav-link-item" data-nav-link><span>友链</span></a>
+          </>
+        )}
       </div>
+    </div>
+
+    <!-- 右段胶囊：搜索 + 主题切换 + 移动端菜单 -->
+    <div class="nav-seg nav-seg--right">
+      <button id="nav-search-btn" class="nav-theme-btn" aria-label="搜索">
+        <iconify-icon icon="humbleicons:search" width="18" height="18"></iconify-icon>
+      </button>
+      <button id="theme-toggle" class="nav-theme-btn" aria-label="切换主题">
+        <iconify-icon icon="line-md:moon" class="theme-icon theme-icon-dark" width="18" height="18"></iconify-icon>
+        <iconify-icon icon="solar:sun-broken" class="theme-icon theme-icon-light" width="18" height="18"></iconify-icon>
+      </button>
+      <button id="nav-mobile-toggle" class="nav-desktop-hide" aria-label="菜单">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="4" y1="6" x2="20" y2="6" />
+          <line x1="4" y1="12" x2="20" y2="12" />
+          <line x1="4" y1="18" x2="20" y2="18" />
+        </svg>
+      </button>
     </div>
   </div>
 </div>

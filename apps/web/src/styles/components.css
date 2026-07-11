@@ -1,4 +1,4 @@
-/* ===== components.css：全局工具（防溢出兜底）/ TabNav / 液态玻璃 / 星空 / 进度条 ===== */
+/* ===== components.css：全局工具（防溢出兜底）/ 液态玻璃 / 星空 / 进度条 ===== */
 /* 全局兜底：约束内容区域不超出视口（排除固定/绝对定位元素） */
 article, section, .post-content, #tcomment,
 #tcomment *, .post-article > * {
@@ -59,67 +59,9 @@ textarea {
   }
 }
 
-/* ===== TabNav 全局样式（确保所有人可见） ===== */
-.tab-nav {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  width: fit-content;
-  margin: 0 auto 2.5rem;
-  padding: 5px;
-  border-radius: 50px;
-  background: oklch(1 0 0 / 0.72);
-  border: 1px solid oklch(0 0 0 / 0.06);
-  box-shadow: 0 1px 3px oklch(0 0 0 / 0.04);
-}
-.dark .tab-nav {
-  background: oklch(0.15 0 0 / 0.72);
-  border-color: oklch(1 0 0 / 0.06);
-  box-shadow: 0 1px 3px oklch(0 0 0 / 0.12);
-}
-#tab-hover-border {
-  position: absolute;
-  height: 2.25rem;
-  border-radius: 9999px;
-  border: 1.5px solid oklch(0.35 0 0);
-  background: transparent;
-  opacity: 0;
-  pointer-events: none;
-  z-index: 0;
-  transition: left 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-              width 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-.dark #tab-hover-border { border-color: oklch(0.6 0 0); }
-.tab-nav:hover #tab-hover-border,
-.tab-nav.has-active #tab-hover-border { opacity: 1; }
-
-.tab-item {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6px 18px;
-  border-radius: 50px;
-  font-size: 14px;
-  font-weight: 500;
-  color: oklch(0.35 0 0);
-  text-decoration: none;
-  white-space: nowrap;
-  transition: color 0.15s ease;
-  line-height: 1;
-  font-family: inherit;
-}
-.dark .tab-item { color: oklch(0.55 0 0); }
-.tab-item:hover { color: oklch(0.1 0 0); }
-.dark .tab-item:hover { color: oklch(0.95 0 0); }
-.tab-item.active {
-  font-weight: 600;
-  color: oklch(0.2 0 0);
-}
-.dark .tab-item.active { color: oklch(0.9 0 0); }
+/* ===== TabNav 样式已迁移至 public/scripts/base/tabnav.js（MutationObserver 注入）
+   与 TabNav.astro 的 <style is:global>，入口编排见 public/scripts/base/entry.js。
+   此处不再放置，避免 dev 下 @import 链缓存导致样式陈旧（Swup 切页后样式不刷新）。 ===== */
 
 /* ===== 进度条隐藏 ===== */
 #progress-bar { display: none; }

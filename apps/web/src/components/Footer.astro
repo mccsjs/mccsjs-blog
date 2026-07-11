@@ -156,7 +156,7 @@ if (friends.length === 0) {
 
     {/* 版权 */}
     <div class="copyright">
-      <span><b>&copy;{copyrightRange} {siteTitle}</b></span>
+      <span><b>&copy;<span id="copyright-year" data-start-year={isNaN(startYear) ? '' : startYear}>{copyrightRange}</span> {siteTitle}</b></span>
     </div>
 
     {/* 网站运行时长计时器 */}
@@ -581,3 +581,16 @@ if (friends.length === 0) {
     createRuntimeCounter();
   </script>
 )}
+
+{/* 版权年份：浏览器端实时刷新，避免静态构建后年份被写死 */}
+<script>
+  function updateCopyrightYear() {
+    var el = document.getElementById('copyright-year');
+    if (!el) return;
+    var startYear = parseInt(el.getAttribute('data-start-year') || '', 10);
+    var y = new Date().getFullYear();
+    el.textContent = (!isNaN(startYear) && startYear < y) ? (startYear + ' - ' + y) : String(y);
+  }
+  updateCopyrightYear();
+  document.addEventListener('astro:page-load', updateCopyrightYear);
+</script>

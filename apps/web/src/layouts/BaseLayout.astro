@@ -189,7 +189,7 @@ const effectiveFontFamily = fontFamily
     <FloatingBar />
     <div id="progress-bar"></div>
 
-    <script defer src={`/scripts/base-layout.js?v=${import.meta.env.DEV ? Date.now() : '2'}`}></script>
+    <script type="module" src={`/scripts/base/entry.js?v=${import.meta.env.DEV ? Date.now() : '2'}`}></script>
     <script defer src={`/scripts/tracker.js?v=${import.meta.env.DEV ? Date.now() : '1'}`}></script>
   </body>
 </html>

@@ -34,14 +34,50 @@ export function textToHtml(text: string): string {
     .join('')
 }
 
-export const DEFAULT_REPLY_TPL =
-  '您有一条新回复｜{{siteTitle}}\n\n' +
-  '{{parentAuthor}} 你好：\n\n' +
-  '{{author}} 在《{{postTitle}}》中回复了你的评论。\n\n' +
-  'Ta 的留言：\n{{content}}\n\n' +
-  '你原来的评论：\n{{parentContent}}\n\n' +
-  '查看回复：{{commentUrl}}\n\n' +
-  '—— {{siteTitle}}'
+// 富 HTML -> 纯文本：去掉 style/script/标签，还原常见实体，用于邮件 text 部分
+export function stripHtml(html: string): string {
+  return (html || '')
+    .replace(/<(style|script)[\s\S]*?<\/\1>/gi, '')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+}
+
+// 回复通知模板（富 HTML，对齐参考项目 D:\3iS73M 的 comment_reply.tmpl 视觉）
+// 变量：parentAuthor(被回复者昵称) / author(回复者昵称) / postTitle(文章标题)
+//       content(回复内容) / commentUrl(完整回复链接) / siteTitle(站点名)
+export const DEFAULT_REPLY_TPL = `<div style="background:#f5f5f5;padding:20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;line-height:1.6;">
+  <div style="background:#ffffff;max-width:800px;margin:0 auto;border-radius:15px;border:1px solid #39c5bb;overflow:hidden;box-shadow:0 0 20px rgba(0,0,0,0.12);">
+    <header style="overflow:hidden;">
+      <img src="https://seln.cn/img/1.jpg" alt="" style="width:100%;display:block;" />
+    </header>
+    <div style="padding:5px 20px;background-color:rgba(70,225,198,0.05);">
+      <div style="border-radius:30px;position:relative;color:#ffffff;float:left;z-index:999;background:#39c5bb;padding:10px 30px;margin:-25px auto 0;box-shadow:5px 5px 5px rgba(0,0,0,0.3);">亲爱的 {{parentAuthor}}：</div>
+      <br />
+      <center><h3 style="margin:18px 0 8px;">您收到了新的回复</h3></center>
+      <hr style="width:200px;border:0;border-bottom:1px solid #e5e5e5;margin:12px auto;" />
+      <br />
+      <p>您好！<strong>{{author}}</strong> 回复了您在 <strong>“{{postTitle}}”</strong> 的评论：</p>
+      <div style="border-radius:8px;border:1px solid #ddd;background-color:#f5f5f5;margin:15px 0;padding:20px;">{{content}}</div>
+      <p>快去看看吧！</p>
+      <div style="text-align:center;">
+        <a href="{{commentUrl}}" style="color:#ffffff;text-decoration:none;display:inline-block;min-height:28px;line-height:28px;padding:0 13px;outline:0;background:#39c5bb;font-size:13px;text-align:center;font-weight:400;border:0;border-radius:999em;" target="_blank">点击去查看回复&gt;&gt;</a>
+        <p> </p>
+      </div>
+      <div style="text-align:center;margin-top:3rem;color:#b3b3b1;">
+        <hr style="width:165px;border:0;border-bottom:1px solid #e5e5e5;margin:5px auto;" />&copy;&nbsp;{{siteTitle}}
+        <p> </p>
+      </div>
+    </div>
+  </div>
+</div>`
 
 export const DEFAULT_ADMIN_TPL =
   '《{{postTitle}}》收到新评论｜{{siteTitle}}\n\n' +

@@ -56,25 +56,7 @@
 
     if (!topRow) return;
 
-    // ===== 1. 滚动收缩 =====
-    var SCROLL_IN = 80;
-    var SCROLL_OUT = 40;
-    var scrolled = false;
-
-    function onScroll() {
-      var y = window.scrollY;
-      if (!scrolled && y > SCROLL_IN) {
-        scrolled = true;
-        topRow.classList.add('scrolled');
-      } else if (scrolled && y < SCROLL_OUT) {
-        scrolled = false;
-        topRow.classList.remove('scrolled');
-      }
-    }
-    window.addEventListener('scroll', onScroll, { passive: true, signal: signal });
-    onScroll();
-
-    // ===== 2. hover 滑动边框 =====
+    // ===== 1. hover 滑动边框 =====
     var _hoverAbort = null;
 
     function cleanupHover() {

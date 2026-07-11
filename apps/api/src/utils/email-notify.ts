@@ -4,6 +4,8 @@ import {
   isValidEmail,
   renderTemplate,
   textToHtml,
+  stripHtml,
+  escapeHtml,
   DEFAULT_REPLY_TPL,
   DEFAULT_ADMIN_TPL,
   REPLY_SUBJECT,
@@ -89,8 +91,21 @@ export function buildNotification(p: NotifyParams, cfg: MailConfig): BuiltNotifi
   // 不通知自己（回复自己的评论 / 博主给自己的新评论发通知）
   if (to.trim().toLowerCase() === p.comment.email.trim().toLowerCase()) return null
 
-  const text = renderTemplate(tpl, vars)
-  const html = textToHtml(text)
+  const rendered = renderTemplate(tpl, vars)
+  const isRichHtml = /<[a-z][\s\S]*>/i.test(rendered)
+  let text: string
+  let html: string
+  if (isRichHtml) {
+    // 富 HTML 模板：变量值先 HTML 转义再渲染，避免评论内容被当作 HTML 注入；
+    // 纯文本部分由 stripHtml 从渲染结果还原，供邮件 text/plain 使用。
+    const safeVars: Record<string, string> = {}
+    for (const k of Object.keys(vars)) safeVars[k] = escapeHtml(vars[k])
+    html = renderTemplate(tpl, safeVars)
+    text = stripHtml(html)
+  } else {
+    text = rendered
+    html = textToHtml(rendered)
+  }
   return {
     to,
     subject: renderTemplate(subjectTpl, vars),

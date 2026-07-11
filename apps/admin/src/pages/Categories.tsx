@@ -4,11 +4,16 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { api } from '../lib/api';
-import type { Category } from '../../../shared/src/index';
 import Button from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Icon } from '@iconify/react';
+
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+}
 
 const schema = z.object({
   name: z.string().min(1, '请输入名称'),

@@ -5,8 +5,29 @@ import { z } from 'zod';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../lib/api';
-import type { Post, Category, Tag } from '../../../shared/src/index';
 import Button from '../components/ui/button';
+
+interface Category {
+  id: string;
+  name: string;
+}
+
+interface Tag {
+  id: string;
+  name: string;
+}
+
+interface Post {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt?: string | null;
+  content: string;
+  published: boolean;
+  coverImage?: string | null;
+  category?: { name?: string } | null;
+  tags: { name: string }[];
+}
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';

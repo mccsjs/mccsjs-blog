@@ -5,15 +5,16 @@ import Button from '../components/ui/button';
 import { Icon } from '@iconify/react';
 
 const navItems = [
-  { to: '/', label: '仪表盘', icon: 'layout-dashboard' },
+  { to: '/', label: '概览', icon: 'layout-dashboard' },
   { to: '/posts', label: '文章', icon: 'file-text' },
   { to: '/categories', label: '分类', icon: 'folder-open' },
   { to: '/tags', label: '标签', icon: 'tags' },
   { to: '/comments', label: '评论', icon: 'message-square' },
-  { to: '/menus', label: '菜单管理', icon: 'menu' },
-  { to: '/friends', label: '友链管理', icon: 'link-2' },
-  { to: '/visitor-logs', label: '访客日志', icon: 'bar-chart-3' },
-  { to: '/settings', label: '系统设置', icon: 'settings-2' },
+  { to: '/menus', label: '菜单', icon: 'menu' },
+  { to: '/friends', label: '友链', icon: 'link-2' },
+  { to: '/visitor-logs', label: '访客', icon: 'bar-chart-3' },
+  { to: '/scratchpad', label: '速记', icon: 'notebook-pen' },
+  { to: '/settings', label: '设置', icon: 'settings-2' },
 ];
 
 export default function AdminLayout() {
@@ -28,7 +29,6 @@ export default function AdminLayout() {
     }
   }, [session, isLoading, navigate, location.pathname]);
 
-  // 页面切换时关闭侧边栏
   useEffect(() => {
     setSidebarOpen(false);
   }, [location.pathname]);
@@ -58,37 +58,35 @@ export default function AdminLayout() {
       {/* 移动端遮罩 */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+          className="fixed inset-0 z-40 bg-black/40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* 侧边栏 */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-[var(--border)] bg-[var(--bg)] transition-transform duration-300 ease-in-out lg:fixed lg:top-0 lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-56 flex-col border-r border-[var(--border)] bg-[var(--bg)] transition-transform duration-200 ease-in-out lg:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Logo 区 */}
-        <div className="flex items-center gap-2.5 px-5 py-5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg [background-image:var(--accent-grad)] shadow-sm">
-            <Icon icon="lucide:pen-tool" width={18} height={18} className="text-white" />
+        <div className="flex items-center justify-between px-4 py-4">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--text-h)] text-[var(--bg)]">
+              <Icon icon="lucide:pen-tool" width={16} height={16} />
+            </div>
+            <span className="text-sm font-semibold text-[var(--text-h)]">博客管理</span>
           </div>
-          <div>
-            <div className="text-sm font-semibold text-[var(--text-h)]">管理系统</div>
-            <div className="text-xs text-[var(--text)]">mccsjsblog</div>
-          </div>
-          {/* 移动端关闭按钮 */}
           <button
             onClick={() => setSidebarOpen(false)}
-            className="ml-auto rounded-lg p-1.5 text-[var(--text)] hover:bg-[var(--bg-muted)] lg:hidden"
+            className="rounded-md p-1 text-[var(--text)] hover:bg-[var(--bg-muted)] lg:hidden"
           >
             <Icon icon="lucide:x" width={20} height={20} />
           </button>
         </div>
 
         {/* 导航 */}
-        <nav className="flex-1 space-y-1 px-3 py-2 overflow-y-auto">
+        <nav className="flex-1 space-y-0.5 overflow-y-auto px-2 py-1">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
@@ -96,23 +94,23 @@ export default function AdminLayout() {
               end={item.to === '/'}
               onClick={() => setSidebarOpen(false)}
               className={({ isActive }) =>
-                `flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
+                `group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all ${
                   isActive
                     ? 'bg-[var(--accent-bg)] text-[var(--accent)]'
                     : 'text-[var(--text)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-h)]'
                 }`
               }
             >
-              <Icon icon={`lucide:${item.icon}`} width={18} height={18} className="shrink-0" />
+              <Icon icon={`lucide:${item.icon}`} width={17} height={17} className="shrink-0" />
               <span>{item.label}</span>
             </NavLink>
           ))}
         </nav>
 
         {/* 用户区 */}
-        <div className="border-t border-[var(--border)] p-3">
-          <div className="flex items-center gap-3 rounded-lg px-2 py-2">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full [background-image:var(--accent-grad)] text-sm font-semibold text-white">
+        <div className="border-t border-[var(--border)] p-2">
+          <div className="flex items-center gap-2.5 rounded-md px-2 py-2">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--bg-muted)] text-xs font-semibold text-[var(--text-h)]">
               {initials}
             </div>
             <div className="min-w-0 flex-1">
@@ -124,27 +122,28 @@ export default function AdminLayout() {
           </div>
           <Button
             variant="ghost"
-            className="mt-1 w-full justify-start gap-2.5"
+            className="mt-0.5 w-full justify-start gap-2 text-[var(--text)] hover:text-[var(--text-h)]"
             onClick={handleSignOut}
           >
-            <Icon icon="lucide:log-out" width={16} height={16} />
+            <Icon icon="lucide:log-out" width={15} height={15} />
             退出登录
           </Button>
         </div>
       </aside>
 
       {/* 主内容 */}
-      <main className="flex-1 min-w-0 lg:ml-64 lg:h-screen lg:overflow-y-auto">
+      <main className="min-w-0 flex-1 lg:ml-56 lg:h-screen lg:overflow-y-auto">
         {/* 移动端顶部栏 */}
         <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-[var(--border)] bg-[var(--bg)] px-4 lg:hidden">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="rounded-lg p-2 text-[var(--text)] hover:bg-[var(--bg-muted)]"
+            className="rounded-md p-2 text-[var(--text)] hover:bg-[var(--bg-muted)]"
           >
-            <Icon icon="lucide:menu" width={22} height={22} />
+            <Icon icon="lucide:menu" width={20} height={20} />
           </button>
-          <span className="text-sm font-semibold text-[var(--text-h)]">管理系统</span>
+          <span className="text-sm font-semibold text-[var(--text-h)]">博客管理</span>
         </header>
+
         <div id="admin-main" className="mx-auto max-w-6xl p-4 sm:p-6 md:p-8">
           <Outlet />
         </div>

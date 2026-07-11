@@ -11,7 +11,7 @@ export default function Button({ children, className = '', variant = 'primary', 
     'inline-flex items-center justify-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium transition-all disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2';
   const variants: Record<ButtonVariant, string> = {
     primary:
-      'text-white shadow-sm hover:shadow-md hover:-translate-y-0.5 focus-visible:ring-[var(--accent)] [background-image:var(--accent-grad)]',
+      'bg-[var(--text-h)] text-[var(--bg)] shadow-sm hover:bg-[var(--accent)] hover:shadow-md hover:-translate-y-0.5 focus-visible:ring-[var(--accent)]',
     secondary:
       'border border-[var(--border)] bg-[var(--bg)] text-[var(--text-h)] hover:bg-[var(--bg-muted)] hover:border-[var(--border-strong)] focus-visible:ring-[var(--accent)]',
     danger:

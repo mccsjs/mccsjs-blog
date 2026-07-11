@@ -216,21 +216,21 @@ export default function VisitorLogs() {
           <div className="flex items-center gap-2">
             <Button
               variant="secondary"
-              size="sm"
+              className="px-3 py-1.5 text-xs"
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page <= 1}
             >
-              <Icon icon="lucide:chevron-left" width={16} height={16} />
+              <Icon icon="lucide:chevron-left" width={14} height={14} />
               上一页
             </Button>
             <Button
               variant="secondary"
-              size="sm"
+              className="px-3 py-1.5 text-xs"
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page >= totalPages}
             >
               下一页
-              <Icon icon="lucide:chevron-right" width={16} height={16} />
+              <Icon icon="lucide:chevron-right" width={14} height={14} />
             </Button>
           </div>
         </div>

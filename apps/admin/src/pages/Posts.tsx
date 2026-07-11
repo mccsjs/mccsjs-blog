@@ -1,9 +1,19 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
-import type { Post } from '../../../shared/src/index';
 import Button from '../components/ui/button';
 import { Icon } from '@iconify/react';
+
+interface Post {
+  id: string;
+  title: string;
+  slug: string;
+  coverImage?: string | null;
+  published: boolean;
+  views: number;
+  updatedAt: string;
+  category?: { name?: string } | null;
+}
 
 export default function Posts() {
   const navigate = useNavigate();

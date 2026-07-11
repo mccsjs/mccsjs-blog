@@ -48,7 +48,7 @@ export default function Login() {
   return (
     <div className="login-page">
       <div className="login-card">
-        <h2 className="login-title">管理系统</h2>
+        <h2 className="login-title">登录</h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="login-form">
           <div className="form-item">
@@ -78,7 +78,7 @@ export default function Login() {
           {error && <div className="form-alert">{error}</div>}
 
           <Button type="submit" className="form-submit" disabled={isSubmitting}>
-            {isSubmitting ? '处理中...' : '登 录'}
+            {isSubmitting ? '处理中...' : '登录'}
           </Button>
         </form>
       </div>
@@ -91,25 +91,22 @@ export default function Login() {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: #f0f2f5;
+          background: var(--bg-soft);
         }
         .login-card {
           width: 100%;
-          max-width: 400px;
+          max-width: 380px;
           padding: 40px 32px;
-          background: #fff;
-          border-radius: 12px;
-          box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+          background: var(--bg);
+          border: 1px solid var(--border);
+          border-radius: 10px;
+          box-shadow: 0 1px 3px 0 rgb(var(--shadow-color) / 0.05);
         }
         .login-title {
-          text-align: center;
-          margin: 0 0 32px;
-          font-size: 22px;
+          margin: 0 0 28px;
+          font-size: 20px;
           font-weight: 600;
-          color: #303133;
-        }
-        .login-form {
-          margin-top: 8px;
+          color: var(--text-h);
         }
         .form-item {
           margin-bottom: 18px;
@@ -117,65 +114,49 @@ export default function Login() {
         .form-label {
           display: block;
           margin-bottom: 6px;
-          font-size: 14px;
+          font-size: 13px;
           font-weight: 500;
-          color: #303133;
+          color: var(--text-h);
         }
         .form-input {
           width: 100%;
-          height: 40px;
-          padding: 0 15px;
-          border: 1px solid #dcdfe6;
-          border-radius: 6px;
+          height: 42px;
+          padding: 0 14px;
+          border: 1px solid var(--border);
+          border-radius: 8px;
           font-size: 14px;
-          color: #303133;
-          background: #fff;
+          color: var(--text-h);
+          background: var(--bg-soft);
           outline: none;
-          transition: border-color 0.2s;
         }
         .form-input:hover {
-          border-color: #c0c4cc;
+          border-color: var(--border-strong);
+          background: var(--bg);
         }
         .form-input:focus {
-          border-color: #6366f1;
-          box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+          border-color: var(--accent);
+          background: var(--bg);
+          box-shadow: 0 0 0 3px var(--accent-bg);
         }
         .form-error {
-          margin-top: 4px;
+          margin-top: 5px;
           font-size: 12px;
-          color: #f56c6c;
+          color: #dc2626;
         }
         .form-alert {
           margin-bottom: 18px;
-          padding: 8px 12px;
+          padding: 10px 12px;
           border-radius: 6px;
-          background: #fef0f0;
-          color: #f56c6c;
+          border: 1px solid rgba(220, 38, 38, 0.15);
+          background: rgba(220, 38, 38, 0.06);
+          color: #dc2626;
           font-size: 13px;
         }
         .form-submit {
           width: 100%;
-          height: 40px;
+          height: 42px;
           font-size: 14px;
-          font-weight: 500;
-        }
-        .login-switch {
-          margin-top: 16px;
-          text-align: center;
-          font-size: 14px;
-          color: #909399;
-        }
-        .switch-link {
-          margin-left: 4px;
-          background: none;
-          border: none;
-          padding: 0;
-          font-size: 14px;
-          color: #6366f1;
-          cursor: pointer;
-        }
-        .switch-link:hover {
-          text-decoration: underline;
+          font-weight: 600;
         }
       `}</style>
     </div>

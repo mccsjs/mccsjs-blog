@@ -11,6 +11,7 @@ import Menus from './pages/Menus';
 import Settings from './pages/Settings';
 import Friends from './pages/Friends';
 import VisitorLogs from './pages/VisitorLogs';
+import Scratchpad from './pages/Scratchpad';
 
 export default function App() {
   return (
@@ -28,6 +29,7 @@ export default function App() {
           <Route path="menus" element={<Menus />} />
           <Route path="friends" element={<Friends />} />
           <Route path="visitor-logs" element={<VisitorLogs />} />
+          <Route path="scratchpad" element={<Scratchpad />} />
           <Route path="settings" element={<Settings />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>

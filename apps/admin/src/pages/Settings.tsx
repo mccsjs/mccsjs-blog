@@ -28,12 +28,10 @@ interface SettingsData {
   commentProvider: string;
   twikooEnvId: string;
   commentEmojiCdn: string;
-  // —— 评论区博主身份（管理端配置，前端「设置」按钮登录用） ——
   adminEmail: string;
   adminName: string;
   adminPassword: string;
   adminBadge: string;
-  // —— 评论邮箱提醒（SMTP 优先 + HTTP 网关回退） ——
   mailEnabled: string;
   mailSmtpHost: string;
   mailSmtpPort: string;
@@ -54,7 +52,6 @@ interface SettingsData {
   fontFamily: string;
   backgroundImage: string;
   linkMarkdown: string;
-  // —— 页脚设置 ——
   showMotto: string;
   mottoTitle: string;
   mottoText: string;
@@ -103,13 +100,19 @@ const defaultValues: SettingsData = {
   backgroundImage: '',
   linkMarkdown: '',
   showMotto: 'true',
-  mottoTitle: '格言🧬',
+  mottoTitle: '格言',
   mottoText: '',
   mottoCtaText: '',
   mottoCtaUrl: '',
   mottoCtaTarget: '_self',
   footerBadges: '',
 };
+
+const TAB_LIST = [
+  { key: 'basic', label: '基本信息' },
+  { key: 'comment', label: '评论' },
+  { key: 'footer', label: '页脚' },
+] as const;
 
 export default function Settings() {
   const queryClient = useQueryClient();
@@ -171,44 +174,32 @@ export default function Settings() {
     setBadgesDirty(true);
   };
 
-  const tabBase =
-    'px-4 py-1.5 text-sm font-medium rounded-md transition-colors';
-  const tabActive = 'bg-[var(--accent)] text-white';
-  const tabInactive = 'text-[var(--text)] hover:text-[var(--text-h)]';
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-[var(--text-h)]">系统设置</h1>
-          <p className="mt-1 text-sm text-[var(--text)]">管理网站基本信息、评论与页脚配置</p>
+          <h1>系统设置</h1>
+          <p className="text-sm text-[var(--text)]">网站基本信息、评论与页脚配置</p>
         </div>
         <Icon icon="lucide:settings-2" width={20} height={20} className="text-[var(--text)]" />
       </div>
 
       {/* Tab 切换 */}
-      <div className="flex gap-1 rounded-lg border border-[var(--border)] bg-[var(--bg)] p-1 w-fit">
-        <button
-          type="button"
-          onClick={() => setTab('basic')}
-          className={`${tabBase} ${tab === 'basic' ? tabActive : tabInactive}`}
-        >
-          基本信息
-        </button>
-        <button
-          type="button"
-          onClick={() => setTab('comment')}
-          className={`${tabBase} ${tab === 'comment' ? tabActive : tabInactive}`}
-        >
-          评论设置
-        </button>
-        <button
-          type="button"
-          onClick={() => setTab('footer')}
-          className={`${tabBase} ${tab === 'footer' ? tabActive : tabInactive}`}
-        >
-          页脚设置
-        </button>
+      <div className="flex w-fit gap-1 rounded-lg border border-[var(--border)] bg-[var(--bg)] p-1">
+        {TAB_LIST.map((t) => (
+          <button
+            key={t.key}
+            type="button"
+            onClick={() => setTab(t.key)}
+            className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${
+              tab === t.key
+                ? 'bg-[var(--accent)] text-white'
+                : 'text-[var(--text)] hover:text-[var(--text-h)]'
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
       </div>
 
       {isLoading ? (
@@ -221,38 +212,32 @@ export default function Settings() {
           className="space-y-6 rounded-xl border border-[var(--border)] bg-[var(--bg)] p-6 shadow-sm"
         >
           {tab === 'basic' && (
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-5 md:grid-cols-2">
               <Field label="网站标题">
                 <Input id="siteTitle" placeholder="My Blog" {...register('siteTitle')} />
               </Field>
 
               <Field label="每页文章数">
-                <Input
-                  id="postsPerPage"
-                  type="number"
-                  min={1}
-                  max={100}
-                  {...register('postsPerPage')}
-                />
+                <Input id="postsPerPage" type="number" min={1} max={100} {...register('postsPerPage')} />
+              </Field>
+
+              <Field label="站点地址" helper="用于邮件链接与 RSS，留空则使用请求域名">
+                <Input id="siteUrl" placeholder="https://your-domain.com" {...register('siteUrl')} />
+              </Field>
+
+              <Field label="ICP 备案号">
+                <Input id="icp" placeholder="京ICP备XXXXXXXX号" {...register('icp')} />
               </Field>
 
               <Field label="Logo URL" className="md:col-span-2">
                 <Input id="siteLogo" placeholder="https://example.com/logo.png" {...register('siteLogo')} />
               </Field>
 
-              <Field label="站点地址 (Site URL)" className="md:col-span-2">
-                <Input
-                  id="siteUrl"
-                  placeholder="https://your-domain.com（用于邮件链接 / RSS，留空则退回请求域名）"
-                  {...register('siteUrl')}
-                />
-              </Field>
-
               <Field label="Favicon URL" className="md:col-span-2">
                 <Input id="favicon" placeholder="https://example.com/favicon.ico" {...register('favicon')} />
               </Field>
 
-              <Field label="字体 CSS 链接" className="md:col-span-2">
+              <Field label="字体 CSS 链接" helper="Google Fonts 等在线字体样式地址" className="md:col-span-2">
                 <Input
                   id="fontCssUrl"
                   placeholder="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap"
@@ -261,34 +246,17 @@ export default function Settings() {
               </Field>
 
               <Field label="字体族名" className="md:col-span-2">
-                <Input
-                  id="fontFamily"
-                  placeholder="'Noto Sans SC', sans-serif"
-                  {...register('fontFamily')}
-                />
+                <Input id="fontFamily" placeholder="'Noto Sans SC', sans-serif" {...register('fontFamily')} />
               </Field>
 
-              <Field label="背景图 URL" className="md:col-span-2">
-                <Input
-                  id="backgroundImage"
-                  placeholder="https://example.com/bg.jpg"
-                  {...register('backgroundImage')}
-                />
+              <Field label="背景图 URL" helper="首页背景图，留空使用默认背景" className="md:col-span-2">
+                <Input id="backgroundImage" placeholder="https://example.com/bg.jpg" {...register('backgroundImage')} />
               </Field>
 
-              <Field label="ICP 备案号" className="md:col-span-2">
-                <Input id="icp" placeholder="京ICP备XXXXXXXX号" {...register('icp')} />
-              </Field>
-
-              <div className="md:col-span-2 border-t border-[var(--border)] pt-2" />
-              <h2 className="md:col-span-2 text-base font-semibold text-[var(--text-h)]">图床设置 (ImgBed)</h2>
+              <SectionTitle className="md:col-span-2">图床</SectionTitle>
 
               <Field label="图床地址" className="md:col-span-2">
-                <Input
-                  id="imgbedUrl"
-                  placeholder="https://imgbed.example.com"
-                  {...register('imgbedUrl')}
-                />
+                <Input id="imgbedUrl" placeholder="https://imgbed.example.com" {...register('imgbedUrl')} />
               </Field>
 
               <Field label="API Token" className="md:col-span-2">
@@ -301,156 +269,93 @@ export default function Settings() {
                 />
               </Field>
 
+              <SectionTitle className="md:col-span-2">内容</SectionTitle>
+
               <Field label="网站描述" className="md:col-span-2">
-                <Textarea
-                  id="siteDescription"
-                  rows={3}
-                  placeholder="一句话介绍网站"
-                  {...register('siteDescription')}
-                />
+                <Textarea id="siteDescription" rows={3} placeholder="一句话介绍网站" {...register('siteDescription')} />
               </Field>
 
-              <Field label="自定义页脚文本" className="md:col-span-2">
-                <Textarea
-                  id="footerText"
-                  rows={2}
-                  placeholder="支持 HTML，会显示在默认页脚下方"
-                  {...register('footerText')}
-                />
+              <Field label="自定义页脚文本" helper="支持 HTML" className="md:col-span-2">
+                <Textarea id="footerText" rows={2} placeholder="显示在默认页脚下方" {...register('footerText')} />
               </Field>
 
               <Field label="友链页 Markdown" className="md:col-span-2">
-                <Textarea
-                  id="linkMarkdown"
-                  rows={8}
-                  placeholder="友链页顶部文本，支持 Markdown"
-                  {...register('linkMarkdown')}
-                />
+                <Textarea id="linkMarkdown" rows={8} placeholder="友链页顶部文本，支持 Markdown" {...register('linkMarkdown')} />
               </Field>
             </div>
           )}
 
           {tab === 'comment' && (
             <div className="space-y-8">
-              <section className="space-y-4">
-                <h2 className="text-base font-semibold text-[var(--text-h)]">评论系统</h2>
-                <p className="text-sm text-[var(--text)]">
-                  选择文章页使用的评论系统。切换后前台文章页会立即生效（可能需刷新缓存）。
-                </p>
-
+              <section className="space-y-3">
+                <h2>评论系统</h2>
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <label
-                    className={`flex cursor-pointer flex-col gap-1 rounded-lg border p-4 transition-colors ${
-                      watch('commentProvider') === 'native'
-                        ? 'border-[var(--accent)] bg-[var(--bg-soft)]'
-                        : 'border-[var(--border)] hover:border-[var(--border-strong)]'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        value="native"
-                        checked={watch('commentProvider') === 'native'}
-                        onChange={() =>
-                          setValue('commentProvider', 'native', { shouldDirty: true })
-                        }
-                      />
-                      <span className="text-sm font-medium text-[var(--text-h)]">本站自研评论区</span>
-                    </div>
-                    <span className="pl-6 text-xs text-[var(--text)]">
-                      评论数据存储在本站数据库，无需第三方服务，支持在「评论管理」审核。
-                    </span>
-                  </label>
-
-                  <label
-                    className={`flex cursor-pointer flex-col gap-1 rounded-lg border p-4 transition-colors ${
-                      watch('commentProvider') === 'twikoo'
-                        ? 'border-[var(--accent)] bg-[var(--bg-soft)]'
-                        : 'border-[var(--border)] hover:border-[var(--border-strong)]'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        value="twikoo"
-                        checked={watch('commentProvider') === 'twikoo'}
-                        onChange={() =>
-                          setValue('commentProvider', 'twikoo', { shouldDirty: true })
-                        }
-                      />
-                      <span className="text-sm font-medium text-[var(--text-h)]">Twikoo</span>
-                    </div>
-                    <span className="pl-6 text-xs text-[var(--text)]">
-                      使用第三方 Twikoo 评论服务，需要在下方填写 envId。
-                    </span>
-                  </label>
+                  <OptionCard
+                    active={watch('commentProvider') === 'native'}
+                    onClick={() => setValue('commentProvider', 'native', { shouldDirty: true })}
+                    title="本站自研评论区"
+                    desc="评论数据存储在本地数据库，无需第三方服务。"
+                  />
+                  <OptionCard
+                    active={watch('commentProvider') === 'twikoo'}
+                    onClick={() => setValue('commentProvider', 'twikoo', { shouldDirty: true })}
+                    title="Twikoo"
+                    desc="使用第三方 Twikoo 服务，需填写 envId。"
+                  />
                 </div>
               </section>
 
               {watch('commentProvider') === 'native' && (
-                <section className="space-y-4">
-                  <h2 className="text-base font-semibold text-[var(--text-h)]">自研评论区配置</h2>
-                  <Field label="表情包地址（owo.json）">
+                <section className="space-y-5">
+                  <div>
+                    <h2>自研评论区</h2>
+                    <p className="text-xs text-[var(--text)]">评论可在「评论管理」中审核。</p>
+                  </div>
+
+                  <Field label="表情包地址" helper="OwO 格式，与 Twikoo 兼容。留空使用 /owo.json">
                     <Input
                       id="commentEmojiCdn"
-                      placeholder="留空使用站点自带表情包"
+                      placeholder="https://example.com/owo.json"
                       {...register('commentEmojiCdn')}
                     />
                   </Field>
-                  <p className="text-xs text-[var(--text)]">
-                    表情包采用 OwO 格式，与 Twikoo 完全兼容。<b>留空</b>则使用站点自带的
-                    <code className="mx-1 rounded bg-[var(--bg-soft)] px-1">/owo.json</code>
-                    （含 QQ / 贴吧 / B站 / 黑盒 / mimi / 甜心兔 / 初音 / 星穹铁道 / 原神 / Heo / 滑稽 共 11 组）；也可填入你 Twikoo 使用的
-                    owo.json 地址，实现两套评论系统共用同一份表情包。
-                  </p>
 
-                  <div className="border-t border-[var(--border)] pt-4" />
-                  <h2 className="text-base font-semibold text-[var(--text-h)]">博主身份（管理员）</h2>
-                  <p className="text-xs text-[var(--text)]">
-                    配置后，前台评论区「发表评论」旁会出现<u>设置按钮</u>（uil:setting）。点击并输入下方邮箱与密码，
-                    即可以后台管理员身份发评论（带「博主」徽章）。若留空则前台不显示该按钮。
-                  </p>
-                  <Field label="管理员昵称（名字）">
-                    <Input
-                      id="adminName"
-                      placeholder="如：博主 / 站长"
-                      {...register('adminName')}
-                    />
-                  </Field>
-                  <Field label="管理员邮箱">
-                    <Input
-                      id="adminEmail"
-                      type="email"
-                      placeholder="需为有效邮箱，如 admin@localhost"
-                      {...register('adminEmail')}
-                    />
-                  </Field>
-                  <Field label="管理员密码">
-                    <Input
-                      id="adminPassword"
-                      type="password"
-                      autoComplete="new-password"
-                      placeholder="留空表示不修改；首次请填写"
-                      {...register('adminPassword')}
-                    />
-                  </Field>
-                  <Field label="博主徽章文字">
-                    <Input
-                      id="adminBadge"
-                      placeholder="如：博主 / 站长 / 作者"
-                      {...register('adminBadge')}
-                    />
-                    <p className="mt-1 text-xs text-[var(--text)]">
-                      显示在「博主身份」评论旁的标识文字，留空默认为「博主」。
+                  <div className="border-t border-[var(--border)]" />
+
+                  <div>
+                    <h2>博主身份</h2>
+                    <p className="text-xs text-[var(--text)]">
+                      配置后前台评论区显示设置按钮，登录后可带博主徽章发表评论。
                     </p>
-                  </Field>
+                  </div>
 
-                  <div className="border-t border-[var(--border)] pt-4" />
-                  <h2 className="text-base font-semibold text-[var(--text-h)]">评论邮箱提醒</h2>
-                  <p className="text-xs text-[var(--text)]">
-                    开启后，有新评论 / 回复时自动发送邮件提醒。
-                    <b>优先 SMTP 直连</b>（nodemailer → Cloudflare Worker TCP），失败自动回退到备用 HTTP 网关。
-                  </p>
+                  <div className="grid gap-5 md:grid-cols-2">
+                    <Field label="管理员昵称">
+                      <Input id="adminName" placeholder="博主" {...register('adminName')} />
+                    </Field>
+                    <Field label="博主徽章">
+                      <Input id="adminBadge" placeholder="博主" {...register('adminBadge')} />
+                    </Field>
+                    <Field label="管理员邮箱">
+                      <Input id="adminEmail" type="email" placeholder="admin@localhost" {...register('adminEmail')} />
+                    </Field>
+                    <Field label="管理员密码" helper="留空表示不修改">
+                      <Input
+                        id="adminPassword"
+                        type="password"
+                        autoComplete="new-password"
+                        placeholder="首次请填写"
+                        {...register('adminPassword')}
+                      />
+                    </Field>
+                  </div>
+
+                  <div className="border-t border-[var(--border)]" />
+
+                  <div>
+                    <h2>邮件通知</h2>
+                    <p className="text-xs text-[var(--text)]">有新评论或回复时自动发送邮件提醒。</p>
+                  </div>
 
                   <label className="flex w-fit cursor-pointer items-center gap-2">
                     <input
@@ -461,45 +366,28 @@ export default function Settings() {
                         setValue('mailEnabled', e.target.checked ? 'true' : 'false', { shouldDirty: true })
                       }
                     />
-                    <span className="text-sm text-[var(--text)]">启用评论邮箱提醒</span>
+                    <span className="text-sm text-[var(--text)]">启用评论邮件提醒</span>
                   </label>
 
-                  {/* ====== SMTP 直连（优先） ====== */}
-                  <h3 className="text-sm font-semibold text-[var(--text-h)]">SMTP 直连（优先）</h3>
-                  <p className="text-xs text-[var(--text)]">
-                    填写 SMTP 邮箱与授权码后优先通过它发信。若发送失败则自动回退到下方备用网关。
-                    推荐 QQ 邮箱（smtp.qq.com:465，授权码在 QQ 邮箱→设置→账户→POP3/SMTP 服务中获取）。
-                  </p>
+                  <h3 className="text-sm font-semibold text-[var(--text-h)]">SMTP 直连</h3>
+                  <p className="text-xs text-[var(--text)]">SMTP 发送失败后自动回退到备用网关。</p>
 
-                  <div className="grid gap-6 md:grid-cols-2">
+                  <div className="grid gap-5 md:grid-cols-2">
                     <Field label="SMTP 服务器">
                       <Input id="mailSmtpHost" placeholder="smtp.qq.com" {...register('mailSmtpHost')} />
                     </Field>
                     <Field label="SMTP 端口">
-                      <Input
-                        id="mailSmtpPort"
-                        type="number"
-                        placeholder="465"
-                        {...register('mailSmtpPort')}
-                      />
+                      <Input id="mailSmtpPort" type="number" placeholder="465" {...register('mailSmtpPort')} />
                     </Field>
-                  </div>
-
-                  <div className="grid gap-6 md:grid-cols-2">
                     <Field label="SMTP 邮箱">
-                      <Input
-                        id="mailSmtpUser"
-                        type="email"
-                        placeholder="xxxx@qq.com"
-                        {...register('mailSmtpUser')}
-                      />
+                      <Input id="mailSmtpUser" type="email" placeholder="xxxx@qq.com" {...register('mailSmtpUser')} />
                     </Field>
-                    <Field label="SMTP 授权码（密码）">
+                    <Field label="SMTP 授权码" helper="留空表示不修改">
                       <Input
                         id="mailSmtpPass"
                         type="password"
                         autoComplete="off"
-                        placeholder="QQ 邮箱授权码（16位，留空表示不修改）"
+                        placeholder="16 位授权码"
                         {...register('mailSmtpPass')}
                       />
                     </Field>
@@ -514,82 +402,76 @@ export default function Settings() {
                         setValue('mailSmtpSecure', e.target.checked ? '1' : '0', { shouldDirty: true })
                       }
                     />
-                    <span className="text-sm text-[var(--text)]">SSL 安全连接（端口 465 时必须开启，一般保持勾选）</span>
+                    <span className="text-sm text-[var(--text)]">SSL 安全连接</span>
                   </label>
 
-                  <div className="border-t border-[var(--border)] pt-4" />
-                  {/* ====== 备用 HTTP 网关（SMTP 失败时自动回退） ====== */}
-                  <h3 className="text-sm font-semibold text-[var(--text-h)]">备用网关（可选，SMTP 失败时自动回退）</h3>
+                  <div className="border-t border-[var(--border)]" />
 
-                  <Field label="发件人名称（网关用）">
-                    <Input
-                      id="mailFromName"
-                      placeholder="如 站点名 / 博主"
-                      {...register('mailFromName')}
-                    />
-                  </Field>
+                  <h3 className="text-sm font-semibold text-[var(--text-h)]">备用网关</h3>
+                  <p className="text-xs text-[var(--text)]">SMTP 失败时自动回退。</p>
 
-                  <Field label="网关类型">
-                    <select
-                      id="mailProvider"
-                      {...register('mailProvider')}
-                      className="w-full rounded-md border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] transition-colors focus:border-[var(--accent)] focus:outline-none"
-                    >
-                      <option value="resend">Resend（推荐，REST API）</option>
-                      <option value="gateway">通用 HTTP 邮件网关</option>
-                    </select>
-                  </Field>
+                  <div className="grid gap-5 md:grid-cols-2">
+                    <Field label="发件人名称">
+                      <Input id="mailFromName" placeholder="站点名" {...register('mailFromName')} />
+                    </Field>
+                    <Field label="网关类型">
+                      <select
+                        id="mailProvider"
+                        {...register('mailProvider')}
+                        className="w-full rounded-md border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] transition-colors focus:border-[var(--accent)] focus:outline-none"
+                      >
+                        <option value="resend">Resend</option>
+                        <option value="gateway">通用 HTTP 网关</option>
+                      </select>
+                    </Field>
+                  </div>
 
                   {watch('mailProvider') === 'resend' && (
-                    <Field label="Resend API Key">
+                    <Field label="Resend API Key" helper="留空表示不修改">
                       <Input
                         id="mailApiKey"
                         type="password"
                         autoComplete="off"
-                        placeholder="re_xxxxxxxxxxxxxxxx（留空表示不修改）"
+                        placeholder="re_xxxxxxxxxxxxxxxx"
                         {...register('mailApiKey')}
                       />
                     </Field>
                   )}
 
                   {watch('mailProvider') === 'gateway' && (
-                    <div className="grid gap-6 md:grid-cols-2">
-                      <Field label="网关地址 (URL)">
-                        <Input
-                          id="mailGatewayUrl"
-                          placeholder="https://mail.example.com/send"
-                          {...register('mailGatewayUrl')}
-                        />
+                    <div className="grid gap-5 md:grid-cols-2">
+                      <Field label="网关地址">
+                        <Input id="mailGatewayUrl" placeholder="https://mail.example.com/send" {...register('mailGatewayUrl')} />
                       </Field>
-                      <Field label="网关 Token">
+                      <Field label="网关 Token" helper="留空表示不修改">
                         <Input
                           id="mailGatewayToken"
                           type="password"
                           autoComplete="off"
-                          placeholder="网关鉴权 Token（留空表示不修改）"
+                          placeholder="鉴权 Token"
                           {...register('mailGatewayToken')}
                         />
                       </Field>
                     </div>
                   )}
 
-                  <div className="border-t border-[var(--border)] pt-4" />
-                  {/* ====== 模板 ====== */}
+                  <div className="border-t border-[var(--border)]" />
+
                   <h3 className="text-sm font-semibold text-[var(--text-h)]">邮件模板</h3>
 
-                  <Field label="回复通知模板">
+                  <Field label="回复通知模板" helper="可用变量见 placeholder">
                     <Textarea
                       id="mailTemplateReply"
-                      rows={6}
-                      placeholder="可用变量：{{siteTitle}} {{postTitle}} {{author}} {{email}} {{content}} {{parentAuthor}} {{parentContent}} {{commentUrl}}"
+                      rows={5}
+                      placeholder="{{siteTitle}} {{postTitle}} {{author}} {{email}} {{content}} {{parentAuthor}} {{parentContent}} {{commentUrl}}"
                       {...register('mailTemplateReply')}
                     />
                   </Field>
-                  <Field label="新评论通知模板">
+                  <Field label="新评论通知模板" helper="可用变量见 placeholder">
                     <Textarea
                       id="mailTemplateAdmin"
-                      rows={6}
-                      placeholder="可用变量：{{siteTitle}} {{postTitle}} {{author}} {{email}} {{content}} {{commentUrl}}"
+                      rows={5}
+                      placeholder="{{siteTitle}} {{postTitle}} {{author}} {{email}} {{content}} {{commentUrl}}"
                       {...register('mailTemplateAdmin')}
                     />
                   </Field>
@@ -597,8 +479,8 @@ export default function Settings() {
               )}
 
               {watch('commentProvider') === 'twikoo' && (
-                <section className="space-y-4">
-                  <h2 className="text-base font-semibold text-[var(--text-h)]">Twikoo 配置</h2>
+                <section className="space-y-3">
+                  <h2>Twikoo 配置</h2>
                   <Field label="Twikoo envId">
                     <Input
                       id="twikooEnvId"
@@ -606,9 +488,6 @@ export default function Settings() {
                       {...register('twikooEnvId')}
                     />
                   </Field>
-                  <p className="text-xs text-[var(--text)]">
-                    Twikoo 服务端地址（环境 ID），通常为你部署的 Twikoo 云函数或 Vercel 地址。
-                  </p>
                 </section>
               )}
             </div>
@@ -616,36 +495,30 @@ export default function Settings() {
 
           {tab === 'footer' && (
             <div className="space-y-8">
-              {/* 版权信息 */}
               <section className="space-y-4">
-                <h2 className="text-base font-semibold text-[var(--text-h)]">版权信息</h2>
-                <Field label="网站起始时间" className="md:col-span-2">
+                <h2>版权</h2>
+                <Field label="网站起始时间" helper="留空只显示当前年份">
                   <Input id="siteStartDate" type="date" {...register('siteStartDate')} />
                 </Field>
-                <p className="text-xs text-[var(--text)]">
-                  留空则版权只显示当前年份；填写后页脚版权显示为「©起始年 - 当前年 By 站点名」（如 ©2023 - 2026 By mccsjs）。
-                </p>
               </section>
 
-              {/* 框架信息 */}
               <section className="space-y-4">
-                <h2 className="text-base font-semibold text-[var(--text-h)]">框架信息</h2>
-                <Field label="框架信息文本" className="md:col-span-2">
+                <h2>框架信息</h2>
+                <Field label="框架信息文本" helper="留空显示默认文案">
                   <Textarea
                     id="footerTechInfo"
                     rows={2}
-                    placeholder="留空则显示默认「由 Astro | 前端 Tailwind CSS | 后端 ElysiaJS + Bun」"
+                    placeholder="由 Astro | Tailwind CSS | ElysiaJS + Bun 驱动"
                     {...register('footerTechInfo')}
                   />
                 </Field>
-                <p className="text-xs text-[var(--text)]">
-                  自定义页脚「框架信息」一行文案，留空使用默认内容。
-                </p>
               </section>
 
-              {/* 格言卡片 */}
               <section className="space-y-4">
-                <h2 className="text-base font-semibold text-[var(--text-h)]">格言卡片</h2>
+                <div>
+                  <h2>格言卡片</h2>
+                  <p className="text-xs text-[var(--text)]">配置后显示在页脚。</p>
+                </div>
 
                 <label className="flex w-fit cursor-pointer items-center gap-2">
                   <input
@@ -653,27 +526,22 @@ export default function Settings() {
                     className="h-4 w-4 rounded border-[var(--border-strong)]"
                     checked={watch('showMotto') === 'true'}
                     onChange={(e) =>
-                      setValue('showMotto', e.target.checked ? 'true' : 'false', {
-                        shouldDirty: true,
-                      })
+                      setValue('showMotto', e.target.checked ? 'true' : 'false', { shouldDirty: true })
                     }
                   />
-                  <span className="text-sm text-[var(--text)]">在页脚显示格言卡片与跳转按钮</span>
+                  <span className="text-sm text-[var(--text)]">显示格言卡片</span>
                 </label>
 
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-5 md:grid-cols-2">
                   <Field label="标题">
-                    <Input id="mottoTitle" placeholder="格言🧬" {...register('mottoTitle')} />
+                    <Input id="mottoTitle" placeholder="格言" {...register('mottoTitle')} />
                   </Field>
-
                   <Field label="按钮文本">
-                    <Input id="mottoCtaText" placeholder="前往了解作者" {...register('mottoCtaText')} />
+                    <Input id="mottoCtaText" placeholder="了解作者" {...register('mottoCtaText')} />
                   </Field>
-
-                  <Field label="按钮链接" className="md:col-span-2">
+                  <Field label="按钮链接">
                     <Input id="mottoCtaUrl" placeholder="/about/" {...register('mottoCtaUrl')} />
                   </Field>
-
                   <Field label="打开方式">
                     <select
                       id="mottoCtaTarget"
@@ -684,31 +552,20 @@ export default function Settings() {
                       <option value="_blank">新窗口</option>
                     </select>
                   </Field>
-
                   <Field label="格言正文" className="md:col-span-2">
-                    <Textarea
-                      id="mottoText"
-                      rows={3}
-                      placeholder="支持换行，会显示在格言卡片中"
-                      {...register('mottoText')}
-                    />
+                    <Textarea id="mottoText" rows={3} placeholder="支持换行" {...register('mottoText')} />
                   </Field>
                 </div>
               </section>
 
-              <div className="border-t border-[var(--border)]" />
-
-              {/* 徽标设置 */}
               <section className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-base font-semibold text-[var(--text-h)]">页脚徽标</h2>
-                  <span className="text-xs text-[var(--text)]">显示在页脚底部（shields.io 风格）</span>
-                </div>
+                <h2>页脚徽标</h2>
+                <p className="text-xs text-[var(--text)]">显示在页脚底部，支持 shields.io 风格图片。</p>
 
                 <div className="space-y-3">
                   {badges.length === 0 && (
                     <p className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--bg-soft)] p-4 text-center text-sm text-[var(--text)]">
-                      还没有徽标，点击下方按钮添加一个
+                      还没有徽标
                     </p>
                   )}
 
@@ -718,7 +575,7 @@ export default function Settings() {
                       className="grid items-center gap-3 rounded-lg border border-[var(--border)] p-3 md:grid-cols-[1fr_1.5fr_2fr_auto]"
                     >
                       <Input
-                        placeholder="标题（如：框架 Astro）"
+                        placeholder="标题"
                         value={b.title}
                         onChange={(e) => updateBadge(i, 'title', e.target.value)}
                       />
@@ -728,7 +585,7 @@ export default function Settings() {
                         onChange={(e) => updateBadge(i, 'href', e.target.value)}
                       />
                       <Input
-                        placeholder="图片 URL（shields.io 徽标地址）"
+                        placeholder="图片 URL"
                         value={b.img}
                         onChange={(e) => updateBadge(i, 'img', e.target.value)}
                       />
@@ -748,18 +605,13 @@ export default function Settings() {
           )}
 
           <div className="flex items-center justify-end gap-3 border-t border-[var(--border)] pt-4">
-            {mutation.isSuccess && (
-              <span className="text-sm text-green-600">保存成功</span>
-            )}
+            {mutation.isSuccess && <span className="text-sm text-green-600">保存成功</span>}
             {mutation.isError && (
               <span className="text-sm text-red-500">
                 {mutation.error instanceof Error ? mutation.error.message : '保存失败'}
               </span>
             )}
-            <Button
-              type="submit"
-              disabled={(!isDirty && !badgesDirty) || isSubmitting || mutation.isPending}
-            >
+            <Button type="submit" disabled={(!isDirty && !badgesDirty) || isSubmitting || mutation.isPending}>
               <Icon icon="lucide:save" width={16} height={16} />
               {mutation.isPending ? '保存中...' : '保存设置'}
             </Button>
@@ -772,10 +624,12 @@ export default function Settings() {
 
 function Field({
   label,
+  helper,
   children,
   className = '',
 }: {
   label: string;
+  helper?: string;
   children: React.ReactNode;
   className?: string;
 }) {
@@ -783,6 +637,44 @@ function Field({
     <div className={`space-y-1.5 ${className}`}>
       <Label htmlFor={label}>{label}</Label>
       {children}
+      {helper && <p className="text-xs text-[var(--text)]">{helper}</p>}
     </div>
+  );
+}
+
+function SectionTitle({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+  return (
+    <h2 className={`mt-2 border-t border-[var(--border)] pt-5 text-base font-semibold text-[var(--text-h)] ${className}`}>
+      {children}
+    </h2>
+  );
+}
+
+function OptionCard({
+  active,
+  onClick,
+  title,
+  desc,
+}: {
+  active: boolean;
+  onClick: () => void;
+  title: string;
+  desc: string;
+}) {
+  return (
+    <label
+      onClick={onClick}
+      className={`flex cursor-pointer flex-col gap-1 rounded-lg border p-4 transition-colors ${
+        active
+          ? 'border-[var(--accent)] bg-[var(--bg-soft)]'
+          : 'border-[var(--border)] hover:border-[var(--border-strong)]'
+      }`}
+    >
+      <div className="flex items-center gap-2">
+        <input type="radio" checked={active} onChange={onClick} />
+        <span className="text-sm font-medium text-[var(--text-h)]">{title}</span>
+      </div>
+      <span className="pl-6 text-xs text-[var(--text)]">{desc}</span>
+    </label>
   );
 }

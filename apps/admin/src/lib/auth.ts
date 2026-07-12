@@ -28,3 +28,20 @@ export async function fetchMe(): Promise<SessionUser | null> {
 export async function logoutRequest(): Promise<void> {
   await api<{ ok: true }>('/api/admin/logout', { method: 'POST' });
 }
+
+// 修改当前管理员资料（昵称 / 邮箱 / 密码）
+export interface UpdateProfilePayload {
+  name?: string;
+  email?: string;
+  currentPassword?: string;
+  newPassword?: string;
+}
+
+export async function updateProfileRequest(
+  payload: UpdateProfilePayload
+): Promise<{ user: SessionUser }> {
+  return api<{ user: SessionUser }>('/api/admin/profile', {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  });
+}

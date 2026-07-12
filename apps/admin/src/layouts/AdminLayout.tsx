@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import Button from '../components/ui/button';
 import { Icon } from '@iconify/react';
+import ProfileDialog from '../components/ProfileDialog';
 
 const navItems = [
   { to: '/', label: '概览', icon: 'layout-dashboard' },
@@ -22,6 +23,8 @@ export default function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isLoading && !session && location.pathname !== '/login') {
@@ -32,6 +35,31 @@ export default function AdminLayout() {
   useEffect(() => {
     setSidebarOpen(false);
   }, [location.pathname]);
+
+  // 头像识别：复用前端评论区逻辑（WeAvatar = 邮箱 SHA256 哈希，d=404 时回落字母头像）
+  useEffect(() => {
+    let active = true;
+    const email = user?.email;
+    if (!email || !crypto?.subtle?.digest) {
+      setAvatarUrl(null);
+      return;
+    }
+    const e = email.trim().toLowerCase();
+    crypto.subtle
+      .digest('SHA-256', new TextEncoder().encode(e))
+      .then((buf) => {
+        const bytes = new Uint8Array(buf);
+        let hex = '';
+        for (let i = 0; i < bytes.length; i++) hex += bytes[i].toString(16).padStart(2, '0');
+        if (active) setAvatarUrl('https://weavatar.com/avatar/' + hex + '?s=80&d=404');
+      })
+      .catch(() => {
+        if (active) setAvatarUrl(null);
+      });
+    return () => {
+      active = false;
+    };
+  }, [user?.email]);
 
   const handleSignOut = async () => {
     await logout();
@@ -109,9 +137,25 @@ export default function AdminLayout() {
 
         {/* 用户区 */}
         <div className="border-t border-[var(--border)] p-2">
-          <div className="flex items-center gap-2.5 rounded-md px-2 py-2">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--bg-muted)] text-xs font-semibold text-[var(--text-h)]">
+          <button
+            type="button"
+            onClick={() => setProfileOpen(true)}
+            className="flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-left transition-colors hover:bg-[var(--bg-muted)]"
+            title="点击修改账号密码"
+          >
+            <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full bg-[var(--bg-muted)] text-xs font-semibold text-[var(--text-h)]">
               {initials}
+              {avatarUrl && (
+                <img
+                  src={avatarUrl}
+                  alt=""
+                  referrerPolicy="no-referrer"
+                  className="absolute inset-0 h-full w-full rounded-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              )}
             </div>
             <div className="min-w-0 flex-1">
               <div className="truncate text-sm font-medium text-[var(--text-h)]">
@@ -119,7 +163,13 @@ export default function AdminLayout() {
               </div>
               <div className="truncate text-xs text-[var(--text)]">{user?.email}</div>
             </div>
-          </div>
+            <Icon
+              icon="lucide:pencil"
+              width={15}
+              height={15}
+              className="shrink-0 text-[var(--text)]"
+            />
+          </button>
           <Button
             variant="ghost"
             className="mt-0.5 w-full justify-start gap-2 text-[var(--text)] hover:text-[var(--text-h)]"
@@ -148,6 +198,8 @@ export default function AdminLayout() {
           <Outlet />
         </div>
       </main>
+
+      <ProfileDialog open={profileOpen} onClose={() => setProfileOpen(false)} />
     </div>
   );
 }

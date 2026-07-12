@@ -2,10 +2,10 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { eq, and } from 'drizzle-orm'
 import { ZodError } from 'zod'
-import { sessions } from '@blog/db'
+import { sessions, users } from '@blog/db'
 import { createDb } from './db'
 import type { DB } from './db'
-import { login, setSessionCookie, clearSessionCookie, getSessionCookie, getSessionUser, requireAuth } from './auth'
+import { login, setSessionCookie, clearSessionCookie, getSessionCookie, getSessionUser, requireAuth, verifyPassword, hashPassword } from './auth'
 import { seedDefaults } from './seed'
 import { contentRoutes } from './routes/content'
 import { menuRoutes } from './routes/menus'
@@ -76,6 +76,53 @@ app.get('/api/admin/me', async (c) => {
   const user = await getSessionUser(c.get('db'), sid)
   if (!user) return c.json({ error: 'Unauthorized' }, 401)
   return c.json({ user })
+})
+
+// 修改当前管理员资料（昵称 / 邮箱 / 密码）
+// 改邮箱或修改密码都需要校验当前密码；邮箱需保持唯一。
+app.put('/api/admin/profile', requireAuth, async (c) => {
+  const db = c.get('db')
+  const me = c.get('user') // { id, email, name }
+  const body = await c.req
+    .json<{ name?: string; email?: string; currentPassword?: string; newPassword?: string }>()
+    .catch(() => ({}))
+
+  const { name, email, currentPassword, newPassword } = body
+
+  const cur = await db.select().from(users).where(eq(users.id, me.id)).limit(1)
+  if (cur.length === 0) return c.json({ error: '用户不存在' }, 404)
+  const curUser = cur[0]
+
+  const nextEmail = email?.trim().toLowerCase()
+  const emailChanged = !!nextEmail && nextEmail !== (curUser.email ?? '').toLowerCase()
+  const changingPassword = !!newPassword
+
+  // 改邮箱或改密码都必须校验当前密码
+  if ((emailChanged || changingPassword) && !currentPassword) {
+    return c.json({ error: '修改账号或密码需先填写当前密码' }, 400)
+  }
+  if ((emailChanged || changingPassword) && !(await verifyPassword(currentPassword!, curUser.password ?? ''))) {
+    return c.json({ error: '当前密码错误' }, 401)
+  }
+  if (changingPassword && newPassword!.length < 6) {
+    return c.json({ error: '新密码至少 6 位' }, 400)
+  }
+
+  const updates: Partial<typeof users.$inferInsert> = {
+    updatedAt: Math.floor(Date.now() / 1000),
+  }
+  if (name !== undefined && name.trim()) updates.name = name.trim()
+  if (nextEmail && emailChanged) {
+    const exist = await db.select({ id: users.id }).from(users).where(eq(users.email, nextEmail)).limit(1)
+    if (exist.length && exist[0].id !== me.id) return c.json({ error: '该邮箱已被占用' }, 409)
+    updates.email = nextEmail
+  }
+  if (changingPassword) updates.password = await hashPassword(newPassword!)
+
+  await db.update(users).set(updates).where(eq(users.id, me.id))
+
+  const updated = await db.select().from(users).where(eq(users.id, me.id)).limit(1)
+  return c.json({ user: { id: updated[0].id, email: updated[0].email, name: updated[0].name } })
 })
 
 // 登出

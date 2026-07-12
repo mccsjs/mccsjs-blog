@@ -29,27 +29,30 @@ export async function login(
   ip?: string,
   ua?: string
 ) {
+  const normEmail = email.trim().toLowerCase()
   const existing = await db.select().from(users).limit(1)
   if (existing.length === 0) {
-    // 首次：用预设管理员账号完成初始化
-    if (email !== adminEmail || password !== adminPassword) {
+    // 首次：用预设管理员账号完成初始化（若已配置预设账号则必须匹配，否则允许任意账号初始化首条）
+    const hasPreset = !!adminEmail && !!adminPassword
+    if (hasPreset && (normEmail !== adminEmail.toLowerCase() || password !== adminPassword)) {
       return { error: '系统尚未初始化，请使用预设管理员账号登录以完成初始化', status: 400 }
     }
     const id = crypto.randomUUID()
     await db.insert(users).values({
       id,
-      email,
+      email: normEmail,
       name: 'Admin',
       password: await hashPassword(password),
       emailVerified: true,
     })
     return createSession(db, id, ip, ua)
   }
-  const user = existing[0]
-  if (!user.password || !(await verifyPassword(password, user.password))) {
+  // 非首次：必须按邮箱精确匹配到对应用户，再校验密码（否则任意邮箱 + 正确密码都能登录）
+  const matched = await db.select().from(users).where(eq(users.email, normEmail)).limit(1)
+  if (matched.length === 0 || !matched[0].password || !(await verifyPassword(password, matched[0].password))) {
     return { error: '邮箱或密码错误', status: 401 }
   }
-  return createSession(db, user.id, ip, ua)
+  return createSession(db, matched[0].id, ip, ua)
 }
 
 async function createSession(db: DB, userId: string, ip?: string, ua?: string) {

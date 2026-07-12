@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import TwikooComments from '../components/TwikooComments.astro';
+import SelfComments from '../components/SelfComments.astro';
 import TabNav from '../components/TabNav.astro';
 import MarkdownIt from 'markdown-it';
 
@@ -34,6 +35,8 @@ interface FriendGroup {
 
 let groups: FriendGroup[] = [];
 let linkMarkdownHtml = '';
+let commentProvider = 'twikoo';
+let commentEmojiCdn = '';
 
 const isLostGroup = (name: string) => /失联/.test(name);
 
@@ -50,6 +53,8 @@ try {
 
   if (settingsRes.ok) {
     const settings = await settingsRes.json();
+    commentProvider = settings.commentProvider || 'twikoo';
+    commentEmojiCdn = settings.commentEmojiCdn || '';
     const raw = settings.linkMarkdown || '';
       if (raw) {
         const hl = hljsModule?.default || hljsModule;
@@ -123,7 +128,7 @@ try {
                   >
                     <div class="relative h-32 w-full overflow-hidden bg-gray-100 dark:bg-gray-800">
                       {friend.screenshot ? (
-                        <img src={friend.screenshot} alt={friend.name} class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                        <img src={friend.screenshot} alt={friend.name} loading="lazy" decoding="async" onload="this.classList.add('is-loaded')" class="friend-shot h-full w-full object-cover opacity-0 transition-all duration-500 group-hover:scale-105" />
                       ) : (
                         <div class="flex h-full w-full items-center justify-center text-xs text-[rgb(var(--fg-muted))] dark:text-[rgb(var(--fg-muted))]">暂无截图</div>
                       )}
@@ -147,7 +152,7 @@ try {
                       ) : null}
                     </div>
                     <div class="flex items-start gap-2.5 py-1 px-2 h-[54px]">
-                      <div class="h-9 w-9 shrink-0 -ml-1 rounded-full border-2 border-[rgb(var(--card-border))] bg-[rgb(var(--bg-soft))] dark:border-[rgb(var(--card-border))] dark:bg-gray-800">
+                      <div class="h-9 w-9 shrink-0 -ml-1 rounded-full border border-[rgb(var(--card-border))] bg-[rgb(var(--bg-soft))] dark:border-[rgb(var(--card-border))] dark:bg-gray-800">
                         {friend.avatar ? (
                           <img src={friend.avatar} alt={friend.name} class="h-full w-full rounded-full object-cover" />
                         ) : (
@@ -186,7 +191,28 @@ try {
   <section id="comments" class="mt-14">
     <h2 class="text-2xl font-bold">评论</h2>
     <div class="mt-6">
-      <TwikooComments />
+      {commentProvider === 'native' ? (
+        <SelfComments postId="link" emojiCdn={commentEmojiCdn} />
+      ) : (
+        <TwikooComments />
+      )}
     </div>
   </section>
+  <style>
+    /* 友链截图：懒加载完成后淡入 */
+    .friend-shot.is-loaded {
+      opacity: 1;
+    }
+  </style>
+
+  <script>
+    // 兜底：缓存命中的图片不会触发 onload，直接标记为已加载
+    document.querySelectorAll('.friend-shot').forEach(function (img) {
+      if (img.complete) {
+        img.classList.add('is-loaded');
+      } else {
+        img.addEventListener('load', function () { img.classList.add('is-loaded'); }, { once: true });
+      }
+    });
+  </script>
 </BaseLayout>

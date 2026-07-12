@@ -212,7 +212,7 @@
 
 
 /* ============================================================
-   自研评论区（#self-comments）
+   评论区（#self-comments）
    ============================================================ */
 #self-comments {
   max-width: 100%;
@@ -340,6 +340,7 @@
   width: 40px;
   height: 40px;
   border-radius: 12px;
+  background: #eef0f2;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -464,8 +465,14 @@
   vertical-align: middle;
 }
 #self-comments .sc-badge-admin {
-  color: #fff;
-  background: rgb(var(--primary));
+  color: #e3ae0d;
+  background: rgba(255, 193, 7, 0.15);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+}
+/* 自定义访客徽章（区别于博主徽章的 primary 色，用青蓝色系） */
+#self-comments .sc-badge-guest {
+  color: #0a7d9c;
+  background: #e6f6ff;
 }
 #self-comments .sc-reply-to {
   margin-left: 6px;
@@ -564,7 +571,7 @@
   border-color: rgb(var(--primary));
 }
 
-/* ---- Markdown 正文排版（自研评论区） ---- */
+/* ---- Markdown 正文排版（评论区） ---- */
 #self-comments .sc-item-content { word-break: break-word; }
 #self-comments .sc-item-content p { margin: 0 0 0.6em; }
 #self-comments .sc-item-content p:last-child { margin-bottom: 0; }
@@ -628,7 +635,7 @@
 }
 
 /* ============================================================
-   自研评论区 · 表情包（与 Twikoo OwO 兼容）
+   评论区 · 表情包（与 Twikoo OwO 兼容）
    ============================================================ */
 #self-comments .sc-form,
 #self-comments .sc-reply-form { position: relative; }
@@ -657,7 +664,7 @@
 #self-comments .sc-emoji-btn iconify-icon { width: 19px; height: 19px; font-size: 19px; color: currentColor; }
 
 /* ---- 表情面板 ---- */
-#self-comments .sc-emoji-panel {
+.sc-emoji-panel {
   position: fixed;
   z-index: 60;
   width: min(420px, calc(100vw - 32px));
@@ -667,7 +674,7 @@
   box-shadow: 0 8px 30px -6px rgba(0, 0, 0, 0.18);
   overflow: hidden;
 }
-#self-comments .sc-emoji-body {
+.sc-emoji-body {
   display: block;
   max-height: 280px;
   overflow-y: auto;
@@ -676,15 +683,15 @@
   touch-action: pan-y;
   scroll-behavior: smooth;
 }
-#self-comments .sc-emoji-pack {
+.sc-emoji-pack {
   display: none;
 }
-#self-comments .sc-emoji-pack.sc-emoji-pack-active {
+.sc-emoji-pack.sc-emoji-pack-active {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
   gap: 4px;
 }
-#self-comments .sc-emoji-item {
+.sc-emoji-item {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -700,17 +707,17 @@
   cursor: pointer;
   transition: background 0.12s, transform 0.12s;
 }
-#self-comments .sc-emoji-item:hover {
+.sc-emoji-item:hover {
   background: rgb(var(--primary) / 0.12);
   transform: scale(1.12);
 }
-#self-comments .sc-owo-opt {
+.sc-owo-opt {
   width: 40px;
   height: 40px;
   object-fit: contain;
   pointer-events: none;
 }
-#self-comments .sc-emoji-bar {
+.sc-emoji-bar {
   display: flex;
   flex-wrap: wrap;
   gap: 2px;
@@ -720,7 +727,7 @@
   max-height: 64px;
   overflow-y: auto;
 }
-#self-comments .sc-emoji-tab {
+.sc-emoji-tab {
   padding: 3px 9px;
   font-size: 0.74rem;
   color: rgb(var(--fg-muted));
@@ -730,12 +737,12 @@
   cursor: pointer;
   transition: color 0.12s, background 0.12s;
 }
-#self-comments .sc-emoji-tab:hover { color: rgb(var(--fg)); }
-#self-comments .sc-emoji-tab-active {
+.sc-emoji-tab:hover { color: rgb(var(--fg)); }
+.sc-emoji-tab-active {
   color: #fff;
   background: rgb(var(--primary));
 }
-#self-comments .sc-emoji-empty {
+.sc-emoji-empty {
   padding: 18px;
   text-align: center;
   font-size: 0.82rem;
@@ -789,12 +796,12 @@
 
 /* ---- 移动端：面板高度收敛 ---- */
 @media screen and (max-width: 640px) {
-  #self-comments .sc-emoji-panel { left: 0; right: 0; width: 100%; }
-  #self-comments .sc-emoji-body { max-height: 150px; }
+  .sc-emoji-panel { left: 0; right: 0; width: 100%; }
+  .sc-emoji-body { max-height: 150px; }
 }
 
 /* ============================================================
-   自研评论区 · 博主身份（Twikoo 式「设置」按钮）
+   评论区 · 博主身份（Twikoo 式「设置」按钮）
    ============================================================ */
 /* ---- 设置按钮（uil:setting） ---- */
 #self-comments .sc-admin-btn {
@@ -828,10 +835,13 @@
 /* ---- 已登录状态条 ---- */
 #self-comments .sc-admin-status {
   display: flex;
+  justify-content: flex-end;
   align-items: center;
   gap: 10px;
+  width: fit-content;
   margin-top: 12px;
-  padding: 8px 12px;
+  margin-left: auto;
+  padding: 6px 12px;
   font-size: 0.8rem;
   color: rgb(var(--fg-soft));
   background: rgb(var(--primary) / 0.08);
@@ -848,7 +858,6 @@
   border-radius: 6px;
 }
 #self-comments .sc-admin-logout {
-  margin-left: auto;
   padding: 3px 10px;
   font-size: 0.78rem;
   color: rgb(var(--fg-soft));

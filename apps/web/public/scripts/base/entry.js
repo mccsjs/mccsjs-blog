@@ -6,7 +6,7 @@ import { runInits } from './registry.js';
 import './tabnav.js';        // TabNav 样式注入（自管理，不走 registry）
 import './codeblocks.js';    // 友链页代码块
 import './twikoo.js';        // Twikoo 评论区
-import './self-comments.js'; // 自研评论区
+import './self-comments.js'; // 评论区
 import './post.js';          // 文章页：代码块工具栏 / 灯箱 / 阅读进度 / TOC
 
 // ===== 页面切换过渡（进度条 + is-page-transitioning） =====

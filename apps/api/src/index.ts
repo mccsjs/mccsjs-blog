@@ -11,6 +11,7 @@ import { contentRoutes } from './routes/content'
 import { menuRoutes } from './routes/menus'
 import { friendRoutes } from './routes/friends'
 import { visitorRoutes } from './routes/visitor'
+import { guestRoutes } from './routes/guests'
 import { refreshAllFeeds, runFriendAutoCheck } from './utils/extras'
 
 type Bindings = {
@@ -38,8 +39,26 @@ app.use(
     allowHeaders: ['Content-Type', 'Authorization'],
   })
 )
+// 兜底建表：本地 miniflare D1 库已建到 migration 0003，不会自动 re-apply 新表，
+// 故在首个请求时幂等建表，保证 guest_badge 表始终存在（部署时 migration 0004 同样会建）。
+let guestBadgeEnsured = false
 app.use('*', async (c, next) => {
   c.set('db', createDb(c.env.DB))
+  if (!guestBadgeEnsured) {
+    try {
+      await c.env.DB.exec(
+        'CREATE TABLE IF NOT EXISTS "guest_badge" (' +
+        '"id" TEXT PRIMARY KEY NOT NULL, ' +
+        '"email" TEXT NOT NULL, ' +
+        '"badge" TEXT NOT NULL, ' +
+        '"updated_at" INTEGER NOT NULL DEFAULT 0); ' +
+        'CREATE UNIQUE INDEX IF NOT EXISTS "guest_badge_email_idx" ON "guest_badge" ("email");'
+      )
+      guestBadgeEnsured = true
+    } catch (e) {
+      console.error('[guest_badge] 兜底建表失败（已忽略）:', e)
+    }
+  }
   await next()
 })
 
@@ -148,6 +167,8 @@ app.route('/', menuRoutes())
 app.route('/', friendRoutes())
 // 访客追踪
 app.route('/', visitorRoutes())
+// 访客（评论者）聚合 + 自定义徽章
+app.route('/', guestRoutes())
 
 // ===== 定时任务（Cron Triggers，见 wrangler.toml [triggers]） =====
 // 0 3 * * * → 刷新所有 RSS；0 0 * * * / 0 12 * * * → 友链自动测速

@@ -1,6 +1,24 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import TwikooComments from '../components/TwikooComments.astro';
+import SelfComments from '../components/SelfComments.astro';
+
+const API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_URL)
+  || (typeof process !== 'undefined' && process.env && process.env.PUBLIC_API_URL)
+  || '';
+
+let commentProvider = 'twikoo';
+let commentEmojiCdn = '';
+try {
+  const settingsRes = await fetch(`${API_URL}/api/settings`);
+  if (settingsRes.ok) {
+    const settings = await settingsRes.json();
+    commentProvider = settings.commentProvider || 'twikoo';
+    commentEmojiCdn = settings.commentEmojiCdn || '';
+  }
+} catch {
+  // 网络异常时使用默认值
+}
 ---
 
 <BaseLayout title="留言板" showComment={true} description="留言板 — 有任何问题或想法，欢迎在此留言">
@@ -15,6 +33,10 @@ import TwikooComments from '../components/TwikooComments.astro';
 
   <!-- 评论区 -->
   <section id="comments" class="rounded-2xl border border-[rgb(var(--card-border))] bg-[rgb(var(--card-bg))] p-6 shadow-sm dark:border-[rgb(var(--card-border))] dark:bg-[rgb(var(--card-bg))]">
-    <TwikooComments />
+    {commentProvider === 'native' ? (
+      <SelfComments postId="comments" emojiCdn={commentEmojiCdn} />
+    ) : (
+      <TwikooComments />
+    )}
   </section>
 </BaseLayout>

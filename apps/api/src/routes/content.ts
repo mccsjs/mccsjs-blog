@@ -318,7 +318,9 @@ export function contentRoutes() {
     const db: DB = c.get('db')
     const data = commentCreateSchema.parse(await c.req.json())
     const post = await db.query.posts.findFirst({ where: eq(posts.id, data.postId) })
-    if (!post) return c.json({ error: 'Post not found' }, 404)
+    // 评论以 postId 作为讨论线程分组键：文章页传真实文章 id，友链 / 留言板等独立页传固定页面键
+    // （如 'link' / 'comments'），这类页并非文章，不应因此返回 404。
+    const threadPost = post || { id: data.postId, title: data.postId, slug: data.postId }
 
     // 回复必须指向同一篇文章下已存在的评论
     let parentId: string | null = data.parentId ?? null
@@ -399,6 +401,7 @@ export function contentRoutes() {
         comment: comment as { id: string; author: string; email: string; content: string },
         post,
         parent,
+        post: threadPost,
         baseUrl: new URL(c.req.url).origin,
       })
     } catch (e) {

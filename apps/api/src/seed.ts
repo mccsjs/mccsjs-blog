@@ -4,18 +4,22 @@ import { defaultSettings, settingKeys } from '@blog/shared'
 
 // 幂等初始化默认数据：导航菜单、聚合菜单、友链、站点设置
 export async function seedDefaults(db: any) {
-  // 导航菜单（仅首次）
+  // 导航菜单（首次插入；已有则按 label 同步为 iconify 图标，避免默认 emoji）
   const nav = await db.select({ id: menus.id }).from(menus).where(eq(menus.type, 'NAV')).limit(1)
+  const navDefaults = [
+    { label: '首页', href: '/', icon: 'material-symbols:home-outline-rounded', sortOrder: 0 },
+    { label: '文章', href: '/posts', icon: 'solar:book-broken', sortOrder: 1 },
+    { label: '留言', href: '/comments', icon: 'boxicons:message', sortOrder: 2 },
+    { label: '友链', href: '/link', icon: 'line-md:link', sortOrder: 3 },
+    { label: '关于', href: '/about', icon: 'ix:about', sortOrder: 4 },
+  ]
   if (nav.length === 0) {
-    const defaults = [
-      { label: '首页', href: '/', icon: '🏠', sortOrder: 0 },
-      { label: '文章', href: '/posts', icon: '📝', sortOrder: 1 },
-      { label: '留言', href: '/comments', icon: '💬', sortOrder: 2 },
-      { label: '友链', href: '/link', icon: '🔗', sortOrder: 3 },
-      { label: '关于', href: '/about', icon: '👤', sortOrder: 4 },
-    ]
-    for (const item of defaults) {
+    for (const item of navDefaults) {
       await db.insert(menus).values({ id: crypto.randomUUID(), ...item, type: 'NAV', visible: true })
+    }
+  } else {
+    for (const item of navDefaults) {
+      await db.update(menus).set({ icon: item.icon }).where(eq(menus.label, item.label))
     }
   }
 

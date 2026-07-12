@@ -51,6 +51,9 @@ interface SettingsData {
   fontCssUrl: string;
   fontFamily: string;
   backgroundImage: string;
+  heroType: string;
+  heroImage: string;
+  heroVideo: string;
   linkMarkdown: string;
   showMotto: string;
   mottoTitle: string;
@@ -98,6 +101,9 @@ const defaultValues: SettingsData = {
   fontCssUrl: '',
   fontFamily: '',
   backgroundImage: '',
+  heroType: 'image',
+  heroImage: '/hero.webp',
+  heroVideo: '',
   linkMarkdown: '',
   showMotto: 'true',
   mottoTitle: '格言',
@@ -278,6 +284,35 @@ export default function Settings() {
                 <Input id="backgroundImage" placeholder="https://example.com/bg.jpg" {...register('backgroundImage')} />
               </Field>
 
+              <SectionTitle className="md:col-span-2">首页 Hero 背景</SectionTitle>
+
+              <Field label="背景类型" className="md:col-span-2">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <OptionCard
+                    active={watch('heroType') === 'image'}
+                    onClick={() => setValue('heroType', 'image', { shouldDirty: true })}
+                    title="图片"
+                    desc="使用静态图片作为首页顶部背景，稳定且兼容性好。"
+                  />
+                  <OptionCard
+                    active={watch('heroType') === 'video'}
+                    onClick={() => setValue('heroType', 'video', { shouldDirty: true })}
+                    title="视频"
+                    desc="循环自动播放的视频背景（手机端静音自动播放），加载前显示图片封面。"
+                  />
+                </div>
+              </Field>
+
+              <Field label="背景图片 URL" helper="图片模式使用；视频模式作为视频加载前的封面" className="md:col-span-2">
+                <Input id="heroImage" placeholder="/hero.webp 或 https://example.com/hero.jpg" {...register('heroImage')} />
+              </Field>
+
+              {watch('heroType') === 'video' && (
+                <Field label="背景视频 URL" helper="仅支持 mp4；留空则回退到图片" className="md:col-span-2">
+                  <Input id="heroVideo" placeholder="/hero.mp4 或 https://example.com/hero.mp4" {...register('heroVideo')} />
+                </Field>
+              )}
+
               <SectionTitle className="md:col-span-2">图床</SectionTitle>
 
               <Field label="图床地址" className="md:col-span-2">
@@ -318,7 +353,7 @@ export default function Settings() {
                   <OptionCard
                     active={watch('commentProvider') === 'native'}
                     onClick={() => setValue('commentProvider', 'native', { shouldDirty: true })}
-                    title="本站自研评论区"
+                    title="本站评论区"
                     desc="评论数据存储在本地数据库，无需第三方服务。"
                   />
                   <OptionCard
@@ -333,7 +368,7 @@ export default function Settings() {
               {watch('commentProvider') === 'native' && (
                 <section className="space-y-5">
                   <div>
-                    <h2>自研评论区</h2>
+                    <h2>评论区</h2>
                     <p className="text-xs text-[var(--text)]">评论可在「评论管理」中审核。</p>
                   </div>
 

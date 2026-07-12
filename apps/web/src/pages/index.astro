@@ -11,6 +11,9 @@ let posts: Post[] = [];
 let error: string | null = null;
 let siteTitle = 'mccsjs';
 let siteDescription = '个人博客，分享技术文章与生活感悟';
+let heroType = 'image';
+let heroImage = '/hero.webp';
+let heroVideo = '';
 
 // 获取文章列表
 try {
@@ -30,6 +33,9 @@ try {
     const settings = await settingsRes.json();
     siteTitle = settings.siteTitle || siteTitle;
     siteDescription = settings.siteDescription || siteDescription;
+    heroType = settings.heroType || 'image';
+    heroImage = settings.heroImage || '/hero.webp';
+    heroVideo = settings.heroVideo || '';
   }
 } catch {
   // 获取失败使用默认值
@@ -40,18 +46,36 @@ const latestPosts = posts.slice(0, 6);
 
 <BaseLayout description={siteTitle + ' — ' + siteDescription}>
   <section class="relative overflow-hidden rounded-3xl text-center sm:py-24">
-    <img
-      src="/hero.webp"
-      alt="Hero"
-      class="absolute inset-0 h-full w-full object-cover"
-      fetchpriority="high"
-    />
+    {(heroType === 'video' && heroVideo) ? (
+      <video
+        class="absolute inset-0 h-full w-full object-cover"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="auto"
+        poster={heroImage}
+        aria-hidden="true"
+      >
+        <source src={heroVideo} type="video/mp4" />
+      </video>
+    ) : (
+      <img
+        src={heroImage}
+        alt="Hero"
+        class="absolute inset-0 h-full w-full object-cover"
+        fetchpriority="high"
+        data-no-lazy
+        decoding="async"
+        aria-hidden="true"
+      />
+    )}
     <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/60"></div>
     <div class="relative px-6 py-16">
-      <h1 class="neon-text text-5xl font-extrabold tracking-tight text-white drop-shadow-lg">
+      <h1 class="neon-text text-3xl sm:text-5xl font-extrabold tracking-tight text-white drop-shadow-lg">
         {siteTitle}
       </h1>
-      <p class="mt-4 text-lg text-white/85 min-h-[4.5rem]">
+      <p class="mt-4 text-base sm:text-lg text-white/85 min-h-[4.5rem]">
         <span id="typewriter-text" class="neon-text"></span><span id="typewriter-cursor" class="ml-1 animate-blink">|</span>
       </p>
     </div>

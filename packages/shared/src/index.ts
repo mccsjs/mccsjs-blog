@@ -54,7 +54,7 @@ export const defaultSettings = {
   postsPerPage: '10',
   commentProvider: 'twikoo', // 'twikoo' | 'native'
   twikooEnvId: '',
-  commentEmojiCdn: '', // 自研评论区表情包 owo.json 地址，留空用站点自带 /owo.json（与 Twikoo COMMENT_EMOJI_CDN 兼容）
+  commentEmojiCdn: '', // 评论区表情包 owo.json 地址，留空用站点自带 /owo.json（与 Twikoo COMMENT_EMOJI_CDN 兼容）
   // 评论区博主身份（管理端「评论设置」配置；adminPassword 仅服务端存储哈希，绝不随设置接口返回）
   adminEmail: '',
   adminName: '',
@@ -88,6 +88,10 @@ export const defaultSettings = {
   fontCssUrl: '',
   fontFamily: '',
   backgroundImage: '',
+  // ============ 首页 Hero 背景（图片 / 视频） ============
+  heroType: 'image', // 'image' | 'video'
+  heroImage: '/hero.webp', // 图片模式使用；视频模式作为加载前封面
+  heroVideo: '', // 视频模式使用，仅 mp4
   linkMarkdown: '',
   showMotto: 'true',
   mottoTitle: '格言🧬',

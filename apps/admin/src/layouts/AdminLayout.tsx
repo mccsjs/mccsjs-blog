@@ -13,7 +13,8 @@ const navItems = [
   { to: '/comments', label: '评论', icon: 'message-square' },
   { to: '/menus', label: '菜单', icon: 'menu' },
   { to: '/friends', label: '友链', icon: 'link-2' },
-  { to: '/visitor-logs', label: '访客', icon: 'bar-chart-3' },
+  { to: '/visitor-logs', label: '访客日志', icon: 'bar-chart-3' },
+  { to: '/guests', label: '访客', icon: 'users' },
   { to: '/scratchpad', label: '速记', icon: 'notebook-pen' },
   { to: '/settings', label: '设置', icon: 'settings-2' },
 ];
@@ -143,7 +144,7 @@ export default function AdminLayout() {
             className="flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-left transition-colors hover:bg-[var(--bg-muted)]"
             title="点击修改账号密码"
           >
-            <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full bg-[var(--bg-muted)] text-xs font-semibold text-[var(--text-h)]">
+            <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full bg-transparent text-xs font-semibold text-[var(--text-h)]">
               {initials}
               {avatarUrl && (
                 <img

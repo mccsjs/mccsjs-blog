@@ -211,3 +211,39 @@ html.is-rendering .transition-swup-leaving {
     border-radius: 0 8px 8px 0;
   }
 }
+
+/* ===== 文章卡片暗色模式适配 ===== */
+.dark .article-grid-card {
+  border-color: rgb(var(--border));
+}
+
+.dark .article-grid-card:hover,
+.dark .article-grid-card:focus-within {
+  border-color: rgb(var(--fg));
+}
+
+/* 暗色模式：渐变遮罩收尾至卡片底色（保持与亮色一致的 card-bg 变量，不强行贴页面背景） */
+.dark .article-grid-card__gradient-overlay {
+  background: linear-gradient(
+    to bottom,
+    transparent 40%,
+    color-mix(in srgb, rgb(var(--card-bg, var(--surface))) 60%, transparent) 80%,
+    rgb(var(--card-bg, var(--surface))) 100%
+  );
+}
+
+/* 暗色日期图标：自适应当前文字颜色 */
+.dark .article-grid-card__date::before {
+  filter: brightness(1.4);
+}
+
+/* ===== 全站图片优化：加载完成淡入 ===== */
+/* 由 img-lazy 脚本驱动：脚本给图片加 lazy-fade 类后再淡入。
+   JS 未执行时图片默认可见（渐进增强），不会因脚本缺失而永久透明。 */
+.lazy-fade {
+  opacity: 0;
+  transition: opacity .45s ease;
+}
+.lazy-fade.is-loaded {
+  opacity: 1;
+}

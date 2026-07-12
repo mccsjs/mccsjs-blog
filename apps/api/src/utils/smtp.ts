@@ -5,7 +5,7 @@
 // 边缘节点上必然失败）。Cloudflare 提供 cloudflare:sockets 这个 TCP 接口，
 // 我们用它在 Worker 里直接实现 SMTP 握手。
 //
-// 设计对齐参考项目 D:\3iS73M（FlecBlog, Go gomail）：
+// 设计对齐 FlecBlog（Go gomail）邮件发送逻辑：
 //   - 加密方式 none / ssl / starttls（ssl=465 隐式 TLS，starttls=587 升级，
 //     none=25 明文，后两者由 Cloudflare 的 secureTransport 直接处理）
 //   - 发件人地址解析：显示名 + 地址；地址缺省回退到 SMTP 登录账号

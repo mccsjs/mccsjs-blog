@@ -191,5 +191,57 @@ const effectiveFontFamily = fontFamily
 
     <script type="module" src={`/scripts/base/entry.js?v=${import.meta.env.DEV ? Date.now() : '2'}`}></script>
     <script defer src={`/scripts/tracker.js?v=${import.meta.env.DEV ? Date.now() : '1'}`}></script>
+
+    {/* 全站图片优化：懒加载 + 异步解码 + 加载完成淡入。
+        首屏关键图（fetchpriority=high 的 Hero / 标记 data-no-lazy 的导航图标）不淡入，保护 LCP。 */}
+    <script is:inline>
+      (function () {
+        function isSkipped(img) {
+          if (img.dataset.noLazy) return true;
+          if (img.classList.contains('friend-shot')) return true; // 友链截图自管淡入
+          return false;
+        }
+        function isHero(img) {
+          return img.getAttribute('fetchpriority') === 'high';
+        }
+        function setupImg(img) {
+          if (!img || img.dataset.lazyReady) return;
+          img.dataset.lazyReady = '1';
+          if (isSkipped(img)) return;
+          if (isHero(img)) {
+            img.decoding = 'async';
+            return;
+          }
+          if (!img.hasAttribute('loading')) img.loading = 'lazy';
+          img.decoding = 'async';
+          img.classList.add('lazy-fade');
+          if (img.complete && img.naturalWidth > 0) {
+            img.classList.add('is-loaded');
+          } else {
+            img.addEventListener('load', function () { img.classList.add('is-loaded'); }, { once: true });
+            img.addEventListener('error', function () { img.classList.add('is-loaded'); }, { once: true });
+          }
+        }
+        function init() {
+          document.querySelectorAll('img').forEach(setupImg);
+          if (!('MutationObserver' in window) || !document.body) return;
+          var mo = new MutationObserver(function (muts) {
+            muts.forEach(function (m) {
+              m.addedNodes.forEach(function (n) {
+                if (n.nodeType !== 1) return;
+                if (n.tagName === 'IMG') setupImg(n);
+                if (n.querySelectorAll) n.querySelectorAll('img').forEach(setupImg);
+              });
+            });
+          });
+          mo.observe(document.body, { childList: true, subtree: true });
+        }
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', init);
+        } else {
+          init();
+        }
+      })();
+    </script>
   </body>
 </html>

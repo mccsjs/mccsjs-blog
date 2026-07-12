@@ -98,6 +98,15 @@ const getReadingTime = (content: string) => {
 
 const readTime = post ? getReadingTime(post.content) : 0;
 
+// 总字数：中文按字、英文按词，与阅读时间统计口径一致
+const wordCount = post
+  ? (() => {
+      const chinese = (post.content.match(/[\u4e00-\u9fa5]/g) || []).length;
+      const words = (post.content.match(/[a-zA-Z0-9_]+/g) || []).length;
+      return chinese + words;
+    })()
+  : 0;
+
 // 初始化 markdown-it，图片渲染成 fancybox 链接
 const md = new MarkdownIt({
   html: true,
@@ -311,8 +320,8 @@ const tocHtmlStr = tocTree.length > 0 ? '<ol class="toc-list">' + renderTocOl(to
 
         <div class={tocTree.length > 0 ? 'grid gap-8 lg:grid-cols-[2fr_280px] lg:gap-12' : 'mx-auto max-w-3xl'}>
           <article class="post-article">
-            <header class="mb-8">
-              <div class="flex flex-wrap items-center gap-2 text-sm text-[rgb(var(--fg-muted))] dark:text-[rgb(var(--fg-muted))]">
+            <header class="mb-8 text-center">
+              <div class="flex flex-wrap items-center justify-center gap-2 text-sm text-[rgb(var(--fg-muted))] dark:text-[rgb(var(--fg-muted))]">
                 <span class="rounded-full bg-yellow-50 px-2.5 py-1 font-medium text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">
                   {post.category.name}
                 </span>
@@ -322,6 +331,8 @@ const tocHtmlStr = tocTree.length > 0 ? '<ol class="toc-list">' + renderTocOl(to
                 <span>{post.views} 次阅读</span>
                 <span>·</span>
                 <span>{readTime} 分钟</span>
+                <span>·</span>
+                <span>总字数 {wordCount}</span>
               </div>
               <h1 class="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">{post.title}</h1>
               {post.excerpt && (
@@ -329,7 +340,7 @@ const tocHtmlStr = tocTree.length > 0 ? '<ol class="toc-list">' + renderTocOl(to
               )}
             </header>
 
-            <div class="post-content prose prose-base max-w-none" set:html={contentHtmlReady}></div>
+            <div class="post-content prose prose-base max-w-none border-t pt-8 dark:border-[rgb(var(--border))]" set:html={contentHtmlReady}></div>
 
             {
               post.tags.length > 0 && (

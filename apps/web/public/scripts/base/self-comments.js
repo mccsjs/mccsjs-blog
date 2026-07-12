@@ -10,7 +10,7 @@ import { registerInit } from './registry.js';
     }, true);
     window.__scAvatarErrBound = true;
   }
-  // ================= 本站自研评论区 =================
+  // ================= 本站评论区 =================
   function scEscapeHtml(str) {
     return String(str == null ? '' : str)
       .replace(/&/g, '&amp;')
@@ -32,7 +32,7 @@ import { registerInit } from './registry.js';
   // weavatar 的 HASH 必须是「邮箱的 SHA256（或 MD5）哈希」，不是原始邮箱——
   // 直接在 URL 放原始邮箱会被当作未知哈希，返回 404（也就不会去查 QQ 头像）。
   // 浏览器端用 crypto.subtle.digest 计算 SHA256（localhost / https 均为安全上下文）。
-  // 再附 d=404：用户没头像时返回 404 → 由全局 error 监听移除 <img> 露出底层字母头像。
+  // 再附 d=mp：用户没头像时返回 weavatar 默认人像图（mystery-person），始终是一张圆角图片，不会露出底层彩色框。
   function scSha256Hex(str) {
     if (!crypto || !crypto.subtle || !crypto.subtle.digest) return Promise.resolve(null);
     try {
@@ -52,7 +52,7 @@ import { registerInit } from './registry.js';
     if (!e) return Promise.resolve(null);
     if (scAvatarHashCache[e]) return scAvatarHashCache[e];
     var p = scSha256Hex(e).then(function (h) {
-      return h ? ('https://weavatar.com/avatar/' + h + '?s=80&d=404') : null;
+      return h ? ('https://weavatar.com/avatar/' + h + '?s=80&d=mp') : null;
     });
     scAvatarHashCache[e] = p;
     return p;
@@ -205,13 +205,17 @@ import { registerInit } from './registry.js';
     var initial = (name.trim().charAt(0) || '?').toUpperCase();
     var color = scAvatarColor(name);
     // 邮箱头像（weavatar）：有邮箱时叠加在字母头像之上；src 由 scApplyAvatars 异步填充 SHA256 哈希后的地址，
-    // 加载失败（含 404）由全局 error 监听移除 <img>，露出底层字母头像。
+    // 缺真实头像时 weavatar 返回默认人像图（d=mp），加载成功即为圆角图片，不会露出底层彩色框。
     var avatarImg = c.email ? '<img class="sc-avatar-img" data-email="' + scEscapeHtml(c.email) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : '';
     var nameHtml = scEscapeHtml(name);
     if (c.website) {
       nameHtml = '<a href="' + scEscapeHtml(c.website) + '" target="_blank" rel="nofollow noopener noreferrer">' + scEscapeHtml(name) + '</a>';
     }
-    var badge = c.isAdmin ? '<span class="sc-badge sc-badge-admin">' + scEscapeHtml(SC_ADMIN_BADGE) + '</span>' : '';
+    var badge = ''
+    if (c.isAdmin) badge += '<span class="sc-badge sc-badge-admin">' + scEscapeHtml(SC_ADMIN_BADGE) + '</span>'
+    // 自定义访客徽章：若该邮箱在管理员设置的映射中、且非管理员（管理员已显示博主徽章，不重复叠加），追加独立徽章
+    var gb = (!c.isAdmin) && SC_GUEST_BADGES[(c.email || '').trim().toLowerCase()]
+    if (gb) badge += '<span class="sc-badge sc-badge-guest">' + scEscapeHtml(gb) + '</span>'
     var replyTo = (c.replyToAuthor) ? '<span class="sc-reply-to"> 回复 ' + scEscapeHtml(c.replyToAuthor) + '</span>' : '';
     var extras = [];
     if (c.region) extras.push('<span class="sc-extra"><iconify-icon class="sc-extra-icon" icon="' + scDeviceIcon('region', c.region) + '"></iconify-icon>' + scEscapeHtml(c.region) + '</span>');
@@ -224,7 +228,7 @@ import { registerInit } from './registry.js';
     var liked = scIsLiked(c.id);
     return (
       '<div class="sc-item' + (isRoot ? '' : ' sc-reply') + '" data-id="' + scEscapeHtml(c.id) + '">' +
-        '<div class="sc-avatar" style="background:' + color + '">' + scEscapeHtml(initial) + avatarImg + '</div>' +
+        '<div class="sc-avatar">' + scEscapeHtml(initial) + avatarImg + '</div>' +
         '<div class="sc-body">' +
           '<div class="sc-item-head">' +
             '<span class="sc-item-name">' + nameHtml + '</span>' +
@@ -404,6 +408,9 @@ import { registerInit } from './registry.js';
   // 博主身份徽章文字（管理端「评论设置」配置，默认「博主」）；
   // 由 scInitAdmin 从 /api/comment-admin 读取后更新，渲染评论徽章时读取。
   var SC_ADMIN_BADGE = '博主';
+  // 自定义访客徽章映射（email -> 徽章文字），由 scInitAdmin 从 /api/guest-badges 拉取后填充。
+  // 用模块级变量，使顶层渲染函数 scRenderComment 也能读到（其无 root 参数）。
+  var SC_GUEST_BADGES = {};
 
   // ===== 评论区博主身份（Twikoo 式「设置」按钮登录） =====
   var SC_ADMIN_TOKEN = 'sc_admin_token'
@@ -532,7 +539,7 @@ import { registerInit } from './registry.js';
         var info = scGetAdminInfo() || { name: '博主' }
         statusEl.hidden = false
         statusEl.innerHTML =
-          '<span class="sc-admin-badge">博主（' + scEscapeHtml(info.name || '博主') + '）已登录</span>' +
+          '<span class="sc-admin-badge">' + scEscapeHtml(SC_ADMIN_BADGE) + '（' + scEscapeHtml(info.name || '博主') + '）已登录</span>' +
           '<button type="button" class="sc-admin-logout">退出</button>'
         root.classList.add('sc-admin-on')
         var form = root.querySelector('.sc-form')
@@ -557,6 +564,34 @@ import { registerInit } from './registry.js';
         refresh();
       })
       .catch(function () { root._scAdminEnabled = false; refresh() })
+
+    // 拉取自定义访客徽章映射（email -> 徽章文字），渲染评论时追加独立徽章
+    fetch(apiUrl + '/api/guest-badges')
+      .then(function (r) { return r.ok ? r.json() : {} })
+      .then(function (d) {
+        SC_GUEST_BADGES = d || {};
+        // 评论可能已先于本请求渲染，遍历已渲染评论注入缺失的访客徽章（仿博主徽章同步模式）
+        var items = root.querySelectorAll('.sc-item');
+        for (var i = 0; i < items.length; i++) {
+          var img = items[i].querySelector('.sc-avatar-img');
+          var em = img ? (img.getAttribute('data-email') || '').trim().toLowerCase() : '';
+          var gb = SC_GUEST_BADGES[em];
+          // 管理员已显示博主徽章，跳过叠加访客徽章
+          if (gb && !items[i].querySelector('.sc-badge-admin') && !items[i].querySelector('.sc-badge-guest')) {
+            var head = items[i].querySelector('.sc-item-head');
+            if (head) {
+              var span = document.createElement('span');
+              span.className = 'sc-badge sc-badge-guest';
+              span.textContent = gb;
+              // 插入到名字后面、回复标签前面（紧跟在管理员徽章之后）
+              var refNode = head.querySelector('.sc-reply-to') || head.querySelector('.sc-item-time');
+              head.insertBefore(span, refNode);
+            }
+          }
+        }
+        refresh();
+      })
+      .catch(function () { SC_GUEST_BADGES = {}; refresh() })
 
     adminBtn.addEventListener('click', function () { scOpenAdminModal(root, apiUrl, refresh) })
     statusEl.addEventListener('click', function (e) {
@@ -810,30 +845,47 @@ import { registerInit } from './registry.js';
     var panel = document.createElement('div');
     panel.className = 'sc-emoji-panel';
     panel.hidden = true;
-    form.appendChild(panel);
+    // 挂到 body 而非 form 内部，避免祖先 transform/filter/perspect 破坏 position:fixed 的视口基准
+    document.body.appendChild(panel);
+
+    // 根据按钮位置精确定位面板（面板须已在 DOM 中且有实际尺寸）
+    function repositionPanel() {
+      var rect = btn.getBoundingClientRect();
+      var pH = panel.offsetHeight || 280;
+      if (rect.bottom + 6 + pH > window.innerHeight && rect.top > pH + 6) {
+        panel.style.top = (rect.top - pH - 6) + 'px';
+      } else {
+        panel.style.top = (rect.bottom + 6) + 'px';
+      }
+      var pW = panel.offsetWidth || Math.min(420, window.innerWidth - 32);
+      var left = rect.left;
+      // 防止面板右侧溢出视口
+      if (left + pW > window.innerWidth) {
+        left = window.innerWidth - pW - 8;
+      }
+      if (left < 8) left = 8;
+      panel.style.left = left + 'px';
+    }
 
     btn.addEventListener('click', function (e) {
       e.preventDefault();
       e.stopPropagation();
       if (!panel.hidden) { panel.hidden = true; return; }
-      // 定位到按钮正下方
-      var rect = btn.getBoundingClientRect();
-      var panelH = panel.offsetHeight || 280;
-      // 如果下方空间不够，翻到按钮上方
-      if (rect.bottom + 6 + panelH > window.innerHeight && rect.top > panelH + 6) {
-        panel.style.top = (rect.top - panelH - 6) + 'px';
-      } else {
-        panel.style.top = (rect.bottom + 6) + 'px';
-      }
-      panel.style.left = rect.left + 'px';
+      // 先用估算高度预定位
+      repositionPanel();
       scGetOwo(emojiCdn).then(function (owo) {
         if (!panel._built) { panel.innerHTML = ''; scBuildEmojiPanel(panel, form.querySelector('textarea'), owo); panel._built = true; }
+        // 面板构建完毕后用真实尺寸重新定位（修复嵌套回复框内偏移问题）
+        repositionPanel();
         // 首屏评论可能还是短代码文本，点开表情时顺手把历史表情补渲染成图片
         if (root && root._scOwoMap !== owo.map) { root._scOwoMap = owo.map; scApplyOwoAll(root); }
         panel.hidden = false;
+        _panelOpenScrollY = window.scrollY;
       }).catch(function () {
         panel.innerHTML = '<div class="sc-emoji-empty">表情包加载失败</div>';
+        repositionPanel();
         panel.hidden = false;
+        _panelOpenScrollY = window.scrollY;
         panel._built = true;
       });
     });
@@ -845,9 +897,14 @@ import { registerInit } from './registry.js';
       }
     });
 
-    // 页面滚动时关闭表情面板
+    // 页面滚动时关闭表情面板（加阈值：小幅度滚动不触发，避免太敏感）
+    var _panelOpenScrollY = 0;
     window.addEventListener('scroll', function () {
-      if (!panel.hidden) panel.hidden = true;
+      if (panel.hidden) return;
+      if (Math.abs(window.scrollY - _panelOpenScrollY) > 40) {
+        panel.hidden = true;
+        _panelOpenScrollY = 0;
+      }
     }, { passive: true });
   }
 

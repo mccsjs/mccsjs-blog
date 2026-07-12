@@ -13,7 +13,7 @@ import { relations } from 'drizzle-orm'
 // 注意：曾误改为 Date.now()（毫秒），导致趋势/统计分桶全部失效（显示为 0）。
 const now = () => Math.floor(Date.now() / 1000)
 
-// ============ 用户 / 会话（自研鉴权，仅需 users + sessions） ============
+// ============ 用户 / 会话（鉴权，仅需 users + sessions） ============
 
 export const users = sqliteTable(
   'user',
@@ -100,9 +100,9 @@ export const comments = sqliteTable(
   'comment',
   {
     id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-    postId: text('post_id')
-      .notNull()
-      .references(() => posts.id, { onDelete: 'cascade' }),
+    // postId 仅作评论分组键：文章页传真实文章 id，友链 / 留言板等独立页传固定页面键
+    // （如 'link' / 'comments'）。不挂外键，避免非文章页评论被外键约束拦截。
+    postId: text('post_id').notNull(),
     author: text('author').notNull(),
     email: text('email').notNull(),
     website: text('website'),
@@ -223,6 +223,20 @@ export const visitorLogs = sqliteTable(
     index('visitor_log_page_idx').on(t.page),
     index('visitor_log_created_idx').on(t.createdAt),
   ]
+)
+
+// ============ 访客自定义徽章 ============
+// 按邮箱持久化评论者的自定义徽章文字（如「老朋友」「潜水员」）。
+// 评论区渲染时通过公开接口 GET /api/guest-badges 拉取 email→badge 映射。
+export const guestBadges = sqliteTable(
+  'guest_badge',
+  {
+    id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+    email: text('email').notNull().unique(),
+    badge: text('badge').notNull(),
+    updatedAt: integer('updated_at').notNull().$defaultFn(now),
+  },
+  (t) => [uniqueIndex('guest_badge_email_idx').on(t.email)]
 )
 
 // ============ 关系 ============

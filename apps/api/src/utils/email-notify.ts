@@ -18,7 +18,7 @@ export interface SmtpConfig {
   port: number
   user: string
   pass: string
-  secure: 'none' | 'ssl' | 'starttls' // 加密方式：对齐参考项目 none/ssl/starttls
+  secure: 'none' | 'ssl' | 'starttls' // 加密方式：none / ssl / starttls
 }
 
 export interface MailConfig {

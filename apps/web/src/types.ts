@@ -62,6 +62,9 @@ export interface SiteSettings {
   fontCssUrl: string;
   fontFamily: string;
   backgroundImage: string;
+  heroType: string;
+  heroImage: string;
+  heroVideo: string;
 }
 
 export interface NavLink {

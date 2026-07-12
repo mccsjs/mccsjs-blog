@@ -1,5 +1,5 @@
 ---
-// 本站自研评论区：仅渲染静态骨架，数据加载 / 提交 / 回复 / 点赞逻辑在 BaseLayout 全局脚本中，
+// 本站评论区：仅渲染静态骨架，数据加载 / 提交 / 回复 / 点赞逻辑在 BaseLayout 全局脚本中，
 // 以适配 swup 页面过渡（与 Twikoo 相同的初始化策略）。
 const API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_URL)
   || (typeof process !== 'undefined' && process.env && process.env.PUBLIC_API_URL)

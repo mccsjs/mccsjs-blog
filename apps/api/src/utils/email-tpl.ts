@@ -50,7 +50,7 @@ export function stripHtml(html: string): string {
     .trim()
 }
 
-// 回复通知模板（富 HTML，对齐参考项目 D:\3iS73M 的 comment_reply.tmpl 视觉）
+// 回复通知模板（富 HTML，对齐 FlecBlog 的 comment_reply.tmpl 视觉）
 // 变量：parentAuthor(被回复者昵称) / author(回复者昵称) / postTitle(文章标题)
 //       content(回复内容) / commentUrl(完整回复链接) / siteTitle(站点名)
 export const DEFAULT_REPLY_TPL = `<div style="background:#f5f5f5;padding:20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;line-height:1.6;">

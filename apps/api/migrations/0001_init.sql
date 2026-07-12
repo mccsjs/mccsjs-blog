@@ -1,4 +1,4 @@
--- 用户 / 会话（自研鉴权）
+-- 用户 / 会话（鉴权）
 CREATE TABLE IF NOT EXISTS "user" (
   "id" TEXT PRIMARY KEY NOT NULL,
   "name" TEXT,

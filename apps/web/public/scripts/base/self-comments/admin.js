@@ -29,7 +29,7 @@ function scGetAdminToken() {
     return t;
   } catch (e) { return null; }
 }
-function scGetAdminInfo() {
+export function scGetAdminInfo() {
   try { return JSON.parse(localStorage.getItem(SC_ADMIN_INFO) || 'null'); } catch (e) { return null; }
 }
 function scSetAdmin(token, info) {
@@ -38,12 +38,12 @@ function scSetAdmin(token, info) {
 function scClearAdmin() {
   try { localStorage.removeItem(SC_ADMIN_TOKEN); localStorage.removeItem(SC_ADMIN_INFO); } catch (e) {}
 }
-function scIsAdminLoggedIn() { return !!scGetAdminToken(); }
-function scAdminAuthHeader() {
+export function scIsAdminLoggedIn() { return !!scGetAdminToken(); }
+export function scAdminAuthHeader() {
   var t = scGetAdminToken();
   return t ? { Authorization: 'Bearer ' + t } : {};
 }
-function scApplyAdminToForm(form, info, lock) {
+export function scApplyAdminToForm(form, info, lock) {
   if (!form) return;
   if (lock && info) {
     if (form.author) { form.author.value = info.name || ''; form.author.readOnly = true; form.author.classList.add('sc-locked'); }

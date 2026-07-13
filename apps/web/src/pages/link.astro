@@ -199,20 +199,28 @@ try {
     </div>
   </section>
   <style>
-    /* 友链截图：懒加载完成后淡入 */
+    /* 友链截图：脚本在加载完成（或 Swup 导航后重新初始化）时加 is-loaded 淡入 */
     .friend-shot.is-loaded {
       opacity: 1;
     }
   </style>
 
   <script>
-    // 兜底：缓存命中的图片不会触发 onload，直接标记为已加载
-    document.querySelectorAll('.friend-shot').forEach(function (img) {
-      if (img.complete) {
-        img.classList.add('is-loaded');
-      } else {
-        img.addEventListener('load', function () { img.classList.add('is-loaded'); }, { once: true });
-      }
-    });
+    // 友链截图淡入：绑定 astro:page-load，兼容 Swup 客户端导航。
+    // 模块脚本仅首屏执行一次，Swup 切页不会重跑，若只初始化一次会导致
+    // is-loaded 永不添加、截图停在 opacity-0（表现为"刷新才显示"）。
+    function initFriendShots() {
+      document.querySelectorAll('.friend-shot').forEach(function (img) {
+        if (img.complete && img.naturalWidth > 0) {
+          img.classList.add('is-loaded');
+        } else {
+          img.addEventListener('load', function () { img.classList.add('is-loaded'); }, { once: true });
+          // 加载失败也显形，避免空白
+          img.addEventListener('error', function () { img.classList.add('is-loaded'); }, { once: true });
+        }
+      });
+    }
+    initFriendShots();
+    document.addEventListener('astro:page-load', initFriendShots);
   </script>
 </BaseLayout>

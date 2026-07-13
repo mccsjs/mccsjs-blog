@@ -7,6 +7,11 @@ compatibility_flags = ["nodejs_compat"]
 ADMIN_EMAIL = "admin@localhost"
 ASSETS_PUBLIC_URL = "https://assets.mccsjsblog.test"
 
+# 空库自动 seed 开关：重置 / 新建本地 D1 后，首个请求若检测到空库会
+# 自动初始化默认数据（菜单 / 友链 / 设置），无需手动调 /api/admin/seed。
+# 默认开启；生产环境若不希望自动注入默认数据，取消下一行注释即可。
+# AUTO_SEED = "false"
+
 [[d1_databases]]
 binding = "DB"
 database_name = "mccsjsblog"

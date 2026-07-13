@@ -75,7 +75,7 @@ export default function Friends() {
 
   // ===== Mutations: Types =====
   const createType = useMutation({
-    mutationFn: (data: TypeFormData) => api<void>('/api/admin/friend-types', { 
+    mutationFn: (data: TypeFormData) => api<FriendType>('/api/admin/friend-types', { 
       method: 'POST', 
       body: JSON.stringify(data) 
     }),
@@ -153,7 +153,7 @@ export default function Friends() {
 
   const openEditFriend = (friend: Friend) => {
     setEditingFriend(friend);
-    friendForm.reset({ name: friend.name, url: friend.url, description: friend.description, avatar: friend.avatar, screenshot: friend.screenshot, sort: friend.sort, isInvalid: friend.isInvalid, typeId: friend.typeId || '' });
+    friendForm.reset({ name: friend.name, url: friend.url, description: friend.description, avatar: friend.avatar, screenshot: friend.screenshot, sort: friend.sort, isInvalid: friend.isInvalid, typeId: friend.type?.name || '' });
     setShowForm(true);
   };
 
@@ -163,11 +163,31 @@ export default function Friends() {
     setShowForm(true);
   };
 
-  const handleFriendSubmit = (data: FriendFormData) => {
-    if (editingFriend) {
-      updateFriend.mutate({ id: editingFriend.id, data });
-    } else {
-      createFriend.mutate(data);
+  // 把表单里的「类型名」解析为 typeId：匹配已有类型则复用其 id，否则自动创建一个新类型
+  const resolveTypeId = async (name: string): Promise<string | null> => {
+    const trimmed = (name || '').trim();
+    if (!trimmed) return null;
+    const existing = types.find((t) => t.name.trim() === trimmed);
+    if (existing) return existing.id;
+    try {
+      const created = await createType.mutateAsync({ name: trimmed, sort: 0, isVisible: true });
+      return created.id;
+    } catch {
+      return null;
+    }
+  };
+
+  const handleFriendSubmit = async (data: FriendFormData) => {
+    try {
+      const resolvedId = await resolveTypeId(data.typeId);
+      const payload = { ...data, typeId: resolvedId ?? '' };
+      if (editingFriend) {
+        updateFriend.mutate({ id: editingFriend.id, data: payload });
+      } else {
+        createFriend.mutate(payload);
+      }
+    } catch (e) {
+      alert('保存失败：' + (e instanceof Error ? e.message : String(e)));
     }
   };
 
@@ -492,17 +512,18 @@ export default function Friends() {
                 </div>
                 <div>
                   <Label htmlFor="typeId">类型</Label>
-                  <select 
+                  <input
                     id="typeId"
-                    value={friendForm.watch('typeId')} 
-                    onChange={(e) => friendForm.setValue('typeId', e.target.value)}
+                    list="typeNameList"
+                    placeholder="输入或选择类型（可自定义）"
+                    {...friendForm.register('typeId')}
                     className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3.5 py-2.5 text-sm text-[var(--text-h)] outline-none transition-all hover:border-[var(--border-strong)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-bg)]"
-                  >
-                    <option value="">无类型</option>
+                  />
+                  <datalist id="typeNameList">
                     {types.map((t: FriendType) => (
-                      <option key={t.id} value={t.id}>{t.name}</option>
+                      <option key={t.id} value={t.name} />
                     ))}
-                  </select>
+                  </datalist>
                 </div>
               </div>
               {editingFriend && (

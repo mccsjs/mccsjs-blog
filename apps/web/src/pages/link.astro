@@ -128,7 +128,7 @@ try {
                   >
                     <div class="relative h-32 w-full overflow-hidden bg-gray-100 dark:bg-gray-800">
                       {friend.screenshot ? (
-                        <img src={friend.screenshot} alt={friend.name} loading="lazy" decoding="async" onload="this.classList.add('is-loaded')" class="friend-shot h-full w-full object-cover opacity-0 transition-all duration-500 group-hover:scale-105" />
+                        <img src={friend.screenshot} alt={friend.name} loading="lazy" decoding="async" class="friend-shot h-full w-full object-cover opacity-0 transition-all duration-500 group-hover:scale-105" />
                       ) : (
                         <div class="flex h-full w-full items-center justify-center text-xs text-[rgb(var(--fg-muted))] dark:text-[rgb(var(--fg-muted))]">暂无截图</div>
                       )}

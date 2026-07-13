@@ -46,29 +46,28 @@ const latestPosts = posts.slice(0, 6);
 
 <BaseLayout description={siteTitle + ' — ' + siteDescription}>
   <section class="relative overflow-hidden rounded-3xl text-center sm:py-24">
-    {(heroType === 'video' && heroVideo) ? (
+    <img
+      src={heroImage}
+      alt=""
+      class="absolute inset-0 h-full w-full object-cover"
+      fetchpriority="high"
+      data-no-lazy
+      decoding="async"
+      aria-hidden="true"
+    />
+    {(heroType === 'video' && heroVideo) && (
       <video
-        class="absolute inset-0 h-full w-full object-cover"
+        class="hero-video absolute inset-0 h-full w-full object-cover"
         autoplay
         muted
         loop
         playsinline
-        preload="auto"
+        preload="metadata"
         poster={heroImage}
         aria-hidden="true"
       >
         <source src={heroVideo} type="video/mp4" />
       </video>
-    ) : (
-      <img
-        src={heroImage}
-        alt="Hero"
-        class="absolute inset-0 h-full w-full object-cover"
-        fetchpriority="high"
-        data-no-lazy
-        decoding="async"
-        aria-hidden="true"
-      />
     )}
     <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/60"></div>
     <div class="relative px-6 py-16">
@@ -154,10 +153,17 @@ const latestPosts = posts.slice(0, 6);
     }
 
     function render() {
+      // 两段文案均来自第三方 hitokoto，用 textContent 写入避免 XSS
+      textEl.textContent = '';
+      var mainSpan = document.createElement('span');
+      mainSpan.textContent = displayMain;
+      textEl.appendChild(mainSpan);
       if (sourceText && displaySource.length > 0) {
-        textEl.innerHTML = displayMain + '<br><span class="type-source">' + displaySource + '</span>';
-      } else {
-        textEl.textContent = displayMain;
+        textEl.appendChild(document.createElement('br'));
+        var srcSpan = document.createElement('span');
+        srcSpan.className = 'type-source';
+        srcSpan.textContent = displaySource;
+        textEl.appendChild(srcSpan);
       }
     }
 
@@ -251,6 +257,11 @@ const latestPosts = posts.slice(0, 6);
   .type-source {
     font-size: 0.85em;
     color: rgba(255,255,255,0.6);
+  }
+
+  /* 尊重「减少动态效果」偏好：关闭 Hero 背景视频，回退到静态图片 */
+  @media (prefers-reduced-motion: reduce) {
+    .hero-video { display: none; }
   }
 </style>
 

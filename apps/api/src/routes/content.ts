@@ -399,9 +399,9 @@ export function contentRoutes() {
     try {
       await notifyOnNewComment(db, {
         comment: comment as { id: string; author: string; email: string; content: string },
-        post,
+        // 文章页用真实 post；友链 / 留言板等非文章页回落 threadPost（post 为 null 时）
+        post: post || threadPost,
         parent,
-        post: threadPost,
         baseUrl: new URL(c.req.url).origin,
       })
     } catch (e) {

@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { desc, eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { comments, guestBadges } from '@blog/db'
 import { requireAuth } from '../auth'
 import type { DB } from '../db'
@@ -16,47 +16,42 @@ export function guestRoutes() {
     const page = Math.max(1, parseInt(c.req.query('page') || '1', 10) || 1)
     const pageSize = Math.min(100, Math.max(1, parseInt(c.req.query('pageSize') || '50', 10) || 50))
 
-    // 取全部评论（含不可见，管理端视角），按时间倒序 → 首次出现即「最新」
-    const all = await db
+    // 用 SQL 窗口函数按 email 聚合（每个邮箱取最新一条 + 评论总数），避免把全部评论拉进内存
+    const ranked = db
       .select({
         email: comments.email,
         author: comments.author,
         website: comments.website,
         isAdmin: comments.isAdmin,
         createdAt: comments.createdAt,
+        rn: sql<number>`ROW_NUMBER() OVER (PARTITION BY ${comments.email} ORDER BY ${comments.createdAt} DESC)`.as('rn'),
       })
       .from(comments)
-      .orderBy(desc(comments.createdAt))
+      .as('ranked')
 
-    const map = new Map<string, any>()
-    const list: any[] = []
-    for (const r of all) {
-      const key = (r.email || '').trim().toLowerCase()
-      if (!key) continue
-      const existing = map.get(key)
-      if (existing) {
-        existing.commentCount++
-        existing.isAdmin = existing.isAdmin || !!r.isAdmin
-        continue
-      }
-      const entry = {
-        email: r.email,
-        name: r.author,
-        website: r.website || '',
-        isAdmin: !!r.isAdmin,
-        lastCommentAt: r.createdAt,
-        commentCount: 1,
-        badge: '',
-      }
-      map.set(key, entry)
-      list.push(entry)
-    }
+    const rows = await db
+      .select({
+        email: ranked.email,
+        author: ranked.author,
+        website: ranked.website,
+        isAdmin: ranked.isAdmin,
+        lastCommentAt: ranked.createdAt,
+        commentCount: sql<number>`COUNT(*) OVER (PARTITION BY ${ranked.email})`.as('commentCount'),
+        badge: guestBadges.badge,
+      })
+      .from(ranked)
+      .leftJoin(guestBadges, eq(guestBadges.email, ranked.email))
+      .where(eq(ranked.rn, 1))
 
-    // 注入自定义徽章
-    const badges = await db.select().from(guestBadges)
-    const badgeMap = new Map<string, string>()
-    badges.forEach((b: any) => badgeMap.set((b.email || '').trim().toLowerCase(), b.badge))
-    list.forEach((e) => { e.badge = badgeMap.get(e.email.trim().toLowerCase()) || '' })
+    const list = rows.map((r: any) => ({
+      email: r.email,
+      name: r.author,
+      website: r.website || '',
+      isAdmin: !!r.isAdmin,
+      lastCommentAt: r.lastCommentAt,
+      commentCount: r.commentCount,
+      badge: r.badge || '',
+    }))
 
     // 关键词过滤（昵称 / 邮箱 / 网站）
     const filtered = keyword
@@ -84,7 +79,11 @@ export function guestRoutes() {
     const email = (c.req.param('email') || '').trim().toLowerCase()
     if (!email) return c.json({ error: '邮箱不能为空' }, 400)
     const body = await c.req.json<{ badge?: string }>().catch(() => ({}))
-    const badge = (body.badge ?? '').trim()
+    // 去除控制字符并限制长度，避免超长 / 恶意 badge 入库后在评论区渲染
+    const badge = (body.badge ?? '')
+      .trim()
+      .replace(/[\u0000-\u001F\u007F]/g, '')
+      .slice(0, 30)
 
     if (!badge) {
       await db.delete(guestBadges).where(eq(guestBadges.email, email))

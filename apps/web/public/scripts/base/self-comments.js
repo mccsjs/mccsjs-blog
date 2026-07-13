@@ -852,11 +852,15 @@ import { registerInit } from './registry.js';
     function repositionPanel() {
       var rect = btn.getBoundingClientRect();
       var pH = panel.offsetHeight || 280;
+      var top;
       if (rect.bottom + 6 + pH > window.innerHeight && rect.top > pH + 6) {
-        panel.style.top = (rect.top - pH - 6) + 'px';
+        top = rect.top - pH - 6;
       } else {
-        panel.style.top = (rect.bottom + 6) + 'px';
+        top = rect.bottom + 6;
       }
+      // 防止面板顶部溢出视口（放到按钮上方时，超高面板可能为负）
+      if (top < 8) top = 8;
+      panel.style.top = top + 'px';
       var pW = panel.offsetWidth || Math.min(420, window.innerWidth - 32);
       var left = rect.left;
       // 防止面板右侧溢出视口

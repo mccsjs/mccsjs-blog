@@ -789,15 +789,14 @@ function OptionCard({
   title: string;
   desc: string;
 }) {
-  return (
-    <label
-      onClick={onClick}
-      className={`flex cursor-pointer flex-col gap-1 rounded-lg border p-4 transition-colors ${
-        active
-          ? 'border-[var(--accent)] bg-[var(--bg-soft)]'
-          : 'border-[var(--border)] hover:border-[var(--border-strong)]'
-      }`}
-    >
+    return (
+      <label
+        className={`flex cursor-pointer flex-col gap-1 rounded-lg border p-4 transition-colors ${
+          active
+            ? 'border-[var(--accent)] bg-[var(--bg-soft)]'
+            : 'border-[var(--border)] hover:border-[var(--border-strong)]'
+        }`}
+      >
       <div className="flex items-center gap-2">
         <input type="radio" checked={active} onChange={onClick} />
         <span className="text-sm font-medium text-[var(--text-h)]">{title}</span>

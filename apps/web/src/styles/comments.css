@@ -796,7 +796,6 @@
 
 /* ---- 移动端：面板高度收敛 ---- */
 @media screen and (max-width: 640px) {
-  .sc-emoji-panel { left: 0; right: 0; width: 100%; }
   .sc-emoji-body { max-height: 150px; }
 }
 

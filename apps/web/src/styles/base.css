@@ -53,13 +53,32 @@
     scrollbar-width: thin;
     scrollbar-color: rgb(var(--border)) transparent;
     scrollbar-gutter: stable;
+    /* 背景放到 html：body 透明，z-index:-1 的星空 canvas 才能透出 */
+    background-color: rgb(var(--bg));
   }
 
   body {
-    background-color: rgb(var(--bg));
     color: rgb(var(--fg));
     overflow-x: hidden;
     max-width: 100vw;
+  }
+
+  /* 夜间星空 canvas：固定在内容底下、不挡点击。
+     深色时背景移到 html，body 透明，z-index:-1 的星空才能透出来。 */
+  #universe {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    display: block;
+  }
+  .dark {
+    background-color: rgb(var(--bg));
+  }
+  .dark body {
+    background-color: transparent;
   }
 
   /* 主题化滚动条（不使用 color-scheme，避免 Windows 走系统原生滚动条） */

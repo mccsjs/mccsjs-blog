@@ -1,4 +1,4 @@
-import type { DB } from '../db'
+import type { DB } from '../../db'
 import { siteSettings } from '@blog/db'
 import { eq } from 'drizzle-orm'
 import { type SettingKey } from '@blog/shared'

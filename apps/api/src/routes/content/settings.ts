@@ -7,10 +7,10 @@ import {
   settingKeys,
   type SettingKey,
 } from '@blog/shared'
-import { requireAuth, hashPassword, verifyPassword, signCommentAdminToken } from '../auth'
-import { sendTestEmail } from '../utils/email'
+import { requireAuth, hashPassword, verifyPassword, signCommentAdminToken } from '../../auth'
+import { sendTestEmail } from '../../utils/email'
 import { SECRET_KEYS, getSiteSetting } from './shared'
-import type { DB } from '../db'
+import type { DB } from '../../db'
 
 // ============ 站点设置 ============
 export function settingsRouter() {

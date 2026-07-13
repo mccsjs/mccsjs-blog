@@ -2,9 +2,9 @@ import { Hono } from 'hono'
 import { eq } from 'drizzle-orm'
 import { categories } from '@blog/db'
 import { categorySchema } from '@blog/shared'
-import { requireAuth } from '../auth'
+import { requireAuth } from '../../auth'
 import { isUniqueError } from './shared'
-import type { DB } from '../db'
+import type { DB } from '../../db'
 
 // ============ 分类 ============
 export function categoriesRouter() {

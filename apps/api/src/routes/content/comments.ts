@@ -2,12 +2,12 @@ import { Hono } from 'hono'
 import { and, desc, eq, sql } from 'drizzle-orm'
 import { comments, posts } from '@blog/db'
 import { commentCreateSchema } from '@blog/shared'
-import { requireAuth, verifyCommentAdminToken } from '../auth'
-import { getClientIp, resolveClientInfo } from '../utils'
-import { renderCommentHtml } from '../markdown'
-import { notifyOnNewComment, sendTestEmail } from '../utils/email'
+import { requireAuth, verifyCommentAdminToken } from '../../auth'
+import { getClientIp, resolveClientInfo } from '../../utils'
+import { renderCommentHtml } from '../../markdown'
+import { notifyOnNewComment, sendTestEmail } from '../../utils/email'
 import { getSiteSetting } from './shared'
-import type { DB } from '../db'
+import type { DB } from '../../db'
 
 // ============ 评论 ============
 export function commentsRouter() {

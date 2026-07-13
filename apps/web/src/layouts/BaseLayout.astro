@@ -220,11 +220,18 @@ const effectiveFontFamily = fontFamily
       (function () {
         function isSkipped(img) {
           if (img.dataset.noLazy) return true;
-          if (img.classList.contains('friend-shot')) return true; // 友链截图自管淡入
           return false;
         }
         function isHero(img) {
           return img.getAttribute('fetchpriority') === 'high';
+        }
+        function markLoaded(img) {
+          if (img.complete && img.naturalWidth > 0) {
+            img.classList.add('is-loaded');
+          } else {
+            img.addEventListener('load', function () { img.classList.add('is-loaded'); }, { once: true });
+            img.addEventListener('error', function () { img.classList.add('is-loaded'); }, { once: true });
+          }
         }
         function setupImg(img) {
           if (!img || img.dataset.lazyReady) return;
@@ -236,13 +243,15 @@ const effectiveFontFamily = fontFamily
           }
           if (!img.hasAttribute('loading')) img.loading = 'lazy';
           img.decoding = 'async';
-          img.classList.add('lazy-fade');
-          if (img.complete && img.naturalWidth > 0) {
-            img.classList.add('is-loaded');
-          } else {
-            img.addEventListener('load', function () { img.classList.add('is-loaded'); }, { once: true });
-            img.addEventListener('error', function () { img.classList.add('is-loaded'); }, { once: true });
+          if (img.classList.contains('friend-shot')) {
+            // 友链截图自管淡入（.friend-shot.is-loaded），复用全站懒加载 + 加载完成标记。
+            // 交给全局 MutationObserver 处理，兼容 Swup 客户端导航（页面内脚本因
+            // reloadScripts:optin 不会在切页时重跑，故不在 link.astro 内放脚本）。
+            markLoaded(img);
+            return;
           }
+          img.classList.add('lazy-fade');
+          markLoaded(img);
         }
         function init() {
           document.querySelectorAll('img').forEach(setupImg);

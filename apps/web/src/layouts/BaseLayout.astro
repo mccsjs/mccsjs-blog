@@ -120,6 +120,28 @@ const effectiveFontFamily = fontFamily
     <title>{title}</title>
     {API_URL && <script is:inline set:html={`window.__API_URL__ = ${JSON.stringify(API_URL)};`} />}
     <script is:inline>
+      // 隐私防护（Tracking Prevention / 隐私扩展）可能拦截 localStorage。
+      // 探测一次；若被拦则降级为内存实现，避免每个访问点都打印 blocked 日志。
+      (function () {
+        try {
+          var __k = '__sc_storage_probe__';
+          localStorage.setItem(__k, '1');
+          localStorage.removeItem(__k);
+        } catch (e) {
+          var __mem = {};
+          var __fake = {
+            getItem: function (k) { return Object.prototype.hasOwnProperty.call(__mem, k) ? __mem[k] : null; },
+            setItem: function (k, v) { __mem[k] = String(v); },
+            removeItem: function (k) { delete __mem[k]; },
+            clear: function () { __mem = {}; },
+            key: function (i) { return Object.keys(__mem)[i] || null; },
+            length: 0,
+          };
+          try { Object.defineProperty(window, 'localStorage', { configurable: true, value: __fake }); } catch (e2) {}
+        }
+      })();
+    </script>
+    <script is:inline>
       (function () {
         const STORAGE_KEY = 'theme';
         const systemDark = window.matchMedia('(prefers-color-scheme: dark)');

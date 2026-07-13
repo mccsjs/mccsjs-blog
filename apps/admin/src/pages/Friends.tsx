@@ -106,7 +106,7 @@ export default function Friends() {
 
   const updateFriend = useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<FriendFormData> }) => api<void>(`/api/admin/friends/${id}`, { 
-      method: 'PUT', 
+      method: 'PATCH', 
       body: JSON.stringify({ ...data, typeId: data.typeId || null }) 
     }),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['friends'] }); setShowForm(false); setEditingFriend(null); },
@@ -119,7 +119,7 @@ export default function Friends() {
 
   const toggleInvalid = useMutation({
     mutationFn: ({ id, isInvalid }: { id: string; isInvalid: boolean }) => api<void>(`/api/admin/friends/${id}`, { 
-      method: 'PUT', 
+      method: 'PATCH', 
       body: JSON.stringify({ isInvalid: !isInvalid }) 
     }),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['friends'] }); },

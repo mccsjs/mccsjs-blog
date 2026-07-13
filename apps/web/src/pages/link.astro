@@ -128,7 +128,7 @@ try {
                   >
                     <div class="relative h-32 w-full overflow-hidden bg-gray-100 dark:bg-gray-800">
                       {friend.screenshot ? (
-                        <img src={friend.screenshot} alt={friend.name} loading="lazy" decoding="async" class="friend-shot h-full w-full object-cover opacity-0 transition-all duration-500 group-hover:scale-105" />
+                        <img src={friend.screenshot} alt={friend.name} class="friend-shot h-full w-full object-cover opacity-0 transition-all duration-500 group-hover:scale-105" />
                       ) : (
                         <div class="flex h-full w-full items-center justify-center text-xs text-[rgb(var(--fg-muted))] dark:text-[rgb(var(--fg-muted))]">暂无截图</div>
                       )}
@@ -199,28 +199,50 @@ try {
     </div>
   </section>
   <style>
-    /* 友链截图：脚本在加载完成（或 Swup 导航后重新初始化）时加 is-loaded 淡入 */
+    /* 友链截图：默认 opacity-0，脚本标记 is-loaded 后淡入 */
     .friend-shot.is-loaded {
       opacity: 1;
     }
   </style>
 
   <script>
-    // 友链截图淡入：绑定 astro:page-load，兼容 Swup 客户端导航。
-    // 模块脚本仅首屏执行一次，Swup 切页不会重跑，若只初始化一次会导致
-    // is-loaded 永不添加、截图停在 opacity-0（表现为"刷新才显示"）。
-    function initFriendShots() {
-      document.querySelectorAll('.friend-shot').forEach(function (img) {
-        if (img.complete && img.naturalWidth > 0) {
-          img.classList.add('is-loaded');
-        } else {
-          img.addEventListener('load', function () { img.classList.add('is-loaded'); }, { once: true });
-          // 加载失败也显形，避免空白
-          img.addEventListener('error', function () { img.classList.add('is-loaded'); }, { once: true });
-        }
-      });
+    // 友链截图淡入 —— 三重保障兼容 Swup 客户端导航：
+    //   1) 首屏立即初始化
+    //   2) astro:page-load 事件后重新初始化（Swup 切页触发）
+    //   3) MutationObserver 监听 DOM 新增 img（兜底任何延迟注入）
+    // 注意：friend-shot 不使用 loading="lazy"，避免浏览器在 Swup 注入后
+    //       延迟/取消加载导致 load 事件永远不派发（参考 FlecBlog FriendCard）。
+    function markLoaded(img) {
+      if (!img || img.classList.contains('is-loaded')) return;
+      if (img.complete && img.naturalWidth > 0) {
+        img.classList.add('is-loaded');
+      } else {
+        img.addEventListener('load', function () { img.classList.add('is-loaded'); }, { once: true });
+        img.addEventListener('error', function () { img.classList.add('is-loaded'); }, { once: true });
+      }
     }
+
+    function initFriendShots() {
+      document.querySelectorAll('.friend-shot').forEach(markLoaded);
+    }
+
     initFriendShots();
     document.addEventListener('astro:page-load', initFriendShots);
+
+    // MutationObserver 兜底：捕获 Swup 或其他动态注入的新截图
+    var mo = new MutationObserver(function (mutations) {
+      mutations.forEach(function (m) {
+        m.addedNodes.forEach(function (node) {
+          if (node.nodeType === 1 && node.classList && node.classList.contains('friend-shot')) {
+            markLoaded(node);
+          }
+          // 也检查子节点
+          if (node.querySelectorAll) {
+            node.querySelectorAll('.friend-shot').forEach(markLoaded);
+          }
+        });
+      });
+    });
+    mo.observe(document.body, { childList: true, subtree: true });
   </script>
 </BaseLayout>

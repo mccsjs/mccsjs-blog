@@ -122,17 +122,9 @@ const visibleAggregateMenus = aggregateMenus.filter((m) => m.visible && m.childr
   </div>
 </div>
 
-<!-- ========== 移动端抽屉 ========== -->
+<!-- ========== 移动端弹出菜单 ========== -->
 <div id="nav-mobile-overlay"></div>
-<nav id="nav-mobile-drawer">
-  <div id="nav-mobile-header">
-    <span class="nav-mobile-title">导航</span>
-    <button id="nav-mobile-close" aria-label="关闭">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-      </svg>
-    </button>
-  </div>
+<nav id="nav-mobile-panel">
   <div id="nav-mobile-body">
     {visibleMenus.length > 0 ? (
       visibleMenus.map((menu, i) => {
@@ -147,7 +139,7 @@ const visibleAggregateMenus = aggregateMenus.filter((m) => m.visible && m.childr
                 </div>
                 <div class="nav-mobile-children">
                   {visibleChildren.map((child) => (
-                    <a href={child.href || '#'} target={child.target || undefined} class="nav-mobile-link">
+                    <a href={child.href || '#'} target={child.target || undefined} class="nav-mobile-link" data-nav-link>
                       {child.icon && <MenuIcon icon={child.icon} class="nav-icon" />}
                       <span>{child.label}</span>
                     </a>
@@ -155,7 +147,7 @@ const visibleAggregateMenus = aggregateMenus.filter((m) => m.visible && m.childr
                 </div>
               </>
             ) : (
-              <a href={menu.href || '#'} target={menu.target || undefined} class="nav-mobile-link nav-mobile-parent-link">
+              <a href={menu.href || '#'} target={menu.target || undefined} class="nav-mobile-link nav-mobile-parent-link" data-nav-link>
                 {menu.icon && <MenuIcon icon={menu.icon} class="nav-icon" />}
                 <span>{menu.label}</span>
               </a>
@@ -165,10 +157,10 @@ const visibleAggregateMenus = aggregateMenus.filter((m) => m.visible && m.childr
       })
     ) : (
       <>
-        <a href="/" class="nav-mobile-link nav-mobile-parent-link"><span>首页</span></a>
-        <a href="/posts" class="nav-mobile-link nav-mobile-parent-link"><span>文章</span></a>
-        <a href="/archive" class="nav-mobile-link nav-mobile-parent-link"><span>归档</span></a>
-        <a href="/link" class="nav-mobile-link nav-mobile-parent-link"><span>友链</span></a>
+        <a href="/" class="nav-mobile-link nav-mobile-parent-link" data-nav-link><span>首页</span></a>
+        <a href="/posts" class="nav-mobile-link nav-mobile-parent-link" data-nav-link><span>文章</span></a>
+        <a href="/archive" class="nav-mobile-link nav-mobile-parent-link" data-nav-link><span>归档</span></a>
+        <a href="/link" class="nav-mobile-link nav-mobile-parent-link" data-nav-link><span>友链</span></a>
       </>
     )}
   </div>

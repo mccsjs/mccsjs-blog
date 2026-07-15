@@ -99,3 +99,37 @@ export function resolveClientInfo(ua: string): ClientInfo {
     return { os: null, browser: null }
   }
 }
+
+// 地区解析：优先用 Cloudflare 边缘头 cf-ipcountry（免费、零延迟、零外部请求）；
+// 缺失时（如非 CF 部署 / 自托管）回退到 ip-api.com 按真实 IP 查询。
+// 带 1.5s 超时 + 按 IP 缓存 24h，失败冷却 1 分钟，避免重复打外部接口 / 触发限流（免费档 45 次/分）。
+const regionCache = new Map<string, { code: string | null; exp: number }>()
+
+export async function resolveRegion(ip: string | null, cfCountry?: string | null): Promise<string | null> {
+  // CF 头优先；XX=匿名 / T1=Tor，视为未知
+  if (cfCountry && cfCountry !== 'XX' && cfCountry !== 'T1') return cfCountry
+  // 无真实 IP 无法回退（本地 dev 多为 unknown / 回环地址）
+  if (!ip || ip === 'unknown') return null
+  const now = Date.now()
+  const cached = regionCache.get(ip)
+  if (cached && cached.exp > now) return cached.code
+  try {
+    const ctrl = new AbortController()
+    const timer = setTimeout(() => ctrl.abort(), 1500)
+    const res = await fetch(`http://ip-api.com/json/${encodeURIComponent(ip)}?fields=status,countryCode,country`, {
+      signal: ctrl.signal,
+    })
+    clearTimeout(timer)
+    if (!res.ok) {
+      regionCache.set(ip, { code: null, exp: now + 60_000 })
+      return null
+    }
+    const data = (await res.json()) as { status?: string; countryCode?: string }
+    const code = data.status === 'success' && data.countryCode ? data.countryCode : null
+    regionCache.set(ip, { code, exp: now + 24 * 3600_000 })
+    return code
+  } catch {
+    regionCache.set(ip, { code: null, exp: now + 60_000 })
+    return null
+  }
+}

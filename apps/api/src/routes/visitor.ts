@@ -1,9 +1,9 @@
 import { Hono } from 'hono'
-import { and, desc, eq, gte, lte, sql } from 'drizzle-orm'
+import { and, desc, eq, gte, isNotNull, lte, sql } from 'drizzle-orm'
 import { visitorLogs } from '@blog/db'
 import { collectSchema, visitorLogQuerySchema } from '@blog/shared'
 import { requireAuth } from '../auth'
-import { getClientIp, resolveClientInfo } from '../utils'
+import { getClientIp, resolveClientInfo, resolveRegion } from '../utils'
 import type { DB } from '../db'
 
 const DEDUP_MS = 5 * 60 * 1000
@@ -53,7 +53,10 @@ async function recordCollect(db: DB, body: any, c: any) {
     /* ignore */
   }
 
-  const { region, os, browser } = await resolveClientInfo(ip, ua)
+  const clientInfo = resolveClientInfo(ua)
+  const region = await resolveRegion(ip, c.req.header('cf-ipcountry'))
+  const os = clientInfo.os
+  const browser = clientInfo.browser
   try {
     await db.insert(visitorLogs).values({
       id: crypto.randomUUID(),
@@ -224,6 +227,76 @@ export function visitorRoutes() {
     }
 
     return c.json({ range, data })
+  })
+
+  // 公开访客统计（聚合，无敏感明细），所有时间。供前端「访客统计」卡片展示，不暴露 IP/visitor_id。
+  let publicStatsCache: { data: any; exp: number } | null = null
+  app.get('/api/visitor-public-stats', async (c) => {
+    const now = Date.now()
+    if (publicStatsCache && publicStatsCache.exp > now) return c.json(publicStatsCache.data)
+    const db: DB = c.get('db')
+    const [totals, countryRows, osRows, browserRows] = await Promise.all([
+      db
+        .select({
+          pageviews: sql<number>`count(*)`,
+          visitors: sql<number>`count(distinct ${visitorLogs.visitorId})`,
+        })
+        .from(visitorLogs),
+      db
+        .select({ value: visitorLogs.region, count: sql<number>`count(*)` })
+        .from(visitorLogs)
+        .where(isNotNull(visitorLogs.region))
+        .groupBy(visitorLogs.region)
+        .orderBy(desc(sql<number>`count(*)`))
+        .limit(6),
+      db
+        .select({ value: visitorLogs.os, count: sql<number>`count(*)` })
+        .from(visitorLogs)
+        .where(isNotNull(visitorLogs.os))
+        .groupBy(visitorLogs.os)
+        .orderBy(desc(sql<number>`count(*)`))
+        .limit(6),
+      db
+        .select({ value: visitorLogs.browser, count: sql<number>`count(*)` })
+        .from(visitorLogs)
+        .where(isNotNull(visitorLogs.browser))
+        .groupBy(visitorLogs.browser)
+        .orderBy(desc(sql<number>`count(*)`))
+        .limit(6),
+    ])
+
+    // 访问次数 = 会话数：同一访客两次事件间隔 > 30 分钟记为新会话（对齐 Umami visits 语义）
+    // Drizzle D1 实例无 .execute，改用原生 D1 绑定跑窗口函数
+    const d1 = (c.env as any).DB as {
+      prepare: (s: string) => { first: () => Promise<Record<string, unknown> | null> }
+    }
+    const sessionRow = await d1
+      .prepare(
+        `WITH ordered AS (
+           SELECT visitor_id, created_at,
+                  LAG(created_at) OVER (PARTITION BY visitor_id ORDER BY created_at) AS prev_ts
+           FROM visitor_log
+         ),
+         starts AS (
+           SELECT CASE WHEN prev_ts IS NULL OR (created_at - prev_ts) > 1800 THEN 1 ELSE 0 END AS s
+           FROM ordered
+         )
+         SELECT COALESCE(SUM(s), 0) AS visits FROM starts`
+      )
+      .first()
+    const visits = Number((sessionRow as any)?.visits ?? 0)
+    const data = {
+      stats: {
+        pageviews: Number(totals[0]?.pageviews ?? 0),
+        visitors: Number(totals[0]?.visitors ?? 0),
+        visits,
+      },
+      country: countryRows.map((r) => ({ value: r.value, count: Number(r.count) })),
+      os: osRows.map((r) => ({ value: r.value, count: Number(r.count) })),
+      browser: browserRows.map((r) => ({ value: r.value, count: Number(r.count) })),
+    }
+    publicStatsCache = { data, exp: now + 5 * 60 * 1000 } // 5 分钟缓存，避免每次刷新打库
+    return c.json(data)
   })
 
   return app

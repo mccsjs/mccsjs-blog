@@ -7,9 +7,9 @@
   // ========= 模块级：抽屉关闭 =========
   function closeDrawer() {
     var mobileOverlay = document.getElementById('nav-mobile-overlay');
-    var mobileDrawer = document.getElementById('nav-mobile-drawer');
+    var mobilePanel = document.getElementById('nav-mobile-panel');
     if (mobileOverlay) mobileOverlay.classList.remove('open');
-    if (mobileDrawer) mobileDrawer.classList.remove('open');
+    if (mobilePanel) mobilePanel.classList.remove('open');
     document.body.style.overflow = '';
   }
 
@@ -51,8 +51,7 @@
     var navCenter = document.getElementById('nav-center');
     var mobileToggle = document.getElementById('nav-mobile-toggle');
     var mobileOverlay = document.getElementById('nav-mobile-overlay');
-    var mobileDrawer = document.getElementById('nav-mobile-drawer');
-    var mobileClose = document.getElementById('nav-mobile-close');
+    var mobilePanel = document.getElementById('nav-mobile-panel');
 
     if (!topRow) return;
 
@@ -164,15 +163,15 @@
       }
     }, { signal: signal });
 
-    // ===== 4. 移动端抽屉 =====
+    // ===== 4. 移动端弹出菜单 =====
+    var mobilePanel = document.getElementById('nav-mobile-panel');
     function openDrawer() {
       if (mobileOverlay) mobileOverlay.classList.add('open');
-      if (mobileDrawer) mobileDrawer.classList.add('open');
+      if (mobilePanel) mobilePanel.classList.add('open');
       document.body.style.overflow = 'hidden';
     }
 
     if (mobileToggle) mobileToggle.addEventListener('click', openDrawer, { signal: signal });
-    if (mobileClose) mobileClose.addEventListener('click', closeDrawer, { signal: signal });
     if (mobileOverlay) mobileOverlay.addEventListener('click', closeDrawer, { signal: signal });
 
     document.addEventListener('keydown', function(e) {

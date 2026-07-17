@@ -52,7 +52,7 @@ export async function discoverRSSFeed(siteUrl: string): Promise<string | null> {
 
     // 尝试常见 RSS 路径
     const commonPaths = [
-      '/feed', '/rss.xml', '/atom.xml', '/index.xml', '/feed.xml', '/rss',
+      '/feed', '/rss.xml', '/index.xml', '/feed.xml', '/rss',
       '/posts/index.xml', '/blog/rss', '/blog/feed',
     ]
     const base = new URL(siteUrl)

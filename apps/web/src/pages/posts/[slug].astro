@@ -16,6 +16,7 @@ const DEFAULT_TWIKOO_ENV_ID = 'https://twikoo.seln.cn';
 
 let twikooEnvId = DEFAULT_TWIKOO_ENV_ID;
 let siteTitle = 'My Blog';
+let siteLogo = '';
 let commentProvider = 'twikoo';
 let commentEmojiCdn = '';
 try {
@@ -24,12 +25,19 @@ try {
     const settings = await settingsRes.json();
     twikooEnvId = settings.twikooEnvId || DEFAULT_TWIKOO_ENV_ID;
     siteTitle = settings.siteTitle || siteTitle;
+    siteLogo = settings.siteLogo || '';
     commentProvider = settings.commentProvider || 'twikoo';
     commentEmojiCdn = settings.commentEmojiCdn || '';
   }
 } catch {
   // 网络异常时使用默认值
 }
+
+// 将相对路径转成绝对 URL（供 JSON-LD 的 image / publisher.logo 使用）
+const toAbsolute = (url?: string) => {
+  if (!url) return undefined;
+  return url.startsWith('http') ? url : new URL(url, Astro.url.origin).href;
+};
 
 export async function getStaticPaths() {
   const API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_URL)
@@ -208,7 +216,7 @@ const jsonLd = post ? {
   '@type': 'BlogPosting',
   headline: post.title,
   description: cleanDescription(post.excerpt || post.content),
-  image: post.coverImage || undefined,
+  image: toAbsolute(post.coverImage) || toAbsolute(siteLogo) || undefined,
   datePublished: new Date(+post.createdAt * 1000).toISOString(),
   dateModified: post.updatedAt ? new Date(+post.updatedAt * 1000).toISOString() : undefined,
   author: {
@@ -217,8 +225,11 @@ const jsonLd = post ? {
     url: Astro.url.origin,
   },
   publisher: {
-    '@type': 'Person',
-    name: post.author?.name || siteTitle,
+    '@type': 'Organization',
+    name: siteTitle,
+    logo: toAbsolute(siteLogo)
+      ? { '@type': 'ImageObject', url: toAbsolute(siteLogo) as string }
+      : undefined,
   },
   keywords: post.tags?.map(t => t.name) || [],
   mainEntityOfPage: {
@@ -280,6 +291,7 @@ const tocHtmlStr = tocTree.length > 0 ? '<ol class="toc-list">' + renderTocOl(to
 
 <BaseLayout
   title={post?.title || '文章详情'}
+  description={post ? cleanDescription(post.excerpt || post.content) : undefined}
   wide={true}
   postSlug={slug}
   postCategory={post?.category?.name}
@@ -287,7 +299,7 @@ const tocHtmlStr = tocTree.length > 0 ? '<ol class="toc-list">' + renderTocOl(to
   ogType="article"
   ogImage={post?.coverImage}
 >
-  {jsonLd && <Fragment slot="head"><script type="application/ld+json" set:html={JSON.stringify(jsonLd)} /></Fragment>}
+  {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
   {post && (
     <Fragment slot="head">
       <meta property="article:published_time" content={new Date(+post.createdAt * 1000).toISOString()} />

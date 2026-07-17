@@ -5,6 +5,7 @@ import { scToggleLike } from './likes.js';
 import { scOpenReply } from './reply.js';
 import { scInitAdmin, scAdminAuthHeader } from './admin.js';
 import { scInitEmoji } from './emoji.js';
+import { scInitImageUpload } from './image-upload.js';
 
 // 评论头像（weavatar）加载失败时移除 <img>，露出底层字母头像。
 // 用捕获阶段监听 error（img 的 error 不冒泡），比内联 onerror 更 CSP 友好。
@@ -49,6 +50,9 @@ export function initSelfComments() {
 
   // 主表单绑定表情按钮
   scInitEmoji(form);
+
+  // 图片上传按钮（点击 + 拖拽 + 粘贴）
+  scInitImageUpload(form);
 
   // 列表内事件委托：点赞 / 回复 / 翻页
   root.addEventListener('click', function (e) {

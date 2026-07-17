@@ -68,7 +68,7 @@ export function postsRouter() {
     }))
   })
 
-  // 单篇（按 slug）。admin=true 可看草稿；非 admin 自增阅读量
+  // 单篇（按 slug）。admin=true 可看草稿；阅读量由前端 /view 单独自增
   app.get('/posts/:slug', async (c) => {
     const db: DB = c.get('db')
     const admin = c.req.query('admin') === 'true'
@@ -79,10 +79,24 @@ export function postsRouter() {
     })
     if (!post) return c.json({ error: 'Not Found' }, 404)
     if (!post.published && !admin) return c.json({ error: 'Not Found' }, 404)
-    if (!admin) {
-      await db.update(posts).set({ views: sql`${posts.views} + 1` }).where(eq(posts.id, post.id))
-    }
     return c.json(shapePost(post))
+  })
+
+  // 阅读量自增（公开，仅供前端在真实阅读时调用，避免构建期预渲染误增）
+  app.post('/posts/:slug/view', async (c) => {
+    const db: DB = c.get('db')
+    const slug = c.req.param('slug')
+    const post = await db.query.posts.findFirst({
+      where: and(eq(posts.slug, slug), eq(posts.published, true)),
+      columns: { id: true },
+    })
+    if (!post) return c.json({ error: 'Not Found' }, 404)
+    const [updated] = await db
+      .update(posts)
+      .set({ views: sql`${posts.views} + 1` })
+      .where(eq(posts.id, post.id))
+      .returning({ views: posts.views })
+    return c.json({ views: updated?.views ?? 0 })
   })
 
   // 创建（admin）

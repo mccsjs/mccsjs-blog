@@ -375,5 +375,55 @@ export function friendRoutes() {
     return c.json({ url })
   })
 
+  // ============ 图床公开上传（评论区访客使用，无需认证） ============
+
+  app.post('/api/imgbed/public-upload', async (c) => {
+    const db: DB = c.get('db')
+    const rows = await db.select().from(siteSettings)
+    const map = new Map(rows.map((r) => [r.key, r.value]))
+    // 评论区独立配置：优先用专用地址，留空则复用主图床地址；Token 始终共用主图床 Token
+    const imgbedUrl = (map.get('imgbedCommentUrl')?.trim() || map.get('imgbedUrl')?.trim() || '').trim()
+    const imgbedToken = (map.get('imgbedToken') ?? '').trim()
+    const imgbedPath = (map.get('imgbedCommentPath') ?? '').trim()
+    if (!imgbedUrl || !imgbedToken) {
+      return c.json({ error: '图床未配置' }, 503)
+    }
+
+    const form = await c.req.parseBody({ all: true })
+    const file = form['file']
+    if (!(file instanceof File)) return c.json({ error: 'No file provided' }, 400)
+
+    // 更严格：评论图片仅允许常见格式，限制 3MB（比后台 5MB 更小）
+    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml']
+    if (!allowed.includes(file.type)) return c.json({ error: '不支持的文件类型' }, 400)
+    if (file.size > 3 * 1024 * 1024) return c.json({ error: '图片不能超过 3MB' }, 400)
+
+    let target: URL
+    try { target = new URL(imgbedUrl) }
+    catch { return c.json({ error: '图床地址格式不正确' }, 500) }
+    const base = target.pathname.replace(/\/+$/, '')
+    target.pathname = `${base}/upload`.replace(/\/{2,}/g, '/')
+    target.searchParams.set('returnFormat', 'full')
+
+    const fd = new FormData()
+    fd.set('file', file, file.name)
+    if (imgbedPath) fd.set('path', imgbedPath)
+    const upstream = await fetch(target.toString(), {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${imgbedToken}` },
+      body: fd,
+    })
+    if (!upstream.ok) {
+      const text = await upstream.text().catch(() => '')
+      return c.json({ error: `图床上传失败 (${upstream.status})` }, 502)
+    }
+    const data: any = await upstream.json().catch(() => null)
+    if (!data) return c.json({ error: '图床返回异常' }, 502)
+    const item = Array.isArray(data) ? data[0] : data
+    const url = item?.publicUrl || item?.src
+    if (!url) return c.json({ error: '图床未返回地址' }, 502)
+    return c.json({ url })
+  })
+
   return app
 }

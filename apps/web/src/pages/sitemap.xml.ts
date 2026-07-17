@@ -71,6 +71,7 @@ export const GET: APIRoute = async ({ url }) => {
   ];
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls.map((u) => `  <url>
     <loc>${escapeXml(u.loc)}</loc>

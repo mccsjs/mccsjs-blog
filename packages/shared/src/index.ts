@@ -44,7 +44,7 @@ export const tagSchema = categorySchema
 export const defaultSettings = {
   siteTitle: 'My Blog',
   siteUrl: '', // 站点正式地址（用于邮件链接 / RSS 等；留空则退回请求来源域名）
-  siteDescription: '一个使用 Astro + React + Tailwind CSS 构建的现代博客',
+  siteDescription: '一个使用 Astro + React + Tailwind CSS 构建的博客',
   siteLogo: '',
   favicon: '',
   icp: '',
@@ -85,6 +85,9 @@ export const defaultSettings = {
     '《{{postTitle}}》收到新评论｜{{siteTitle}}\n\n{{author}}（{{email}}）在《{{postTitle}}》发表了新评论：\n\n{{content}}\n\n查看评论：{{commentUrl}}\n\n—— {{siteTitle}}',
   imgbedUrl: '',
   imgbedToken: '',
+  // 评论区图片上传：独立配置（可指向不同图床 / 子路径），但复用上方 imgbedToken
+  imgbedCommentUrl: '', // 评论区专用图床地址；留空则复用 imgbedUrl
+  imgbedCommentPath: '', // 评论区上传子路径（如 pl）；留空则存根目录
   fontCssUrl: '',
   fontFamily: '',
   backgroundImage: '',

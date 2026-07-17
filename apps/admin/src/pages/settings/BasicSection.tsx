@@ -77,22 +77,6 @@ export function BasicSection({ form }: { form: UseFormReturn<SettingsData> }) {
         </Field>
       )}
 
-      <SectionTitle className="md:col-span-2">图床</SectionTitle>
-
-      <Field label="图床地址" className="md:col-span-2">
-        <Input id="imgbedUrl" placeholder="https://imgbed.example.com" {...register('imgbedUrl')} />
-      </Field>
-
-      <Field label="API Token" className="md:col-span-2">
-        <Input
-          id="imgbedToken"
-          type="password"
-          autoComplete="off"
-          placeholder="imgbed_xxxxxxxxxxxxxxxx"
-          {...register('imgbedToken')}
-        />
-      </Field>
-
       <SectionTitle className="md:col-span-2">内容</SectionTitle>
 
       <Field label="网站描述" className="md:col-span-2">

@@ -38,6 +38,8 @@ export interface SettingsData {
   mailTemplateAdmin: string;
   imgbedUrl: string;
   imgbedToken: string;
+  imgbedCommentUrl: string;
+  imgbedCommentPath: string;
   fontCssUrl: string;
   fontFamily: string;
   backgroundImage: string;
@@ -88,6 +90,8 @@ export const defaultValues: SettingsData = {
   mailTemplateAdmin: '',
   imgbedUrl: '',
   imgbedToken: '',
+  imgbedCommentUrl: '',
+  imgbedCommentPath: '',
   fontCssUrl: '',
   fontFamily: '',
   backgroundImage: '',

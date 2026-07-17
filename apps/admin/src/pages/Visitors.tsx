@@ -30,6 +30,10 @@ function GuestAvatar({ email }: { email: string }) {
       })
       .catch(() => setSrc(''))
   }, [email])
+  if (!src) {
+    // 邮箱为空或哈希未算完时不渲染 img，避免空 src 触发 React 告警与整页重请求
+    return <div className="h-9 w-9 shrink-0 rounded-xl bg-[var(--bg-muted)]" />
+  }
   return (
     <img
       src={src}
@@ -234,7 +238,7 @@ export default function Visitors() {
                         </div>
                         <div className="text-xs text-[var(--text)]">
                           {g.commentCount} 条 ·{' '}
-                          {new Date(g.lastCommentAt).toLocaleDateString('zh-CN')}
+                          {g.lastCommentAt ? new Date(g.lastCommentAt * 1000).toLocaleDateString('zh-CN') : '—'}
                         </div>
                       </div>
                     </div>

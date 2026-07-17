@@ -1,0 +1,69 @@
+---
+interface Props {
+  postCount: number
+  totalWords: number
+  runDays: number
+  visitorCount: number
+  pageViews: number
+  lastUpdated: string
+}
+
+const { postCount, totalWords, runDays, visitorCount, pageViews, lastUpdated } = Astro.props
+
+const fmt = (n: number) => n.toLocaleString('zh-CN')
+
+const rows: { label: string; value: string }[] = [
+  { label: '文章数目', value: fmt(postCount) },
+  { label: '运行时间', value: runDays >= 0 ? `${fmt(runDays)} 天` : '—' },
+  { label: '本站总字数', value: fmt(totalWords) },
+  { label: '本站访客数', value: fmt(visitorCount) },
+  { label: '本站总浏览量', value: fmt(pageViews) },
+  { label: '最后更新', value: lastUpdated },
+]
+---
+
+<section class="site-info-card overflow-hidden rounded-2xl border border-[rgb(var(--border)/0.5)] bg-[rgb(var(--surface))] shadow-sm transition-transform duration-300 hover:-translate-y-0.5">
+  <div class="h-1 w-full bg-gradient-to-r from-[rgb(var(--primary))] to-[rgb(var(--primary)/0.45)]"></div>
+  <div class="p-5">
+    <h3 class="mb-4 flex items-center gap-2 text-base font-bold">
+      <svg class="h-5 w-5 text-[rgb(var(--primary))]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="3" y="3" width="7" height="7" rx="1.5" />
+        <rect x="14" y="3" width="7" height="7" rx="1.5" />
+        <rect x="14" y="14" width="7" height="7" rx="1.5" />
+        <rect x="3" y="14" width="7" height="7" rx="1.5" />
+      </svg>
+      网站信息
+    </h3>
+    <ul class="space-y-3 text-sm">
+      {
+        rows.map((r) => (
+          <li class="flex items-center justify-between gap-3">
+            <span class="text-[rgb(var(--fg-soft))]">{r.label}</span>
+            <span class="font-semibold tabular-nums">{r.value}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .site-info-card {
+    animation: sicard-fade 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes sicard-fade {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .site-info-card {
+      animation: none;
+    }
+  }
+</style>

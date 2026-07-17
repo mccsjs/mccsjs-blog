@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PostCard from '../components/PostCard.astro';
+import SiteInfoCard from '../components/SiteInfoCard.astro';
 import type { Post } from '../types';
 
 const API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_URL)
@@ -14,6 +15,7 @@ let siteDescription = '个人博客，分享技术文章与生活感悟';
 let heroType = 'image';
 let heroImage = '/hero.webp';
 let heroVideo = '';
+let siteStartDate = '';
 
 // 获取文章列表
 try {
@@ -36,9 +38,66 @@ try {
     heroType = settings.heroType || 'image';
     heroImage = settings.heroImage || '/hero.webp';
     heroVideo = settings.heroVideo || '';
+    siteStartDate = settings.siteStartDate || '';
   }
 } catch {
   // 获取失败使用默认值
+}
+
+// 公开访客统计（无需登录）：UV=访客数，PV=总浏览量
+let visitorStats = { visitors: 0, pageviews: 0 };
+try {
+  const vsRes = await fetch(`${API_URL}/api/visitor-public-stats`);
+  if (vsRes.ok) {
+    const vs = await vsRes.json();
+    visitorStats = {
+      visitors: vs?.stats?.visitors ?? 0,
+      pageviews: vs?.stats?.pageviews ?? 0,
+    };
+  }
+} catch {
+  // 获取失败使用 0
+}
+
+// 本站总字数：汇总各文章正文（去标签/语法后）的中文字符与英文词数
+function countWords(md: string): number {
+  const text = (md || '')
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/`[^`]*`/g, ' ')
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/[#>*_~`|]/g, ' ')
+    .replace(/\s+/g, '');
+  const cjk = (text.match(/[一-鿿]/g) || []).length;
+  const en = (text.match(/[A-Za-z0-9]+/g) || []).length;
+  return cjk + en;
+}
+const postCount = posts.length;
+const totalWords = posts.reduce((sum, p) => sum + countWords(p.content || ''), 0);
+
+// 运行时间：自建站日期至今的天数（未配置建站日期时显示 —）
+const runDays = siteStartDate
+  ? Math.max(0, Math.floor((Date.now() - new Date(siteStartDate).getTime()) / 86400000))
+  : -1;
+
+// 最后更新时间：最新文章的 updatedAt / createdAt（库里是整数秒）
+function timeAgo(sec: number): string {
+  const diff = Math.max(0, Math.floor(Date.now() / 1000 - sec));
+  if (diff < 60) return '刚刚';
+  if (diff < 3600) return `${Math.floor(diff / 60)} 分钟前`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)} 小时前`;
+  if (diff < 2592000) return `${Math.floor(diff / 86400)} 天前`;
+  if (diff < 31536000) return `${Math.floor(diff / 2592000)} 个月前`;
+  return `${Math.floor(diff / 31536000)} 年前`;
+}
+let lastUpdatedText = '—';
+if (posts.length) {
+  const newest = posts.reduce(
+    (m, p) => Math.max(m, Number(p.updatedAt) || 0, Number(p.createdAt) || 0),
+    0
+  );
+  lastUpdatedText = newest ? timeAgo(newest) : '—';
 }
 
 const latestPosts = posts.slice(0, 6);
@@ -81,34 +140,51 @@ const latestPosts = posts.slice(0, 6);
   </section>
 
   <section class="mt-16">
-    <div class="mb-8 flex items-end justify-between">
+    <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <!-- 左栏：最新文章 -->
       <div>
-        <h2 class="text-2xl font-bold">最新文章</h2>
-        <p class="mt-1 text-[rgb(var(--fg-soft))]">看看最近发布了什么</p>
-      </div>
-      <a href="/posts" class="text-sm font-medium text-[rgb(var(--primary))] hover:brightness-110">
-        查看全部 →
-      </a>
-    </div>
+        <div class="mb-8 flex items-end justify-between">
+          <div>
+            <h2 class="text-2xl font-bold">最新文章</h2>
+            <p class="mt-1 text-[rgb(var(--fg-soft))]">看看最近发布了什么</p>
+          </div>
+          <a href="/posts" class="text-sm font-medium text-[rgb(var(--primary))] hover:brightness-110">
+            查看全部 →
+          </a>
+        </div>
 
-    {
-      error ? (
-        <div class="rounded-xl border border-red-100 bg-red-50 p-6 text-center text-red-700">
-          <p class="font-medium">加载文章失败</p>
-          <p class="mt-1 text-sm">{error}</p>
-        </div>
-      ) : latestPosts.length === 0 ? (
-        <div class="rounded-xl border p-12 text-center text-[rgb(var(--fg-soft))]" style="border-color: rgb(var(--border) / 0.4); background: rgb(var(--surface));">
-          暂无文章，稍后再来吧
-        </div>
-      ) : (
-        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {latestPosts.map((post) => (
-            <PostCard post={post} />
-          ))}
-        </div>
-      )
-    }
+        {
+          error ? (
+            <div class="rounded-xl border border-red-100 bg-red-50 p-6 text-center text-red-700">
+              <p class="font-medium">加载文章失败</p>
+              <p class="mt-1 text-sm">{error}</p>
+            </div>
+          ) : latestPosts.length === 0 ? (
+            <div class="rounded-xl border p-12 text-center text-[rgb(var(--fg-soft))]" style="border-color: rgb(var(--border) / 0.4); background: rgb(var(--surface));">
+              暂无文章，稍后再来吧
+            </div>
+          ) : (
+            <div class="grid gap-6 sm:grid-cols-2">
+              {latestPosts.map((post) => (
+                <PostCard post={post} />
+              ))}
+            </div>
+          )
+        }
+      </div>
+
+      <!-- 右栏：网站信息卡（桌面端吸顶） -->
+      <aside class="lg:sticky lg:top-24 h-fit">
+        <SiteInfoCard
+          postCount={postCount}
+          totalWords={totalWords}
+          runDays={runDays}
+          visitorCount={visitorStats.visitors}
+          pageViews={visitorStats.pageviews}
+          lastUpdated={lastUpdatedText}
+        />
+      </aside>
+    </div>
   </section>
 
 <script is:inline data-swup-reload-script>

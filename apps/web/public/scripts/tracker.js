@@ -36,6 +36,29 @@
     return document.referrer || ''
   }
 
+  // 文章阅读量自增：当前路径为 /posts/:slug 时，向 /api/posts/:slug/view 发 beacon
+  // 对齐旧博客「真实阅读才 +1」的语义；同一次会话内同一篇文章只计一次，避免 Swup 初始加载重复触发
+  var lastViewSlug = null
+  function getArticleSlug(path) {
+    var m = path.match(/^\/posts\/([^/?#]+)/)
+    return m ? m[1] : null
+  }
+  function maybeCountView() {
+    var slug = getArticleSlug(getPageUrl())
+    if (!slug) {
+      lastViewSlug = null // 离开文章页后重置，便于再次进入时计数
+      return
+    }
+    if (slug === lastViewSlug) return
+    lastViewSlug = slug
+    var viewUrl = (API_URL ? API_URL + '/api/posts/' : '/api/posts/') + slug + '/view'
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(viewUrl, new Blob([JSON.stringify({})], { type: 'application/json' }))
+    } else {
+      fetch(viewUrl, { method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' } }).catch(function () {})
+    }
+  }
+
   function send(type, extra) {
     var vid = getVisitorId()
     var payload = {
@@ -61,6 +84,9 @@
         headers: { 'Content-Type': 'application/json' },
       }).catch(function () {})
     }
+
+    // 文章阅读量自增（仅在真实浏览文章页时触发）
+    maybeCountView()
   }
 
   // 首屏加载时发送

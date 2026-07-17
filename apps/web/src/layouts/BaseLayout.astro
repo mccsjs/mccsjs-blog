@@ -26,7 +26,7 @@ const isHome = Astro.url.pathname === '/';
 
 const defaultSettings: SiteSettings = {
   siteTitle: 'My Blog',
-  siteDescription: '一个使用 Astro + React + Tailwind CSS 构建的现代博客',
+  siteDescription: '一个使用 Astro + React + Tailwind CSS 构建的博客',
   siteLogo: '',
   favicon: '',
   icp: '',
@@ -116,7 +116,6 @@ const effectiveFontFamily = fontFamily
     <meta name="generator" content={Astro.generator} />
     <link rel="sitemap" href="/sitemap.xml" />
     <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.xml" />
-    <link rel="alternate" type="application/atom+xml" title="Atom" href="/atom.xml" />
     <title>{title}</title>
     {API_URL && <script is:inline set:html={`window.__API_URL__ = ${JSON.stringify(API_URL)};`} />}
     <script is:inline>

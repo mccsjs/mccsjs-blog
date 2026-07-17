@@ -12,9 +12,9 @@ export async function GET(context: APIContext) {
     if (res.ok) posts = await res.json();
   } catch {}
 
-  return rss({
+  const resp = await rss({
     title: 'mccsjs',
-    description: '一个使用 Astro + React + Tailwind CSS 构建的现代博客',
+    description: '一个使用 Astro + React + Tailwind CSS 构建的博客',
     site: context.url.origin,
     items: posts.map((post) => ({
       title: post.title,
@@ -26,4 +26,12 @@ export async function GET(context: APIContext) {
     customData: `<language>zh-CN</language>
     <generator>Astro</generator>`,
   });
+
+  // 注入 XSL 样式表引用：浏览器打开时渲染美化页面，阅读器/爬虫仍拿到标准 XML
+  const xml = await resp.text();
+  const styled = xml.replace(
+    /^<\?xml[^>]*\?>/,
+    '$&\n<?xml-stylesheet type="text/xsl" href="/rss.xsl"?>'
+  );
+  return new Response(styled, { headers: resp.headers });
 }

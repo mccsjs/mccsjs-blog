@@ -52,7 +52,7 @@ export default function AdminLayout() {
         const bytes = new Uint8Array(buf);
         let hex = '';
         for (let i = 0; i < bytes.length; i++) hex += bytes[i].toString(16).padStart(2, '0');
-        if (active) setAvatarUrl('https://weavatar.com/avatar/' + hex + '?s=80&d=404');
+        if (active) setAvatarUrl('https://weavatar.com/avatar/' + hex + '?s=80&d=mp');
       })
       .catch(() => {
         if (active) setAvatarUrl(null);

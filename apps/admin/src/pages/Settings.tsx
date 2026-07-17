@@ -8,16 +8,18 @@ import { type SettingsData, type Badge, defaultValues } from './settings/types';
 import { BasicSection } from './settings/BasicSection';
 import { CommentSection } from './settings/CommentSection';
 import { FooterSection } from './settings/FooterSection';
+import { ImageBedSection } from './settings/ImageBedSection';
 
 const TAB_LIST = [
   { key: 'basic', label: '基本信息' },
   { key: 'comment', label: '评论' },
+  { key: 'imagebed', label: '图床' },
   { key: 'footer', label: '页脚' },
 ] as const;
 
 export default function Settings() {
   const queryClient = useQueryClient();
-  const [tab, setTab] = useState<'basic' | 'comment' | 'footer'>('basic');
+  const [tab, setTab] = useState<'basic' | 'comment' | 'imagebed' | 'footer'>('basic');
   const [badges, setBadges] = useState<Badge[]>([]);
   const [badgesDirty, setBadgesDirty] = useState(false);
 
@@ -149,6 +151,7 @@ export default function Settings() {
               handleTestEmail={handleTestEmail}
             />
           )}
+          {tab === 'imagebed' && <ImageBedSection form={form} />}
           {tab === 'footer' && (
             <FooterSection
               form={form}

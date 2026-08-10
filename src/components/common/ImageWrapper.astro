@@ -1,0 +1,53 @@
+---
+// 图片智能包装：本地 src/assets 资源走 Astro 优化管线，public/远程直出
+import { Image } from 'astro:assets';
+import path from 'node:path';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  src: string;
+  alt?: string;
+  class?: string;
+  loading?: 'lazy' | 'eager';
+  fetchpriority?: 'high' | 'low' | 'auto';
+  widths?: number[];
+  sizes?: string;
+}
+
+const {
+  src,
+  alt = '',
+  class: className,
+  loading = 'lazy',
+  fetchpriority = 'auto',
+  widths,
+  sizes,
+} = Astro.props;
+
+const isLocal = !(src.startsWith('/') || /^https?:/i.test(src) || src.startsWith('data:'));
+let img: ImageMetadata | null = null;
+if (isLocal) {
+  // 动态引用 workaround：import.meta.glob 静态收集，按配置路径匹配
+  const files = import.meta.glob<ImageMetadata>('../../assets/**/*.{png,jpg,jpeg,webp,avif,svg}', {
+    import: 'default',
+  });
+  const normalized = path.normalize(`../../assets/${src}`).replace(/\\/g, '/');
+  const file = files[normalized];
+  if (file) img = await file();
+  else console.error(`[ImageWrapper] 图片不存在: ${normalized}`);
+}
+---
+
+{img ? (
+  <Image
+    src={img}
+    alt={alt}
+    class={className}
+    loading={loading}
+    fetchpriority={fetchpriority}
+    {...(widths ? { widths } : {})}
+    {...(sizes ? { sizes } : {})}
+  />
+) : (
+  <img src={src} alt={alt} class={className} loading={loading} fetchpriority={fetchpriority} />
+)}

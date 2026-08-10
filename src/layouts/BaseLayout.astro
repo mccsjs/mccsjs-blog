@@ -1,0 +1,407 @@
+---
+import '../styles/global.css';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import Breadcrumb from '../components/layout/Breadcrumb.astro';
+import FloatingBar from '../components/layout/FloatingBar.astro';
+import type { SiteSettings, MenuItem } from '../types';
+import { getSiteSettings, getMenus } from '../utils/data';
+// 站点图标静态引用：favicon / OG 图兜底需要构建后 URL
+import faviconImg from '../assets/images/favicon.svg';
+
+interface Props {
+  title?: string;
+  description?: string;
+  wide?: boolean;
+  postSlug?: string;
+  postCategory?: string;
+  hideBreadcrumb?: boolean;
+  // 去主栏底部留白（无页脚页用，避免聊天容器溢出整页滚动）
+  flushBottom?: boolean;
+  // SEO
+  ogType?: string;
+  ogImage?: string;
+}
+
+const { title: rawTitle, description: rawDescription, wide = false, postSlug, postCategory, hideBreadcrumb = false, flushBottom = false, ogType = 'website', ogImage } = Astro.props;
+const isHome = Astro.url.pathname === '/';
+
+const settings: SiteSettings = getSiteSettings();
+
+const title = rawTitle ? `${rawTitle} | ${settings.siteTitle}` : settings.siteTitle;
+// description 三重兜底：页面传的 → 站点描述 → 页面标题
+const description = rawDescription || settings.siteDescription || title;
+
+// OG 图片优先级：页面指定 ogImage → 动态生成的 /og/<slug>.png → 站点图标（静态 import）
+const ogImageUrl = ogImage
+  ? (ogImage.startsWith('http') ? ogImage : new URL(ogImage, Astro.url.origin).href)
+  : (settings.generateOgImages && postSlug
+      ? new URL(`/og/${postSlug}.png`, Astro.url.origin).href
+      : faviconImg.src);
+const pageUrl = Astro.url.href;
+
+const navMenus = getMenus('NAV');
+const footerMenus = getMenus('FOOTER');
+const aggregateMenus = getMenus('GROUP');
+
+const fontUrl = settings.fontCssUrl?.trim() ?? '';
+const fontFamily = settings.fontFamily?.trim() ?? '';
+const fontExtMatch = fontUrl.match(/\.(woff2|woff|ttf|otf|eot)(\?.*)?$/i);
+const isFontFile = !!fontExtMatch;
+const fontFormat = fontExtMatch ? fontExtMatch[1].toLowerCase() : '';
+const fontMimeType: Record<string, string> = {
+  woff2: 'font/woff2',
+  woff: 'font/woff',
+  ttf: 'font/ttf',
+  otf: 'font/otf',
+  eot: 'application/vnd.ms-fontobject',
+};
+const effectiveFontFamily = fontFamily
+  ? `'${fontFamily.replace(/'/g, "\\'")}'`
+  : fontUrl
+    ? "'CustomFont'"
+    : '';
+---
+<html lang="zh-CN" style="color-scheme: light dark;">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    {settings.keywords && <meta name="keywords" content={settings.keywords} />}
+    {settings.adminName && <meta name="author" content={settings.adminName} />}
+    <link rel="canonical" href={pageUrl} />
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content={settings.siteTitle} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:locale" content="zh_CN" />
+    {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {ogImageUrl && <meta name="twitter:image" content={ogImageUrl} />}
+
+    <meta name="generator" content={Astro.generator} />
+    <link rel="sitemap" href="/sitemap.xml" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.xml" />
+    <title>{title}</title>
+    <script is:inline>
+      // 隐私防护（Tracking Prevention / 隐私扩展）可能拦截 localStorage。
+      // 探测一次；若被拦则降级为内存实现，避免每个访问点都打印 blocked 日志。
+      (function () {
+        try {
+          var __k = '__sc_storage_probe__';
+          localStorage.setItem(__k, '1');
+          localStorage.removeItem(__k);
+        } catch (e) {
+          var __mem = {};
+          var __fake = {
+            getItem: function (k) { return Object.prototype.hasOwnProperty.call(__mem, k) ? __mem[k] : null; },
+            setItem: function (k, v) { __mem[k] = String(v); },
+            removeItem: function (k) { delete __mem[k]; },
+            clear: function () { __mem = {}; },
+            key: function (i) { return Object.keys(__mem)[i] || null; },
+            length: 0,
+          };
+          try { Object.defineProperty(window, 'localStorage', { configurable: true, value: __fake }); } catch (e2) {}
+        }
+      })();
+    </script>
+    <script is:inline>
+      (function () {
+        const STORAGE_KEY = 'theme';
+        const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
+        const saved = localStorage.getItem(STORAGE_KEY);
+        const isDark = saved === 'dark' || (!saved && systemDark.matches);
+        document.documentElement.classList.toggle('dark', isDark);
+        // 强制重绘，确保字体渲染生效
+        void document.documentElement.offsetHeight;
+      })();
+    </script>
+    <link rel="icon" type="image/svg+xml" href={faviconImg.src} />
+    {/* 不蒜子站点统计 */}
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    {fontUrl && isFontFile && (
+      <>
+        <link rel="preload" href={fontUrl} as="font" type={fontMimeType[fontFormat]} crossorigin />
+        <style set:html={`
+          @font-face {
+            font-family: ${effectiveFontFamily};
+            src: url('${fontUrl}') format('${fontFormat}');
+            font-weight: 100 900;
+            font-style: normal;
+            font-display: swap;
+          }
+        `} />
+      </>
+    )}
+    {fontUrl && !isFontFile && <link rel="stylesheet" href={fontUrl} />}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <slot name="head" />
+  </head>
+  <body
+    class="flex min-h-screen flex-col antialiased"
+    style={
+      isHome && settings.backgroundImage
+        ? `background-image: url('${settings.backgroundImage}'); background-size: cover; background-position: center; background-attachment: fixed; font-family: ${effectiveFontFamily || 'inherit'};`
+        : effectiveFontFamily
+          ? `font-family: ${effectiveFontFamily};`
+          : undefined
+    }
+  >
+    {/* 夜间星空：canvas 实时绘制星点 + 流星，z-index:-1 盖在内容底下、不挡点击。
+        仅 .dark 时绘制（开关在下方脚本）。深色背景已移到 html，body 透明，星空得以透出。 */}
+    <canvas id="universe"></canvas>
+    {isHome && settings.backgroundImage && (
+      <div class="fixed inset-0 bg-black/30 -z-10 md:hidden"></div>
+    )}
+    <div class="relative z-10 flex min-h-screen flex-col">
+      <Header siteTitle={settings.siteTitle} siteLogo={settings.siteLogo} favicon={faviconImg.src} menus={navMenus} aggregateMenus={aggregateMenus} />
+      <main id="swup-container" class:list={[
+        "transition-swup-main mx-auto w-full flex-1 px-4 pt-24 md:pt-28 md:px-6",
+        flushBottom ? "overflow-x-clip overflow-y-visible pb-0" : "overflow-x-clip pb-12 md:pb-16",
+        wide ? "max-w-6xl" : "max-w-5xl"
+      ]}>
+        {!hideBreadcrumb && (
+          <Breadcrumb title={rawTitle} postSlug={postSlug} postCategory={postCategory} menus={navMenus} />
+        )}
+        <slot />
+      </main>
+      <Footer
+        siteTitle={settings.siteTitle}
+        icp={settings.icp}
+        footerText={settings.footerText}
+        siteStartDate={settings.siteStartDate}
+        footerTechInfo={settings.footerTechInfo}
+        menus={footerMenus}
+        showMotto={settings.showMotto}
+        mottoTitle={settings.mottoTitle}
+        mottoText={settings.mottoText}
+        mottoCtaText={settings.mottoCtaText}
+        mottoCtaUrl={settings.mottoCtaUrl}
+        mottoCtaTarget={settings.mottoCtaTarget}
+        footerBadges={settings.footerBadges}
+      />
+    </div>
+    <FloatingBar />
+    <div id="progress-bar"></div>
+
+    {/* 页脚/悬浮栏按页显隐：Footer/FloatingBar 位于 Swup 容器外，切页不重渲染，
+        这里监听每次切页事件按路径控制显隐（/comments/ 隐藏）。 */}
+    <script is:inline>
+      (function () {
+        function isCommentsPage() {
+          return location.pathname.replace(/\/+$/, '') === '/comments';
+        }
+        function syncPageShell() {
+          var isComments = isCommentsPage();
+          var footer = document.querySelector('.site-footer');
+          var bar = document.getElementById('floating-bar');
+          if (footer) footer.style.display = isComments ? 'none' : '';
+          if (bar) bar.style.display = isComments ? 'none' : '';
+        }
+        syncPageShell();
+        document.addEventListener('swup:page-view', syncPageShell);
+        document.addEventListener('astro:page-load', syncPageShell);
+      })();
+    </script>
+
+    <script type="module" src={`/scripts/base/entry.js?v=${import.meta.env.DEV ? Date.now() : '2'}`}></script>
+    {/* 分页交互：document 委托，SWUP 切页后依然有效（页面私有 script 会被 SWUP 注入后不执行） */}
+    <script defer src="/scripts/base/pagination.js"></script>
+
+    {/* 全站图片优化：懒加载 + 异步解码 + 加载完成淡入。
+        首屏关键图（fetchpriority=high 的 Hero / 标记 data-no-lazy 的导航图标）不淡入，保护 LCP。 */}
+    <script is:inline>
+      (function () {
+        function isSkipped(img) {
+          if (img.dataset.noLazy) return true;
+          return false;
+        }
+        function isHero(img) {
+          return img.getAttribute('fetchpriority') === 'high';
+        }
+        function markLoaded(img) {
+          if (img.complete && img.naturalWidth > 0) {
+            img.classList.add('is-loaded');
+          } else {
+            img.addEventListener('load', function () { img.classList.add('is-loaded'); }, { once: true });
+            img.addEventListener('error', function () { img.classList.add('is-loaded'); }, { once: true });
+          }
+        }
+        function setupImg(img) {
+          if (!img || img.dataset.lazyReady) return;
+          img.dataset.lazyReady = '1';
+          if (isSkipped(img)) return;
+          if (isHero(img)) {
+            img.decoding = 'async';
+            return;
+          }
+          if (!img.hasAttribute('loading')) img.loading = 'lazy';
+          img.decoding = 'async';
+          if (img.classList.contains('friend-shot')) {
+            // 友链截图自管淡入（.friend-shot.is-loaded），复用全站懒加载 + 加载完成标记。
+            // 交给全局 MutationObserver 处理，兼容 Swup 客户端导航（页面内脚本因
+            // reloadScripts:optin 不会在切页时重跑，故不在 link.astro 内放脚本）。
+            markLoaded(img);
+            return;
+          }
+          img.classList.add('lazy-fade');
+          markLoaded(img);
+        }
+        function init() {
+          document.querySelectorAll('img').forEach(setupImg);
+          if (!('MutationObserver' in window) || !document.body) return;
+          var mo = new MutationObserver(function (muts) {
+            muts.forEach(function (m) {
+              m.addedNodes.forEach(function (n) {
+                if (n.nodeType !== 1) return;
+                if (n.tagName === 'IMG') setupImg(n);
+                if (n.querySelectorAll) n.querySelectorAll('img').forEach(setupImg);
+              });
+            });
+          });
+          mo.observe(document.body, { childList: true, subtree: true });
+        }
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', init);
+        } else {
+          init();
+        }
+      })();
+    </script>
+
+    {/* 随机封面 SW：按 seed 缓存 API 图，刷新不换图不重复下载 */}
+    <script is:inline>
+      (function () {
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', function () {
+            navigator.serviceWorker.register('/sw.js').catch(function () {});
+          });
+        }
+      })();
+    </script>
+
+    {/* 随机封面兜底：图片加载失败时切换到备用 API */}
+    <script is:inline>
+      (function () {
+        document.addEventListener('error', function (e) {
+          var t = e.target;
+          if (t && t.tagName === 'IMG' && t.dataset.fmFallback && t.src !== t.dataset.fmFallback) {
+            t.removeAttribute('data-fm-fallback');
+            t.src = t.dataset.fmFallback;
+          }
+        }, true);
+      })();
+    </script>
+
+    {/* 夜间星空：复刻 D:\blog 的 #universe canvas 星点 + 流星效果。
+        原版闸门是 data-theme=='dark'，本项目深色用 <html>.dark 类，故改为
+        documentElement.classList.contains('dark')。脚本位于 #swup-container 外，
+        Swup 切页不重跑；rAF 每帧自检 .dark，深色绘制、浅色清空。 */}
+    <script is:inline>
+      (function () {
+        var canvas = document.getElementById('universe');
+        if (!canvas) return;
+        var n, e, i, h, t = 0.05, o = true,
+            a = '180,184,240', r = '226,225,142', d = '226,225,224', c = [];
+        function f() {
+          n = window.innerWidth; e = window.innerHeight;
+          i = 0.216 * n;
+          canvas.setAttribute('width', n);
+          canvas.setAttribute('height', e);
+        }
+        function u() {
+          h.clearRect(0, 0, n, e);
+          for (var t2 = c.length, i2 = 0; i2 < t2; i2++) {
+            var s = c[i2];
+            s.move(); s.fadeIn(); s.fadeOut(); s.draw();
+          }
+        }
+        function y() {
+          this.reset = function () {
+            this.giant = m(3);
+            this.comet = !this.giant && !o && m(10);
+            this.x = l(0, n - 10);
+            this.y = l(0, e);
+            this.r = l(1.1, 2.6);
+            this.dx = l(t, 6 * t) + (this.comet + 1 - 1) * t * l(50, 120) + 2 * t;
+            this.dy = -l(t, 6 * t) - (this.comet + 1 - 1) * t * l(50, 120);
+            this.fadingOut = null;
+            this.fadingIn = true;
+            this.opacity = 0;
+            this.opacityTresh = l(0.2, 1 - 0.4 * (this.comet + 1 - 1));
+            this.do = l(0.0005, 0.002) + 0.001 * (this.comet + 1 - 1);
+          };
+          this.fadeIn = function () {
+            if (this.fadingIn) {
+              this.fadingIn = !(this.opacity > this.opacityTresh);
+              this.opacity += this.do;
+            }
+          };
+          this.fadeOut = function () {
+            if (this.fadingOut) {
+              this.fadingOut = !(this.opacity < 0);
+              this.opacity -= this.do / 2;
+              if (this.x > n || this.y < 0) { this.fadingOut = false; this.reset(); }
+            }
+          };
+          this.draw = function () {
+            if (h.beginPath(), this.giant) {
+              h.fillStyle = 'rgba(' + a + ',' + this.opacity + ')';
+              h.arc(this.x, this.y, 2, 0, 2 * Math.PI, false);
+            } else if (this.comet) {
+              h.fillStyle = 'rgba(' + d + ',' + this.opacity + ')';
+              h.arc(this.x, this.y, 1.5, 0, 2 * Math.PI, false);
+              for (var k = 0; k < 30; k++) {
+                h.fillStyle = 'rgba(' + d + ',' + (this.opacity - this.opacity / 20 * k) + ')';
+                h.rect(this.x - this.dx / 4 * k, this.y - this.dy / 4 * k - 2, 2, 2);
+                h.fill();
+              }
+            } else {
+              h.fillStyle = 'rgba(' + r + ',' + this.opacity + ')';
+              h.rect(this.x, this.y, this.r, this.r);
+            }
+            h.closePath();
+            h.fill();
+          };
+          this.move = function () {
+            this.x += this.dx;
+            this.y += this.dy;
+            if (this.fadingOut === false) this.reset();
+            if (this.x > n - n / 4 || this.y < 0) this.fadingOut = true;
+          };
+        }
+        function m(t) { return Math.floor(1000 * Math.random()) + 1 < 10 * t; }
+        function l(t, i) { return Math.random() * (i - t) + t; }
+        function initStars() {
+          c = [];
+          for (var t = 0; t < i; t++) { c[t] = new y(); c[t].reset(); }
+        }
+        f();
+        h = canvas.getContext('2d');
+        initStars();
+        setTimeout(function () { o = false; }, 50);
+        window.addEventListener('resize', function () {
+          f();
+          initStars();
+        }, false);
+        function loop() {
+          if (document.documentElement.classList.contains('dark')) {
+            u();
+          } else if (h) {
+            h.clearRect(0, 0, n, e);
+          }
+          window.requestAnimationFrame(loop);
+        }
+        loop();
+      })();
+    </script>
+  </body>
+</html>

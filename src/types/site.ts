@@ -1,0 +1,33 @@
+export interface SiteSettings {
+  siteTitle: string;
+  siteDescription: string;
+  siteLogo: string;
+  favicon: string;
+  icp: string;
+  footerText: string;
+  siteStartDate: string;
+  footerTechInfo: string;
+  postsPerPage: string;
+  twikooEnvId: string;
+  fontCssUrl: string;
+  fontFamily: string;
+  backgroundImage: string;
+  heroType: string;
+  heroImage: string;
+  heroVideo: string;
+  commentProvider?: string;
+  commentEmojiCdn?: string;
+  linkMarkdown?: string;
+  showMotto?: boolean;
+  mottoTitle?: string;
+  mottoText?: string;
+  mottoCtaText?: string;
+  mottoCtaUrl?: string;
+  mottoCtaTarget?: string;
+  footerBadges?: string;
+  adminName?: string;
+  adminEmail?: string;
+  adminBadge?: string;
+  keywords?: string;
+  generateOgImages?: boolean;
+}

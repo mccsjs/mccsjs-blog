@@ -1,6 +1,9 @@
 node_modules
 dist
+dist.old
+.astro
 .env
+.env.production
 .vercel
 .netlify
 uploads
@@ -25,3 +28,9 @@ backend/.backend.log
 .wrangler/
 _tmp_*
 .obsidian/
+
+# 构建期下载的随机封面（每次构建重新生成）
+public/covers/
+
+# 删除文件的临时备份（rename 绕过 safe-delete 用）
+.wb-trash/

@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ChatRoom from '../components/chat/ChatRoom';
+import { getSiteSettings } from '../utils/data';
+
+const DEFAULT_ENV_ID = 'https://twikoo.seln.cn';
+const settings = getSiteSettings();
+const envId = settings.twikooEnvId || DEFAULT_ENV_ID;
+---
+
+<BaseLayout title="留言板" description="在这里给我留言，畅所欲言～" hideBreadcrumb wide flushBottom>
+  <div class="page-comments">
+    <ChatRoom client:load="react" envId={envId} />
+  </div>
+</BaseLayout>
+
+<style>
+  .page-comments {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: calc(100dvh - 12rem);
+    max-height: 44rem;
+    min-height: 26rem;
+    overflow: hidden;
+  }
+
+  .page-comments :global(.guestbook-chat) {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    max-width: none;
+  }
+</style>

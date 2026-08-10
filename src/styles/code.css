@@ -1,0 +1,427 @@
+/* ===== code.css：代码块（行号 / 折叠 / 工具栏 / 暗色高亮 / 友链代码块）===== */
+@layer base {
+  /* ===== 代码块 ===== */
+  .post-content pre {
+    margin: 1.5rem 0;
+    overflow-x: auto;
+    border-radius: 12px;
+    background: rgb(var(--bg-soft)) !important;
+    border: 1px solid rgb(var(--border));
+    padding: 1.25rem;
+    font-size: 0.95rem;
+    color: rgb(var(--fg));
+    position: relative;
+    box-shadow: 0 1px 3px rgb(var(--fg) / 0.04);
+  }
+
+  /* ===== 代码块工具栏（顶部：语言标签 + 复制按钮） ===== */
+  .post-content pre .code-tool-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 12px;
+    margin: -1.25rem -1.25rem 0.75rem -1.25rem;
+    border-bottom: 1px solid rgb(var(--border-light));
+    background: rgb(var(--bg-soft) / 0.45);
+    border-radius: 12px 12px 0 0;
+    min-height: 30px;
+  }
+  .post-content pre .code-lang {
+    font-family: 'BlogFont', system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    color: rgb(var(--fg-soft) / 0.7);
+    text-transform: uppercase;
+    user-select: none;
+    pointer-events: none;
+  }
+  .post-content pre .code-copy-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: rgb(var(--fg-soft) / 0.5);
+    font-family: 'BlogFont', system-ui, -apple-system, sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    transition: color 0.2s, background 0.2s;
+    user-select: none;
+  }
+  .post-content pre .code-copy-btn:hover {
+    background: rgb(var(--bg) / 0.6);
+    color: rgb(var(--primary));
+  }
+  .post-content pre .code-copy-btn.copied {
+    color: #22c55e !important;
+  }
+  /* 无语言标签时靠右显示 */
+  .post-content pre .code-tool-bar:not(:has(.code-lang)) {
+    justify-content: flex-end;
+  }
+
+  /* ===== 代码块行号 ===== */
+  .post-content pre code.has-line-numbers {
+    display: table;
+    padding-left: 0;
+  }
+  .post-content pre .code-line-numbers {
+    display: table-cell;
+    text-align: right;
+    user-select: none;
+    color: rgb(var(--fg-soft) / 0.4);
+    padding-right: 1rem;
+    border-right: 1px solid rgb(var(--border-light));
+    vertical-align: top;
+    font-size: inherit;
+    line-height: inherit;
+    min-width: 2em;
+  }
+  .post-content pre .code-line-numbers span {
+    display: block;
+  }
+  .post-content pre .code-line-numbers + .code-line-content {
+    display: table-cell;
+    vertical-align: top;
+  }
+  .post-content pre .code-line {
+    display: block;
+    min-height: 1em;
+  }
+
+  /* ===== 友链页代码块 ===== */
+  #link-markdown-section pre {
+    margin: 1.5rem 0;
+    overflow-x: auto;
+    border-radius: 12px;
+    background: rgb(var(--bg-soft)) !important;
+    border: 1px solid rgb(var(--border));
+    padding: 1.25rem;
+    font-size: 0.95rem;
+    color: rgb(var(--fg));
+    position: relative;
+    box-shadow: 0 1px 3px rgb(var(--fg) / 0.04);
+  }
+  #link-markdown-section pre code.has-line-numbers {
+    display: table;
+    padding-left: 0;
+  }
+  #link-markdown-section pre .code-line-numbers {
+    display: table-cell;
+    text-align: right;
+    user-select: none;
+    color: rgb(var(--fg-soft) / 0.4);
+    padding-right: 1rem;
+    border-right: 1px solid rgb(var(--border-light));
+    vertical-align: top;
+    font-size: inherit;
+    line-height: inherit;
+    min-width: 2em;
+  }
+  #link-markdown-section pre .code-line-numbers span {
+    display: block;
+  }
+  #link-markdown-section pre .code-line-numbers + .code-line-content {
+    display: table-cell;
+    vertical-align: top;
+  }
+  #link-markdown-section pre .code-line {
+    display: block;
+    min-height: 1em;
+  }
+  /* 友链页代码块工具栏 */
+  #link-markdown-section pre .code-tool-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 12px;
+    margin: -1.25rem -1.25rem 0.75rem -1.25rem;
+    border-bottom: 1px solid rgb(var(--border-light));
+    background: rgb(var(--bg-soft) / 0.45);
+    border-radius: 12px 12px 0 0;
+    min-height: 30px;
+  }
+  #link-markdown-section pre .code-lang {
+    font-family: 'BlogFont', system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    color: rgb(var(--fg-soft) / 0.7);
+    text-transform: uppercase;
+    user-select: none;
+    pointer-events: none;
+  }
+  #link-markdown-section pre .code-copy-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: rgb(var(--fg-soft) / 0.5);
+    font-family: 'BlogFont', system-ui, -apple-system, sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    transition: color 0.2s, background 0.2s;
+    user-select: none;
+  }
+  #link-markdown-section pre .code-copy-btn:hover {
+    background: rgb(var(--bg) / 0.6);
+    color: rgb(var(--primary));
+  }
+  #link-markdown-section pre .code-copy-btn.copied {
+    color: #22c55e !important;
+  }
+  #link-markdown-section pre .code-tool-bar:not(:has(.code-lang)) {
+    justify-content: flex-end;
+  }
+
+  /* ===== 代码块折叠（超过10行自动折叠）===== */
+  /* 折叠状态：限制 <pre> 最大高度 */
+  .post-content pre.code-collapsed,
+  #link-markdown-section pre.code-collapsed {
+    max-height: 20rem;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+  }
+  .post-content pre:not(.code-collapsed),
+  #link-markdown-section pre:not(.code-collapsed) {
+    overflow-x: auto;
+  }
+  /* 遮罩层（<pre> 的子元素，position:absolute 相对 <pre>） */
+  .post-content pre .code-fold-overlay,
+  #link-markdown-section pre .code-fold-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4em;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 0.5rem;
+    pointer-events: none;
+    z-index: 2;
+    transition: background 0.35s ease, height 0.35s ease;
+  }
+  /* 折叠状态：强渐变遮罩 */
+  .post-content pre.code-collapsed .code-fold-overlay,
+  #link-markdown-section pre.code-collapsed .code-fold-overlay {
+    background: linear-gradient(to bottom, transparent, rgb(var(--bg-soft) / 0.85), rgb(var(--bg-soft)));
+  }
+  html.dark .post-content pre.code-collapsed .code-fold-overlay,
+  html.dark #link-markdown-section pre.code-collapsed .code-fold-overlay {
+    background: linear-gradient(to bottom, transparent, rgb(var(--bg-soft) / 0.9), rgb(var(--bg-soft)));
+  }
+  /* 展开状态：淡渐变遮罩，高度减小 */
+  .post-content pre:not(.code-collapsed) .code-fold-overlay,
+  #link-markdown-section pre:not(.code-collapsed) .code-fold-overlay {
+    background: linear-gradient(to bottom, transparent, rgb(var(--bg-soft) / 0.4));
+    height: 2.5em;
+  }
+  html.dark .post-content pre:not(.code-collapsed) .code-fold-overlay,
+  html.dark #link-markdown-section pre:not(.code-collapsed) .code-fold-overlay {
+    background: linear-gradient(to bottom, transparent, rgb(var(--bg-soft) / 0.5));
+  }
+  .post-content pre .code-expand-btn,
+  #link-markdown-section pre .code-expand-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    pointer-events: auto;
+    font-family: 'BlogFont', system-ui, -apple-system, sans-serif;
+    font-size: 13px;
+    color: rgb(var(--fg-soft));
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 3px 14px;
+    border-radius: 6px;
+    transition: color 0.2s, background 0.2s;
+    user-select: none;
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+  }
+  .post-content pre .code-expand-btn:hover,
+  #link-markdown-section pre .code-expand-btn:hover {
+    color: rgb(var(--primary));
+    background: rgb(var(--bg) / 0.5);
+  }
+
+  /* 展开状态：给 <pre> 底部留出空间，防止「收起」按钮遮挡代码 */
+  .post-content pre:not(.code-collapsed):has(.code-fold-overlay),
+  #link-markdown-section pre:not(.code-collapsed):has(.code-fold-overlay) {
+    padding-bottom: 3em;
+  }
+
+  /* 行内代码（不在 pre 内的 code） */
+  .post-content p code,
+  .post-content li code,
+  .post-content td code,
+  .post-content th code,
+  .post-content h1 code,
+  .post-content h2 code,
+  .post-content h3 code,
+  #link-markdown-section p code,
+  #link-markdown-section li code,
+  #link-markdown-section td code,
+  #link-markdown-section th code {
+    border-radius: 4px;
+    background: #fef08a;
+    padding: 0.15em 0.35em;
+    font-size: 0.9em;
+    font-weight: 500;
+    color: #1a1a1a;
+    border: 1px solid #eab308;
+  }
+  /* 暗色模式：行内代码 */
+  html.dark .post-content p code,
+  html.dark .post-content li code,
+  html.dark .post-content td code,
+  html.dark .post-content th code,
+  html.dark .post-content h1 code,
+  html.dark .post-content h2 code,
+  html.dark .post-content h3 code,
+  html.dark #link-markdown-section p code,
+  html.dark #link-markdown-section li code,
+  html.dark #link-markdown-section td code,
+  html.dark #link-markdown-section th code {
+    background: #ca8a04;
+    color: #1a1a1a;
+    border-color: #a16207;
+  }
+  .post-content pre code {
+    background: transparent !important;
+    padding: 0;
+    font-weight: 400;
+    color: inherit !important;
+  }
+  html.dark .post-content pre code {
+    background: transparent !important;
+    outline: none;
+  }
+  #link-markdown-section pre code {
+    background: transparent !important;
+    padding: 0;
+    font-weight: 400;
+    color: inherit !important;
+  }
+
+  .post-content img {
+    margin: 1.5rem 0;
+    width: 100%;
+    border-radius: 12px;
+    max-width: 100%;
+    height: auto;
+  }
+  .post-content figure {
+    margin: 1.5rem 0;
+    border: none;
+    background: transparent;
+  }
+
+  .post-content hr {
+    margin: 2rem 0;
+    border: none;
+    border-top: 1px solid rgb(var(--border) / 0.5);
+  }
+
+  .post-content table {
+    margin: 1.5rem 0;
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  .post-table-wrap { margin: 1.5rem 0; overflow-x: auto; }
+  .post-content th, .post-content td {
+    border: 1px solid rgb(var(--border));
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+  }
+  .post-content th {
+    background: rgb(var(--bg-soft));
+    font-weight: 600;
+  }
+
+  .liquid-glass {
+    background: rgb(var(--glass-bg) / 0.55);
+    -webkit-backdrop-filter: blur(12px) saturate(1.8) brightness(1.08);
+    backdrop-filter: blur(12px) saturate(1.8) brightness(1.08);
+    border: 1px solid rgb(var(--glass-border) / 0.35);
+    box-shadow:
+      0 2px 8px 0 rgb(0 0 0 / 0.04),
+      0 8px 24px -4px rgb(0 0 0 / 0.08),
+      inset 0 0.5px 0 0 rgb(255 255 255 / 0.6);
+  }
+  .dark .liquid-glass {
+    background: rgb(var(--glass-bg) / 0.55);
+    border-color: rgb(var(--glass-border) / 0.35);
+  }
+
+  /* ===== 黑夜模式：友链说明区（替代 prose-invert） ===== */
+  html.dark #link-markdown-section,
+  html.dark #link-markdown-section * {
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+    text-rendering: optimizeLegibility !important;
+  }
+  html.dark #link-markdown-section {
+    color: rgb(var(--fg)) !important;
+  }
+  html.dark #link-markdown-section h1,
+  html.dark #link-markdown-section h2,
+  html.dark #link-markdown-section h3,
+  html.dark #link-markdown-section h4,
+  html.dark #link-markdown-section strong,
+  html.dark #link-markdown-section b {
+    color: rgb(var(--fg)) !important;
+  }
+  html.dark #link-markdown-section p,
+  html.dark #link-markdown-section li,
+  html.dark #link-markdown-section td,
+  html.dark #link-markdown-section th,
+  html.dark #link-markdown-section span {
+    color: rgb(var(--fg)) !important;
+  }
+  html.dark #link-markdown-section a {
+    color: rgb(var(--primary)) !important;
+  }
+  /* ===== 暗色模式：Shiki 双主题切换（github-dark） ===== */
+  html.dark .shiki,
+  html.dark .shiki span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+    font-style: var(--shiki-dark-font-style) !important;
+    font-weight: var(--shiki-dark-font-weight) !important;
+    text-decoration: var(--shiki-dark-text-decoration) !important;
+  }
+
+  /* ===== 友链区代码块行号（CSS counter，匹配 Shiki 的 .line） ===== */
+  #link-markdown-section .shiki .line {
+    display: block;
+  }
+  #link-markdown-section .shiki {
+    counter-reset: step;
+  }
+  #link-markdown-section .shiki .line::before {
+    counter-increment: step;
+    content: counter(step);
+    display: inline-block;
+    width: 1.25rem;
+    margin-right: 0.75rem;
+    text-align: right;
+    opacity: 0.5;
+    user-select: none;
+  }
+
+  /* Shiki 接管代码高亮，旧 .hljs-* 暗色规则已移除 */
+  html.dark #link-markdown-section blockquote {
+    border-color: rgb(var(--border-light)) !important;
+    color: rgb(var(--fg-soft)) !important;
+  }
+
+}

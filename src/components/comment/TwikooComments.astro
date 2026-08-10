@@ -1,9 +1,8 @@
 ---
 import { getSiteSettings } from '../../utils/data';
 
-const DEFAULT_ENV_ID = 'https://twikoo.seln.cn';
 const settings = getSiteSettings();
-const envId = settings.twikooEnvId || DEFAULT_ENV_ID;
+const envId = settings.twikooEnvId;
 ---
 
 <!-- 仅渲染容器，初始化逻辑在 BaseLayout 全局脚本中 -->

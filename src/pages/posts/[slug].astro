@@ -9,13 +9,11 @@ import { renderMarkdown } from '../../utils/markdown';
 // 站点图标静态引用：JSON-LD 的 image/publisher.logo 需要构建后 URL
 import faviconImg from '../../assets/images/favicon.svg';
 
-const DEFAULT_TWIKOO_ENV_ID = 'https://twikoo.seln.cn';
-
 const settings = getSiteSettings();
-const twikooEnvId = settings.twikooEnvId || DEFAULT_TWIKOO_ENV_ID;
+const twikooEnvId = settings.twikooEnvId;
 const siteTitle = settings.siteTitle || 'My Blog';
 const siteLogo = settings.siteLogo || '';
-const commentProvider = settings.commentProvider || 'twikoo';
+const commentProvider = settings.commentProvider;
 const commentEmojiCdn = settings.commentEmojiCdn || '';
 
 // 将相对路径转成绝对 URL（供 JSON-LD 的 image / publisher.logo 使用）

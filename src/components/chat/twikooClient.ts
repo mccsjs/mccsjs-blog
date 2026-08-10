@@ -7,7 +7,7 @@ import type { TwikooComment } from './types';
 const ACCESS_TOKEN_KEY = 'twikoo-access-token';
 const LANG = 'zh-CN';
 
-let ENV_ID = 'https://twikoo.seln.cn';
+let ENV_ID = '';
 
 /** 设置 Twikoo 服务地址（页面挂载时由组件注入） */
 export function configureTwikoo(envId: string) {

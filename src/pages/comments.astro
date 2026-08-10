@@ -3,9 +3,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import ChatRoom from '../components/chat/ChatRoom';
 import { getSiteSettings } from '../utils/data';
 
-const DEFAULT_ENV_ID = 'https://twikoo.seln.cn';
 const settings = getSiteSettings();
-const envId = settings.twikooEnvId || DEFAULT_ENV_ID;
+const envId = settings.twikooEnvId;
 ---
 
 <BaseLayout title="留言板" description="在这里给我留言，畅所欲言～" hideBreadcrumb wide flushBottom>

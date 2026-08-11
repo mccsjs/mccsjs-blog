@@ -4,9 +4,10 @@ export const footerConfig = {
   showMotto: true,
   mottoTitle: '格言🧬',
   mottoText:
-    '代码如水，逻辑如山；以热爱为引，赴一场与世界的对话。\n这是被称作工程师的人们的故事，是无数个深夜里未竟的旅途。',
-  mottoCtaText: '前往了解作者',
-  mottoCtaUrl: '/about/',
-  mottoCtaTarget: '_self',
+    '你看，他们曾如此骄傲的活过，贯彻始终 — 以生命奏响了文明的颂歌。这是被称作英桀的人们的故事，是十三位逐火者未竟的旅途',
+  mottoCtaText: '前往见证十三英桀的终末',
+  mottoCtaUrl: 'https://www.bilibili.com/video/BV1fY4y1F7GL',
+  mottoCtaTarget: '_blank',    
+    // '_self' 表示在当前窗口/标签页打开，若设置为 '_blank' 则会新开窗口。
   footerBadges: '[]',
 };

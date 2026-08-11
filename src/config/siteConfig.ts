@@ -30,7 +30,7 @@ export const siteConfig = {
   author: {
     name: 'mccsjs',
     bio: '分享技术，记录生活',
-    avatar: '',
+    avatar: '/src/assets/img/ico.jpg',
   },
   // 首页 hero 社交图标栏：JSON 数组 [{icon, href}]，icon 为 simpleicons 名或完整 URL；留空则隐藏
   titleIcons: '',

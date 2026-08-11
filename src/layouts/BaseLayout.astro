@@ -13,6 +13,7 @@ interface Props {
   title?: string;
   description?: string;
   wide?: boolean;
+  fullWidth?: boolean;
   postSlug?: string;
   postCategory?: string;
   hideBreadcrumb?: boolean;
@@ -23,7 +24,7 @@ interface Props {
   ogImage?: string;
 }
 
-const { title: rawTitle, description: rawDescription, wide = false, postSlug, postCategory, hideBreadcrumb = false, flushBottom = false, ogType = 'website', ogImage } = Astro.props;
+const { title: rawTitle, description: rawDescription, wide = false, fullWidth = false, postSlug, postCategory, hideBreadcrumb = false, flushBottom = false, ogType = 'website', ogImage } = Astro.props;
 const isHome = Astro.url.pathname === '/';
 
 const settings: SiteSettings = getSiteSettings();
@@ -166,7 +167,7 @@ const effectiveFontFamily = fontFamily
       <main id="swup-container" class:list={[
         "transition-swup-main mx-auto w-full flex-1 px-4 pt-24 md:pt-28 md:px-6",
         flushBottom ? "overflow-x-clip overflow-y-visible pb-0" : "overflow-x-clip pb-12 md:pb-16",
-        wide ? "max-w-6xl" : "max-w-5xl"
+        fullWidth ? "max-w-none" : wide ? "max-w-[1200px]" : "max-w-5xl"
       ]}>
         {!hideBreadcrumb && (
           <Breadcrumb title={rawTitle} postSlug={postSlug} postCategory={postCategory} menus={navMenus} />

@@ -7,7 +7,7 @@ const settings = getSiteSettings();
 const envId = settings.twikooEnvId;
 ---
 
-<BaseLayout title="留言板" description="在这里给我留言，畅所欲言～" hideBreadcrumb wide flushBottom>
+<BaseLayout title="留言板" description="在这里给我留言，畅所欲言～" hideBreadcrumb fullWidth flushBottom>
   <div class="page-comments">
     <ChatRoom client:load="react" envId={envId} />
   </div>
@@ -18,9 +18,11 @@ const envId = settings.twikooEnvId;
     display: flex;
     flex-direction: column;
     width: 100%;
-    height: calc(100dvh - 12rem);
-    max-height: 44rem;
-    min-height: 26rem;
+    max-width: 1400px;
+    margin-inline: auto;
+    margin-top: -1.5rem;
+    height: calc(100dvh - 6rem);
+    min-height: 82vh;
     overflow: hidden;
   }
 

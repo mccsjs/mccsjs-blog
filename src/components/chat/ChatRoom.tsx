@@ -91,8 +91,11 @@ export default function ChatRoom({ envId }: Props) {
   const [newMessageCount, setNewMessageCount] = useState(0);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
   const [lastSyncedAt, setLastSyncedAt] = useState<number | null>(null);
+  const [hasMoreHistory, setHasMoreHistory] = useState(false);
+  const [loadingHistory, setLoadingHistory] = useState(false);
 
   const listRef = useRef<HTMLDivElement | null>(null);
+  const historyPageRef = useRef(1);
   const announcementDialogRef = useRef<HTMLDialogElement | null>(null);
   const deleteDialogRef = useRef<HTMLDialogElement | null>(null);
   const pollTimerRef = useRef<number | undefined>(undefined);
@@ -134,23 +137,44 @@ export default function ChatRoom({ envId }: Props) {
     setInitialError('');
     setSyncError('');
     try {
-      const first = await getComments(1, PAGE_SIZE);
-      setMessages(flattenComments(first.data));
-      setTotalCount(first.count);
+      const res = await getComments(1, PAGE_SIZE);
+      setMessages(flattenComments(res.data));
+      setTotalCount(res.count);
+      setHasMoreHistory(res.more);
+      historyPageRef.current = 1;
       setLastSyncedAt(Date.now());
       requestAnimationFrame(() => scrollToBottom(false));
-      let res = first;
-      let page = 2;
-      while (res.more && page <= 50) {
-        res = await getComments(page, PAGE_SIZE);
-        setMessages((prev) => mergeMessages(prev, flattenComments(res.data)));
-        setTotalCount(res.count);
-        page += 1;
-      }
     } catch (e) {
       setInitialError(getErrorMessage(e) || '留言加载失败');
     } finally {
       setInitialLoading(false);
+      dataBusyRef.current = false;
+    }
+  };
+
+  const loadMoreHistory = async () => {
+    if (dataBusyRef.current || !hasMoreHistory || loadingHistory || initialLoading) return;
+    dataBusyRef.current = true;
+    setLoadingHistory(true);
+    const el = listRef.current;
+    const oldHeight = el?.scrollHeight ?? 0;
+    const oldTop = el?.scrollTop ?? 0;
+    try {
+      const nextPage = historyPageRef.current + 1;
+      const res = await getComments(nextPage, PAGE_SIZE);
+      const older = flattenComments(res.data);
+      historyPageRef.current = nextPage;
+      setHasMoreHistory(res.more);
+      setMessages((prev) => [...older, ...prev]);
+      requestAnimationFrame(() => {
+        if (el) {
+          el.scrollTop = oldTop + (el.scrollHeight - oldHeight);
+        }
+      });
+    } catch (e) {
+      setSyncError(getErrorMessage(e) || '加载历史消息失败');
+    } finally {
+      setLoadingHistory(false);
       dataBusyRef.current = false;
     }
   };
@@ -443,13 +467,17 @@ export default function ChatRoom({ envId }: Props) {
     nearBottomRef.current = near;
     setShowScrollToBottom(!near);
     if (near) setNewMessageCount(0);
+    if (el.scrollTop < 80 && hasMoreHistory && !loadingHistory && !initialLoading) {
+      void loadMoreHistory();
+    }
   };
 
   useEffect(() => {
     configureTwikoo(envId ?? '');
     const storedProfile = readStoredValue<unknown>(PROFILE_STORAGE_KEY);
     if (isProfile(storedProfile)) setProfile(storedProfile);
-    setDraft(readStoredString(DRAFT_STORAGE_KEY));
+    const storedDraft = readStoredString(DRAFT_STORAGE_KEY);
+    setDraft(storedDraft && storedDraft.trim().length > 0 ? storedDraft : '');
     setIsOffline(!navigator.onLine);
 
     try {
@@ -584,6 +612,21 @@ export default function ChatRoom({ envId }: Props) {
                   <div className="guestbook-chat__empty-mark">GB</div>
                   <h3>还没有人发言</h3>
                   <p>发送第一条消息，开启这段对话。</p>
+                </div>
+              )}
+
+              {hasMoreHistory && messages.length > 0 && (
+                <div className="guestbook-chat__history-trigger">
+                  {loadingHistory ? (
+                    <span className="guestbook-chat__history-loading">
+                      <LoaderCircle size={16} />
+                      加载历史消息…
+                    </span>
+                  ) : (
+                    <button type="button" onClick={() => void loadMoreHistory()}>
+                      加载更多历史消息
+                    </button>
+                  )}
                 </div>
               )}
 

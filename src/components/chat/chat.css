@@ -345,6 +345,40 @@
   font: 700 0.75rem/1 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
+.guestbook-chat__history-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3) 0;
+}
+
+.guestbook-chat__history-trigger button {
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--guestbook-line);
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--guestbook-muted);
+  font-size: 0.8rem;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.guestbook-chat__history-trigger button:hover {
+  border-color: var(--gb-primary);
+  color: var(--gb-primary);
+}
+
+.guestbook-chat__history-loading {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--guestbook-muted);
+  font-size: 0.8rem;
+}
+
+.guestbook-chat__history-loading svg {
+  animation: guestbook-spin 1s linear infinite;
+}
+
 .guestbook-chat__state > button {
   display: inline-flex;
   align-items: center;
@@ -875,7 +909,7 @@
 .guestbook-composer textarea {
   display: block;
   width: 100%;
-  min-height: 4.5rem;
+  min-height: 2.5rem;
   max-height: min(32dvh, 16rem);
   resize: none;
   padding: var(--space-3);
@@ -1676,7 +1710,7 @@
 
   .guestbook-composer textarea {
     font-size: 1rem;
-    min-height: 3.5rem;
+    min-height: 2.25rem;
     max-height: min(40dvh, 18rem);
   }
 

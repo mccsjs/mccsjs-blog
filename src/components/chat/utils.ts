@@ -132,7 +132,7 @@ export function hasImage(content: string): boolean {
 
 /** 校验消息正文，返回错误文案（空串表示通过） */
 export function validateMessageBody(content: string): string {
-  const textLength = getTextLength(content);
+  const textLength = getTextLength(content.replace(/["'`]/g, ''));
   if (textLength < MIN_MESSAGE_LENGTH && !hasImage(content)) {
     return `消息至少需要 ${MIN_MESSAGE_LENGTH} 个字符`;
   }

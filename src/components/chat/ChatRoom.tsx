@@ -477,7 +477,8 @@ export default function ChatRoom({ envId }: Props) {
     const storedProfile = readStoredValue<unknown>(PROFILE_STORAGE_KEY);
     if (isProfile(storedProfile)) setProfile(storedProfile);
     const storedDraft = readStoredString(DRAFT_STORAGE_KEY);
-    setDraft(storedDraft && storedDraft.trim().length > 0 ? storedDraft : '');
+    const draftBlank = storedDraft.replace(/["'`]/g, '').trim().length === 0;
+    setDraft(draftBlank ? '' : storedDraft);
     setIsOffline(!navigator.onLine);
 
     try {

@@ -909,7 +909,7 @@
 .guestbook-composer textarea {
   display: block;
   width: 100%;
-  min-height: 2.5rem;
+  min-height: 2.25rem;
   max-height: min(32dvh, 16rem);
   resize: none;
   padding: var(--space-3);

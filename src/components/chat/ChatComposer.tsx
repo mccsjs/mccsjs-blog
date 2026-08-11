@@ -315,7 +315,7 @@ export default function ChatComposer({
           onDrop={handleDrop}
           onCompositionStart={() => setIsComposing(true)}
           onCompositionEnd={() => setIsComposing(false)}
-          rows={2}
+          rows={1}
           maxLength={MAX_MESSAGE_LENGTH}
           placeholder="说点什么...（支持 :表情: 和粘贴图片）"
           aria-label="留言内容"

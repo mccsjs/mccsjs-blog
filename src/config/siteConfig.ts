@@ -1,4 +1,6 @@
 // 站点配置（原 api /api/settings 导出，纯静态化后在此维护）
+import avatarImg from '../assets/img/ico.jpg';
+
 export const siteConfig = {
   title: 'mccsjs',
   // 站点正式域名，决定全站 canonical/og:url/sitemap/robots 的绝对地址。
@@ -30,7 +32,7 @@ export const siteConfig = {
   author: {
     name: 'mccsjs',
     bio: '分享技术，记录生活',
-    avatar: '/src/assets/img/ico.jpg',
+    avatar: avatarImg,
   },
   // 首页 hero 社交图标栏：JSON 数组 [{icon, href}]，icon 为 simpleicons 名或完整 URL；留空则隐藏
   titleIcons: '',

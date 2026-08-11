@@ -607,6 +607,7 @@ export default function ChatRoom({ envId }: Props) {
               onScroll={handleScroll}
               aria-live="polite"
               aria-relevant="additions"
+              data-lenis-prevent
             >
               {messages.length === 0 && (
                 <div className="guestbook-chat__empty">

@@ -34,7 +34,7 @@ try {
 const posts: Post[] = await getAllPosts();
 let error: string | null = null;
 
-// 公开访客统计（纯静态改由不蒜子客户端填充，构建期传 0）
+// 公开访客统计（纯静态改由 Vercount 客户端填充，构建期传 0）
 const visitorStats = { visitors: 0, pageviews: 0 };
 
 // 本站总字数：汇总各文章正文（去标签/语法后）的中文字符与英文词数
@@ -88,6 +88,7 @@ const latestPosts = posts.slice(0, 6);
       alt=""
       class="absolute inset-0 h-full w-full object-cover"
       fetchpriority="high"
+      loading="eager"
       aria-hidden="true"
     />
     {(heroType === 'video' && heroVideo) && (

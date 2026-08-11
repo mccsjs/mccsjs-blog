@@ -1,6 +1,6 @@
 # mccsjsblog
 
-基于 [Astro](https://astro.build) 的**纯静态**博客。文章以 Markdown 书写，构建期生成静态 HTML，通过 Swup 实现 SPA 式无刷新翻页；评论与留言板接入 Twikoo，统计接入不蒜子，可部署到 GitHub Pages 等任意静态托管。
+基于 [Astro](https://astro.build) 的**纯静态**博客。文章以 Markdown 书写，构建期生成静态 HTML，通过 Swup 实现 SPA 式无刷新翻页；评论与留言板接入 Twikoo，统计接入 Vercount，可部署到 GitHub Pages 等任意静态托管。
 
 > 本项目为纯静态站点（SSG），无后端、无数据库。所有页面在 `astro build` 时预渲染为 HTML。
 
@@ -13,7 +13,7 @@
 - **Astro Markdown + Shiki 双主题** — 文章渲染与代码高亮（`@astrojs/markdown-satteri`）
 - **Lenis** — 平滑滚动
 - **Twikoo** — 第三方评论 + 留言板
-- **不蒜子 (busuanzi)** — 站点 PV / UV 统计
+- **Vercount** — 站点 PV / UV 统计
 - **satori + sharp** — 文章 OG 分享图生成
 - **iconify-icon / lucide-react** — 图标
 
@@ -23,7 +23,7 @@
 - **评论**：每篇文章底部 Twikoo 评论区。
 - **留言板**：独立 `/comments` 页，Twikoo 驱动，支持表情包（OwO，`public/owo.json`）。
 - **友链**：`/link` 页，数据来自 `friendsConfig.ts`；未设置截图的友链自动用 mshots 生成截图。
-- **统计**：不蒜子站点 PV / UV，文章页阅读数。
+- **统计**：Vercount 站点 PV / UV，文章页阅读数。
 - **RSS / Sitemap**：美化输出，构建期生成。
 - **OG 图**：基于 satori 的文章分享卡片。
 

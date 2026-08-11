@@ -676,6 +676,7 @@
   border: 0;
   border-radius: var(--radius-small);
   object-fit: contain;
+  cursor: zoom-in;
 }
 
 .guestbook-message__quote {
@@ -1022,9 +1023,11 @@
   overflow: hidden;
   border: 1px solid var(--guestbook-editor-line);
   border-radius: var(--radius-medium);
-  background: var(--guestbook-editor-bg);
+  background: rgb(var(--card-bg) / 0.95);
   color: var(--guestbook-editor-text);
   box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 0.18);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .guestbook-composer__emoji-tabs {
@@ -1864,10 +1867,12 @@
   overflow: hidden;
   border: 1px solid var(--guestbook-editor-line);
   border-radius: var(--radius-medium);
-  background: var(--guestbook-editor-bg);
+  background: rgb(var(--card-bg) / 0.95);
   color: var(--guestbook-editor-text);
   box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 0.18);
   z-index: 9;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .guestbook-composer__emoji-state {

@@ -422,9 +422,9 @@ export default function ChatComposer({
                   /^https?:\/\//i.test(emojiPacks[emojiTab]?.icon ?? '') ? '' : ' is-text'
                 }`}
               >
-                {emojiPacks[emojiTab]?.items.map((item) => (
+                {emojiPacks[emojiTab]?.items.map((item, idx) => (
                   <button
-                    key={item.text}
+                    key={`${emojiPacks[emojiTab]?.name ?? 'pack'}-${idx}`}
                     type="button"
                     title={item.text}
                     onClick={() => insertEmoji(item)}

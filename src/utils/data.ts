@@ -177,7 +177,6 @@ export function getSiteSettings(): SiteSettings {
     icp: siteConfig.icp,
     footerText: siteConfig.footerText,
     siteStartDate: siteConfig.siteStartDate,
-    footerTechInfo: siteConfig.footerTechInfo,
     postsPerPage: String(siteConfig.postsPerPage),
     twikooEnvId: commentConfig.envId,
     fontCssUrl: siteConfig.fontCssUrl,

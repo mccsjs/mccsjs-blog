@@ -9,7 +9,6 @@ interface Props {
   icp?: string;
   footerText?: string;
   siteStartDate?: string;
-  footerTechInfo?: string;
   menus?: MenuItem[];
   showMotto?: string;
   mottoTitle?: string;
@@ -25,7 +24,6 @@ const {
   icp = '',
   footerText = '',
   siteStartDate = '',
-  footerTechInfo = '',
   menus = [],
   showMotto = 'true',
   mottoTitle = '格言🧬',
@@ -155,17 +153,6 @@ if (friends.length === 0) {
 
     {/* 网站运行时长计时器 */}
     {siteStartDate && <div id="workboard"></div>}
-
-    {/* 框架信息 */}
-    {footerTechInfo ? (
-      <div class="framework-info">{footerTechInfo}</div>
-    ) : (
-      <div class="framework-info">
-        <a href="https://astro.build" target="_blank" rel="noopener noreferrer">Astro</a>
-        <span class="footer-separator">|</span>
-        <a href="https://hono.dev" target="_blank" rel="noopener noreferrer">Hono</a>
-      </div>
-    )}
 
     {/* 自定义页脚文字 */}
     {footerText && <div class="footer_custom_text" set:html={footerText} />}
@@ -404,9 +391,8 @@ if (friends.length === 0) {
     color: var(--color-accent-sand);
   }
 
-  /* 版权 / 框架信息 / 自定义文字 */
+  /* 版权 / 自定义文字 */
   #footer-wrap .copyright,
-  #footer-wrap .framework-info,
   #footer-wrap .footer_custom_text,
   #footer-wrap #ghbdages {
     margin: 0 auto;
@@ -426,21 +412,6 @@ if (friends.length === 0) {
     display: inline-block;
     margin-left: 2px;
     animation: heartbeat 1.2s ease-in-out infinite;
-  }
-  .framework-info {
-    font-size: 0.8rem;
-    margin-top: 10px;
-  }
-  .framework-info a {
-    color: var(--color-accent-sky);
-    transition: color 0.25s ease;
-  }
-  .framework-info a:hover {
-    color: var(--color-accent-sand);
-  }
-  .footer-separator {
-    margin: 0 4px;
-    opacity: 0.5;
   }
   .footer_custom_text {
     margin-top: 8px;
@@ -485,14 +456,6 @@ if (friends.length === 0) {
       margin-top: 8px;
       font-size: 0.78rem;
     }
-    .framework-info {
-      margin-top: 10px;
-      font-size: 0.72rem;
-      line-height: 1.5;
-    }
-    .framework-info .footer-separator {
-      margin: 0 3px;
-    }
     #ghbdages {
       margin-top: 12px;
     }
@@ -524,9 +487,6 @@ if (friends.length === 0) {
     /* 小屏底部进一步宽松 */
     #workboard {
       font-size: 0.75rem;
-    }
-    .framework-info {
-      font-size: 0.7rem;
     }
     .github-badge img {
       max-height: 20px;

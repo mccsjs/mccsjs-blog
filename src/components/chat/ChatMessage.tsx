@@ -1,5 +1,5 @@
 // 单条 QQ 群聊气泡
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ArrowUpToLine,
   Check,
@@ -46,6 +46,25 @@ export default function ChatMessage({
   onCopyError,
 }: Props) {
   const [copied, setCopied] = useState(false);
+  const bodyRef = useRef<HTMLDivElement>(null);
+
+  // 图片灯箱：给用户图片（非 emoji）加 data-fancybox；全局只 bind 一次（document 事件委托，动态图片也生效）
+  useEffect(() => {
+    const root = bodyRef.current;
+    if (!root) return;
+    const w = window as unknown as {
+      Fancybox?: { bind: (targets: unknown, options?: unknown) => void };
+      __gbFancyboxBound?: boolean;
+    };
+    root.querySelectorAll<HTMLImageElement>('img').forEach((img) => {
+      if (img.title === 'emoji') return;
+      img.dataset.fancybox = 'guestbook';
+      if (img.alt) img.dataset.caption = img.alt;
+    });
+    if (!w.Fancybox || w.__gbFancyboxBound) return;
+    w.Fancybox.bind('[data-fancybox="guestbook"]', { Carousel: { infinite: false } });
+    w.__gbFancyboxBound = true;
+  }, [message.body]);
 
   const copyMessage = async () => {
     try {
@@ -129,6 +148,7 @@ export default function ChatMessage({
             )}
             <div
               className="guestbook-message__body"
+              ref={bodyRef}
               dangerouslySetInnerHTML={{ __html: message.body }}
             />
           </div>

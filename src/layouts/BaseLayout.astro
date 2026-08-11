@@ -125,8 +125,9 @@ const effectiveFontFamily = fontFamily
       })();
     </script>
     <link rel="icon" type="image/svg+xml" href={faviconImg.src} />
-    {/* 不蒜子站点统计 */}
-    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    {/* Vercount 站点统计 */}
+    <link rel="preconnect" href="https://vercount.one" crossorigin />
+    <script async src="https://events.vercount.one/js"></script>
     {fontUrl && isFontFile && (
       <>
         <link rel="preload" href={fontUrl} as="font" type={fontMimeType[fontFormat]} crossorigin />
@@ -179,7 +180,6 @@ const effectiveFontFamily = fontFamily
         icp={settings.icp}
         footerText={settings.footerText}
         siteStartDate={settings.siteStartDate}
-        footerTechInfo={settings.footerTechInfo}
         menus={footerMenus}
         showMotto={settings.showMotto}
         mottoTitle={settings.mottoTitle}

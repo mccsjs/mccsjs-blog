@@ -6,7 +6,6 @@ export interface SiteSettings {
   icp: string;
   footerText: string;
   siteStartDate: string;
-  footerTechInfo: string;
   postsPerPage: string;
   twikooEnvId: string;
   fontCssUrl: string;

@@ -90,7 +90,7 @@ export async function getCategories(): Promise<Category[]> {
     const name = p.category?.name?.trim();
     if (name) count[name] = (count[name] || 0) + 1;
   }
-  return Object.keys(count).map((name) => ({ id: name, name, slug: name }));
+  return Object.keys(count).map((name) => ({ id: name, name, slug: name, count: count[name] }));
 }
 
 export async function getTags(): Promise<Tag[]> {

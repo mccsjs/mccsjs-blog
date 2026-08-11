@@ -1,0 +1,108 @@
+---
+import SiteInfoCard from './SiteInfoCard.astro';
+import { siteConfig } from '../../config/siteConfig';
+
+interface Props {
+  categories: { name: string; slug: string; count?: number }[];
+  tags: { name: string; slug: string }[];
+  postCount: number;
+  totalWords: number;
+  runDays: number;
+  visitorCount: number;
+  pageViews: number;
+  lastUpdated: string;
+}
+
+const { categories, tags, postCount, totalWords, runDays, visitorCount, pageViews, lastUpdated } = Astro.props;
+
+const author = {
+  name: siteConfig.author?.name || siteConfig.title,
+  bio: siteConfig.author?.bio || siteConfig.description,
+  avatar: siteConfig.author?.avatar || '',
+};
+const initials = (author.name || '光').trim().charAt(0);
+---
+
+<aside class="flex flex-col gap-5">
+  <!-- 资料卡 -->
+  <section class="overflow-hidden rounded-2xl border border-[rgb(var(--border)/0.5)] bg-[rgb(var(--surface))] shadow-sm">
+    <div class="h-1 w-full bg-gradient-to-r from-[rgb(var(--primary))] to-[rgb(var(--primary)/0.45)]"></div>
+    <div class="p-5 text-center">
+      {
+        author.avatar ? (
+          <img src={author.avatar} alt={author.name} class="mx-auto h-20 w-20 rounded-full object-cover" />
+        ) : (
+          <div class="mx-auto grid h-20 w-20 place-items-center rounded-full bg-[rgb(var(--primary))] text-3xl font-bold text-white">
+            {initials}
+          </div>
+        )
+      }
+      <h3 class="mt-3 text-lg font-bold text-[rgb(var(--fg))]">{author.name}</h3>
+      <p class="mt-1 text-sm text-[rgb(var(--fg-soft))]">{author.bio}</p>
+    </div>
+  </section>
+
+  <!-- 分类卡 -->
+  <section class="overflow-hidden rounded-2xl border border-[rgb(var(--border)/0.5)] bg-[rgb(var(--surface))] shadow-sm">
+    <div class="h-1 w-full bg-gradient-to-r from-[rgb(var(--primary))] to-[rgb(var(--primary)/0.45)]"></div>
+    <div class="p-5">
+      <h4 class="mb-3 flex items-center gap-2 text-base font-bold text-[rgb(var(--fg))]">
+        <svg class="h-5 w-5 text-[rgb(var(--primary))]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2z" />
+        </svg>
+        分类
+      </h4>
+      <ul class="flex flex-col gap-1">
+        {
+          categories.map((c) => (
+            <li>
+              <a
+                href={`/categories/${c.slug}`}
+                class="flex items-center justify-between rounded-full px-3 py-1.5 text-sm text-[rgb(var(--fg-soft))] transition-colors hover:bg-[rgb(var(--bg-soft))] hover:text-[rgb(var(--fg))]"
+              >
+                <span>{c.name}</span>
+                <span class="text-xs text-[rgb(var(--fg-soft))]">{c.count ?? 0}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- 标签卡 -->
+  <section class="overflow-hidden rounded-2xl border border-[rgb(var(--border)/0.5)] bg-[rgb(var(--surface))] shadow-sm">
+    <div class="h-1 w-full bg-gradient-to-r from-[rgb(var(--primary))] to-[rgb(var(--primary)/0.45)]"></div>
+    <div class="p-5">
+      <h4 class="mb-3 flex items-center gap-2 text-base font-bold text-[rgb(var(--fg))]">
+        <svg class="h-5 w-5 text-[rgb(var(--primary))]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20.59 13.41 13.42 20.59a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+          <circle cx="7" cy="7" r="1.5" />
+        </svg>
+        标签
+      </h4>
+      <div class="flex flex-wrap gap-2">
+        {
+          tags.map((t) => (
+            <a
+              href={`/tags/${t.slug}`}
+              class="rounded-full bg-[rgb(var(--bg-soft))] px-3 py-1 text-sm text-[rgb(var(--fg-soft))] transition-colors hover:bg-[rgb(var(--primary)/0.15)] hover:text-[rgb(var(--primary))]"
+            >
+              #{t.name}
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- 网站信息卡 -->
+  <SiteInfoCard
+    postCount={postCount}
+    totalWords={totalWords}
+    runDays={runDays}
+    visitorCount={visitorCount}
+    pageViews={pageViews}
+    lastUpdated={lastUpdated}
+  />
+</aside>

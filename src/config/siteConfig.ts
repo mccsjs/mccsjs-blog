@@ -26,4 +26,12 @@ export const siteConfig = {
   heroImage: 'images/hero.webp',
   // 管理员（关于页标识）
   // 分类与标签：不再手写配置，由文章 frontmatter 自动聚合（见 utils/data.ts 的 getCategories/getTags）
+  // 站长资料（首页侧栏资料卡）：avatar 留空则用名称首字母
+  author: {
+    name: 'mccsjs',
+    bio: '分享技术，记录生活',
+    avatar: '',
+  },
+  // 首页 hero 社交图标栏：JSON 数组 [{icon, href}]，icon 为 simpleicons 名或完整 URL；留空则隐藏
+  titleIcons: '',
 } as const;

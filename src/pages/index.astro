@@ -1,10 +1,11 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PostCard from '../components/layout/PostCard.astro';
-import SiteInfoCard from '../components/widget/SiteInfoCard.astro';
+import Sidebar from '../components/widget/Sidebar.astro';
 import ImageWrapper from '../components/common/ImageWrapper.astro';
 import type { Post } from '../types';
-import { getAllPosts, getSiteSettings } from '../utils/data';
+import { getAllPosts, getSiteSettings, getCategories, getTags } from '../utils/data';
+import { siteConfig } from '../config/siteConfig';
 // hero 图静态引用：提供 video poster 的构建后 URL
 import heroImg from '../assets/images/hero.webp';
 
@@ -15,6 +16,20 @@ const heroType = settings.heroType || 'image';
 const heroImage = settings.heroImage || 'images/hero.webp';
 const heroVideo = settings.heroVideo || '';
 const siteStartDate = settings.siteStartDate || '';
+
+const categories = await getCategories();
+const tags = await getTags();
+
+// hero 社交图标栏：解析 siteConfig.titleIcons（JSON 数组），为空则隐藏
+function iconSrc(icon: string): string {
+  return /^https?:\/\//i.test(icon) ? icon : `https://cdn.simpleicons.org/${icon}`;
+}
+let titleIcons: { icon: string; href: string }[] = [];
+try {
+  const parsed = JSON.parse(siteConfig.titleIcons || '[]');
+  if (Array.isArray(parsed)) titleIcons = parsed.filter((it: any) => it && typeof it.icon === 'string');
+} catch {}
+
 
 const posts: Post[] = await getAllPosts();
 let error: string | null = null;
@@ -97,13 +112,32 @@ const latestPosts = posts.slice(0, 6);
       <p class="mt-4 text-base sm:text-lg text-white/85 min-h-[4.5rem]">
         <span id="typewriter-text" class="neon-text"></span><span id="typewriter-cursor" class="ml-1 animate-blink">|</span>
       </p>
+      {
+        titleIcons.length > 0 && (
+          <ul class="mt-5 flex flex-wrap items-center justify-center gap-5">
+            {titleIcons.map((it, i) => (
+              <li>
+                <a
+                  href={it.href || '#'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={it.icon}
+                  class="inline-flex h-9 w-9 items-center justify-center transition-transform hover:scale-110"
+                >
+                  <img src={iconSrc(it.icon)} alt={it.icon} class="h-7 w-7 object-contain" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
     </div>
   </section>
 
   <section class="mt-16">
     <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
       <!-- 左栏：最新文章 -->
-      <div>
+      <div class="xl:max-w-2xl">
         <div class="mb-8 flex items-end justify-between">
           <div>
             <h2 class="text-2xl font-bold">最新文章</h2>
@@ -134,9 +168,11 @@ const latestPosts = posts.slice(0, 6);
         }
       </div>
 
-      <!-- 右栏：网站信息卡（桌面端吸顶） -->
+      <!-- 右栏：资料 + 分类 + 标签 + 网站信息（桌面端吸顶） -->
       <aside class="lg:sticky lg:top-24 h-fit">
-        <SiteInfoCard
+        <Sidebar
+          categories={categories}
+          tags={tags}
           postCount={postCount}
           totalWords={totalWords}
           runDays={runDays}

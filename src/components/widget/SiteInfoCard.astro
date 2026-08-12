@@ -5,20 +5,20 @@ interface Props {
   runDays: number
   visitorCount: number
   pageViews: number
-  lastUpdated: string
+  lastUpdated: number
 }
 
 const { postCount, totalWords, runDays, visitorCount, pageViews, lastUpdated } = Astro.props
 
 const fmt = (n: number) => n.toLocaleString('zh-CN')
+const fmtWords = (n: number) => (n >= 10000 ? `${(n / 10000).toFixed(1)}w` : n.toLocaleString('zh-CN'))
 
 const rows: { label: string; value: string }[] = [
   { label: '文章数目', value: fmt(postCount) },
   { label: '运行时间', value: runDays >= 0 ? `${fmt(runDays)} 天` : '—' },
-  { label: '本站总字数', value: fmt(totalWords) },
+  { label: '本站总字数', value: fmtWords(totalWords) },
   { label: '本站访客数', value: '<span id="busuanzi_container_site_uv"><span id="busuanzi_value_site_uv">0</span></span>' },
   { label: '本站总浏览量', value: '<span id="busuanzi_container_site_pv"><span id="busuanzi_value_site_pv">0</span></span>' },
-  { label: '最后更新', value: lastUpdated },
 ]
 ---
 
@@ -34,18 +34,50 @@ const rows: { label: string; value: string }[] = [
       </svg>
       网站信息
     </h3>
-    <ul class="space-y-3 text-sm">
-      {
-        rows.map((r) => (
-          <li class="flex items-center justify-between gap-3">
-            <span class="text-[rgb(var(--fg-soft))]">{r.label}</span>
-            <span class="font-semibold tabular-nums" set:html={r.value}></span>
-          </li>
-        ))
-      }
-    </ul>
+      <ul class="space-y-3 text-sm">
+        {
+          rows.map((r) => (
+            <li class="flex items-center justify-between gap-3">
+              <span class="text-[rgb(var(--fg-soft))]">{r.label}</span>
+              <span class="font-semibold tabular-nums" set:html={r.value}></span>
+            </li>
+          ))
+        }
+        <li class="flex items-center justify-between gap-3">
+          <span class="text-[rgb(var(--fg-soft))]">最后更新</span>
+          <span class="font-semibold tabular-nums" id="last-updated-val" data-ts={lastUpdated}>刚刚</span>
+        </li>
+      </ul>
   </div>
 </section>
+
+<script>
+  function fmtUpdated(ts: number): string {
+    const diff = Math.max(0, Date.now() - ts);
+    const min = 60000, hour = 3600000, day = 86400000, month = 2592000000, year = 31536000000;
+    if (diff < min) return '刚刚';
+    if (diff < hour) return `${Math.floor(diff / min)}分钟前`;
+    if (diff < day) return `${Math.floor(diff / hour)}小时前`;
+    if (diff < month) return `${Math.floor(diff / day)}天前`;
+    if (diff < year) return `${Math.floor(diff / month)}个月前`;
+    const d = new Date(ts);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${dd}`;
+  }
+  function updateUpdated(): void {
+    const el = document.getElementById('last-updated-val');
+    if (!el) return;
+    const ts = Number(el.getAttribute('data-ts'));
+    if (!ts) return;
+    el.textContent = fmtUpdated(ts);
+  }
+  updateUpdated();
+  document.addEventListener('swup:page-view', updateUpdated);
+  document.addEventListener('astro:page-load', updateUpdated);
+  setInterval(updateUpdated, 60000);
+</script>
 
 <style>
   .site-info-card {

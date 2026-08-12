@@ -6,8 +6,7 @@ import Breadcrumb from '../components/layout/Breadcrumb.astro';
 import FloatingBar from '../components/layout/FloatingBar.astro';
 import type { SiteSettings, MenuItem } from '../types';
 import { getSiteSettings, getMenus } from '../utils/data';
-// 站点图标静态引用：favicon / OG 图兜底需要构建后 URL
-import faviconImg from '../assets/images/favicon.svg';
+import { siteConfig } from '../config/siteConfig';
 
 interface Props {
   title?: string;
@@ -38,7 +37,7 @@ const ogImageUrl = ogImage
   ? (ogImage.startsWith('http') ? ogImage : new URL(ogImage, Astro.url.origin).href)
   : (settings.generateOgImages && postSlug
       ? new URL(`/og/${postSlug}.png`, Astro.url.origin).href
-      : faviconImg.src);
+      : new URL(siteConfig.favicon.src, Astro.url.origin).href);
 const pageUrl = Astro.url.href;
 
 const navMenus = getMenus('NAV');
@@ -124,7 +123,7 @@ const effectiveFontFamily = fontFamily
         void document.documentElement.offsetHeight;
       })();
     </script>
-    <link rel="icon" type="image/svg+xml" href={faviconImg.src} />
+    <link rel="icon" href={siteConfig.favicon.src} />
     {/* Vercount 站点统计 */}
     <link rel="preconnect" href="https://vercount.one" crossorigin />
     <script async src="https://events.vercount.one/js"></script>
@@ -164,7 +163,7 @@ const effectiveFontFamily = fontFamily
       <div class="fixed inset-0 bg-black/30 -z-10 md:hidden"></div>
     )}
     <div class="relative z-10 flex min-h-screen flex-col">
-      <Header siteTitle={settings.siteTitle} siteLogo={settings.siteLogo} favicon={faviconImg.src} menus={navMenus} aggregateMenus={aggregateMenus} />
+      <Header siteTitle={settings.siteTitle} siteLogo={settings.siteLogo} favicon={siteConfig.favicon.src} menus={navMenus} aggregateMenus={aggregateMenus} />
       <main id="swup-container" class:list={[
         "transition-swup-main mx-auto w-full flex-1 px-4 pt-24 md:pt-28 md:px-6",
         flushBottom ? "overflow-x-clip overflow-y-visible pb-0" : "overflow-x-clip pb-12 md:pb-16",
@@ -210,6 +209,16 @@ const effectiveFontFamily = fontFamily
         syncPageShell();
         document.addEventListener('swup:page-view', syncPageShell);
         document.addEventListener('astro:page-load', syncPageShell);
+
+        // Vercount 整页加载只扫描一次；Swup 切页后新 DOM 需重跑脚本才能填充 busuanzi id
+        function reloadVercount() {
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://events.vercount.one/js';
+          s.onload = function () { s.remove(); };
+          document.body.appendChild(s);
+        }
+        document.addEventListener('swup:page-view', reloadVercount);
       })();
     </script>
 

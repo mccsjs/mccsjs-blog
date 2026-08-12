@@ -26,6 +26,7 @@
     if (!st) return;
     var perPage = getPerPage();
     currentPage = Math.min(Math.max(1, page), st.total);
+    try { sessionStorage.setItem('posts-page', String(currentPage)); } catch (e) {}
     var start = (currentPage - 1) * perPage;
     var end = start + perPage;
     for (var k = 0; k < st.items.length; k++) {
@@ -59,4 +60,14 @@
     else if (nav === 'next') setPage(currentPage + 1);
     else setPage(Number(btn.dataset.page));
   });
+
+  // 返回列表页时恢复离开时的页码（Swup 缓存的是首次 HTML，翻页状态不保留）
+  function restorePage() {
+    try {
+      var saved = Number(sessionStorage.getItem('posts-page') || '');
+      if (saved >= 1) setPage(saved);
+    } catch (e) {}
+  }
+  document.addEventListener('astro:page-load', restorePage);
+  restorePage();
 })();

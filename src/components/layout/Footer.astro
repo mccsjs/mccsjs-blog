@@ -45,19 +45,15 @@ try {
 const year = new Date().getFullYear();
 const startYear = siteStartDate ? new Date(siteStartDate).getFullYear() : NaN;
 const copyrightRange = !isNaN(startYear) && startYear < year ? `${startYear} - ${year}` : `${year}`;
-const visibleMenus = menus.filter((m) => m.visible);
-
-// 「猜你想看」：展开所有可见菜单（含子菜单），取前 8 个做两列布局
-const guessLinks: { label: string; href: string; target?: string }[] = [];
-for (const m of visibleMenus) {
-  if (m.children?.length) {
-    for (const c of m.children.filter((c) => c.visible)) {
-      guessLinks.push({ label: c.label, href: c.href || '#', target: c.target || undefined });
-    }
-  } else {
-    guessLinks.push({ label: m.label, href: m.href || '#', target: m.target || undefined });
-  }
-}
+// 猜你想看：固定快捷导航
+const guessLinks: { label: string; href: string; target?: string }[] = [
+  { label: '我的朋友', href: '/link' },
+  { label: '留点什么', href: '/comments' },
+  { label: '关于作者', href: '/about' },
+  { label: '文章归档', href: '/archive' },
+  { label: '文章分类', href: '/categories' },
+  { label: '文章标签', href: '/tags' },
+];
 
 // 「推荐友链」：从本地友链数据读取 recommended=true 的项
 let friends: { name: string; url: string; avatar: string }[] = [];
@@ -288,7 +284,7 @@ if (friends.length === 0) {
   }
   .ft-links li a:hover {
     text-decoration: none;
-    color: #facc15;
+    color: rgb(var(--primary));
     transform: translateX(3px);
   }
 
@@ -428,8 +424,11 @@ if (friends.length === 0) {
     margin: 2px 5px;
   }
   .github-badge img {
+    height: 20px;
+    width: auto;
     border-radius: 4px;
     transition: transform 0.25s ease;
+    vertical-align: middle;
   }
   .github-badge:hover img {
     transform: scale(1.06);

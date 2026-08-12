@@ -171,7 +171,7 @@
   position: absolute;
   top: calc(100% + 10px);
   left: 0;
-  width: 280px;
+  width: 320px;
   padding: 14px;
   border-radius: 16px;
   background: oklch(1 0 0 / 0.92);
@@ -231,6 +231,7 @@
   font-weight: 500;
   color: oklch(0.35 0 0);
   text-decoration: none;
+  white-space: nowrap;
   transition: background 0.15s ease, color 0.15s ease;
 }
 .aggregate-item:hover {

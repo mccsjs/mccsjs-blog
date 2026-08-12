@@ -172,8 +172,8 @@ export function getSiteSettings(): SiteSettings {
   return {
     siteTitle: siteConfig.title,
     siteDescription: siteConfig.description,
-    siteLogo: siteConfig.favicon, // favicon 兼作站点图标
-    favicon: siteConfig.favicon,
+    siteLogo: siteConfig.favicon.src, // favicon 兼作站点图标
+    favicon: siteConfig.favicon.src,
     icp: siteConfig.icp,
     footerText: siteConfig.footerText,
     siteStartDate: siteConfig.siteStartDate,

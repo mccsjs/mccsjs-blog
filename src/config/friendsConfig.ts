@@ -13,12 +13,12 @@ export interface FriendConfigItem {
 export const friendsConfig: FriendConfigItem[] = [
   {
     name: "mccsjs",
-    url: "https://hexo.seln.cn/",
+    url: "https://blog.seln.cn/",
     description: "第一是我自己！！！",
-    avatar: "https://hexo.seln.cn/img/ico.jpg",
+    avatar: "https://blog.seln.cn/img/ico.jpg",
     type: "技术支持",
-    screenshot: "https://hexo.seln.cn/img/a.jpg",
-    recommended: false,
+    screenshot: "https://blog.seln.cn/img/a.jpg",
+    recommended: true,
     sort: 1,
   },
   {
@@ -128,7 +128,7 @@ export const friendsConfig: FriendConfigItem[] = [
     avatar: "https://yu-blog.top/img/avatar.jpg",
     type: "一些好朋友~",
     screenshot: "https://pic.seln.cn/file/siteshot/nOscTmi4.png",
-    recommended: false,
+    recommended: true,
     sort: 12,
   },
   {
@@ -228,7 +228,7 @@ export const friendsConfig: FriendConfigItem[] = [
     avatar: "https://blog.pljzy.top/_astro/logo.BxIxyJV1_Z19cEQW.webp",
     type: "一些好朋友~",
     screenshot: "",
-    recommended: false,
+    recommended: true,
     sort: 22,
   },
   {
@@ -268,7 +268,7 @@ export const friendsConfig: FriendConfigItem[] = [
     avatar: "https://qiniu.ayeez.cn/avatar.jpg",
     type: "一些好朋友~",
     screenshot: "",
-    recommended: false,
+    recommended: true,
     sort: 26,
   },
   {
@@ -368,7 +368,7 @@ export const friendsConfig: FriendConfigItem[] = [
     avatar: "https://blog.224418.xyz/img/favicon.ico",
     type: "一些好朋友~",
     screenshot: "https://pic.seln.cn/file/siteshot/IsAl8y77.png",
-    recommended: false,
+    recommended: true,
     sort: 36,
   },
   {

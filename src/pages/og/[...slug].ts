@@ -9,14 +9,6 @@ import { getAllPosts, siteConfig } from '../../utils/data';
 export const prerender = true;
 
 // 磁盘路径解析：public（/ 或 /public/ 前缀）与 src/assets（无 / 前缀）两类
-function resolveImagePath(p?: string): string | null {
-  if (!p) return null;
-  if (/^https?:/i.test(p)) return null; // 远程无法本地读取
-  if (p.startsWith('/public/')) return `./public${p.replace('/public', '')}`;
-  if (p.startsWith('/')) return `./public${p}`;
-  return `./src/assets/${p}`;
-}
-
 // satori 只支持 ttf/otf/woff1，woff2 需先 init wasm 再 decode 成 ttf
 async function woff2ToTtf(buf: Buffer): Promise<Buffer> {
   await woff2.init();
@@ -80,9 +72,9 @@ export async function GET({ props }: APIContext<{ post: Post }>): Promise<Respon
   const { post } = props;
   const { regular, bold } = await getFonts();
 
-  // 站点图标：读取 siteConfig.favicon（兼作 logo）
-  const iconPath = resolveImagePath(siteConfig.favicon);
-  const iconBase64 = iconPath ? await imageToPngBase64(iconPath) : null;
+  // 站点图标：读取 siteConfig.favicon（兼作 logo），用源文件磁盘路径绘制
+  const iconFsPath = (siteConfig.favicon as { fsPath?: string }).fsPath ?? null;
+  const iconBase64 = iconFsPath ? await imageToPngBase64(iconFsPath) : null;
 
   const primaryColor = '#d97706'; // amber-600，站点强调色
   const textColor = '#f3f4f6';

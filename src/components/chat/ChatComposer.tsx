@@ -317,7 +317,7 @@ export default function ChatComposer({
           onCompositionEnd={() => setIsComposing(false)}
           rows={1}
           maxLength={MAX_MESSAGE_LENGTH}
-          placeholder="说点什么...（支持 :表情: 和粘贴图片）"
+          placeholder="输入QQ号或QQ邮箱会自动获取头像🐧收到回复将会发送到您的邮箱📧可以通过昵称访问您的网站🔗）"
           aria-label="留言内容"
           disabled={isOffline}
         />

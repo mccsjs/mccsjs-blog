@@ -37,19 +37,11 @@ let error: string | null = null;
 // 公开访客统计（纯静态改由 Vercount 客户端填充，构建期传 0）
 const visitorStats = { visitors: 0, pageviews: 0 };
 
-// 本站总字数：汇总各文章正文（去标签/语法后）的中文字符与英文词数
+// 本站总字数：与文章详情页口径一致（中文按字、英文按词，含代码）
 function countWords(md: string): number {
-  const text = (md || '')
-    .replace(/```[\s\S]*?```/g, ' ')
-    .replace(/`[^`]*`/g, ' ')
-    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
-    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/[#>*_~`|]/g, ' ')
-    .replace(/\s+/g, '');
-  const cjk = (text.match(/[一-鿿]/g) || []).length;
-  const en = (text.match(/[A-Za-z0-9]+/g) || []).length;
-  return cjk + en;
+  const chinese = (md || '').match(/[\u4e00-\u9fa5]/g) || [];
+  const words = (md || '').match(/[A-Za-z0-9_]+/g) || [];
+  return chinese.length + words.length;
 }
 const postCount = posts.length;
 const totalWords = posts.reduce((sum, p) => sum + countWords(p.content || ''), 0);
@@ -59,24 +51,8 @@ const runDays = siteStartDate
   ? Math.max(0, Math.floor((Date.now() - new Date(siteStartDate).getTime()) / 86400000))
   : -1;
 
-// 最后更新时间：最新文章的 updatedAt / createdAt（库里是整数秒）
-function timeAgo(sec: number): string {
-  const diff = Math.max(0, Math.floor(Date.now() / 1000 - sec));
-  if (diff < 60) return '刚刚';
-  if (diff < 3600) return `${Math.floor(diff / 60)} 分钟前`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)} 小时前`;
-  if (diff < 2592000) return `${Math.floor(diff / 86400)} 天前`;
-  if (diff < 31536000) return `${Math.floor(diff / 2592000)} 个月前`;
-  return `${Math.floor(diff / 31536000)} 年前`;
-}
-let lastUpdatedText = '—';
-if (posts.length) {
-  const newest = posts.reduce(
-    (m, p) => Math.max(m, Number(p.updatedAt) || 0, Number(p.createdAt) || 0),
-    0
-  );
-  lastUpdatedText = newest ? timeAgo(newest) : '—';
-}
+// 最后更新：以构建时间为基准（客户端再算相对时间）
+const lastBuildTs = Date.now();
 
 const latestPosts = posts.slice(0, 6);
 ---
@@ -179,7 +155,7 @@ const latestPosts = posts.slice(0, 6);
           runDays={runDays}
           visitorCount={visitorStats.visitors}
           pageViews={visitorStats.pageviews}
-          lastUpdated={lastUpdatedText}
+          lastUpdated={lastBuildTs}
         />
       </aside>
     </div>

@@ -6,8 +6,7 @@ import type { MarkdownHeading } from 'astro';
 import type { Post } from '../../types';
 import { getPostBySlug, getAllPosts, getSiteSettings } from '../../utils/data';
 import { renderMarkdown } from '../../utils/markdown';
-// 站点图标静态引用：JSON-LD 的 image/publisher.logo 需要构建后 URL
-import faviconImg from '../../assets/images/favicon.svg';
+import { siteConfig } from '../../config/siteConfig';
 
 const settings = getSiteSettings();
 const twikooEnvId = settings.twikooEnvId;
@@ -148,7 +147,7 @@ const jsonLd = post ? {
   '@type': 'BlogPosting',
   headline: post.title,
   description: cleanDescription(post.excerpt || post.content),
-  image: toAbsolute(post.coverImage) || (siteLogo ? faviconImg.src : undefined),
+  image: toAbsolute(post.coverImage) || (siteLogo ? toAbsolute(siteConfig.favicon.src) : undefined),
   datePublished: new Date(+post.createdAt * 1000).toISOString(),
   dateModified: post.updatedAt ? new Date(+post.updatedAt * 1000).toISOString() : undefined,
   inLanguage: 'zh-CN',
@@ -161,7 +160,7 @@ const jsonLd = post ? {
     '@type': 'Organization',
     name: siteTitle,
     logo: siteLogo
-      ? { '@type': 'ImageObject', url: faviconImg.src }
+      ? { '@type': 'ImageObject', url: toAbsolute(siteConfig.favicon.src) }
       : undefined,
   },
   keywords: post.tags?.map(t => t.name) || [],
@@ -287,7 +286,7 @@ const tocHtmlStr = tocTree.length > 0 ? '<ol class="toc-list">' + renderTocOl(to
                 <span>·</span>
                 <span>{readTime} 分钟</span>
                 <span>·</span>
-                <span>总字数 {wordCount}</span>
+                <span>总字数 {wordCount >= 10000 ? `${(wordCount / 10000).toFixed(1)}w` : wordCount.toLocaleString('zh-CN')}</span>
               </div>
               <h1 class="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">{post.title}</h1>
               {post.excerpt && (

@@ -78,7 +78,8 @@
     vertical-align: top;
     font-size: inherit;
     line-height: inherit;
-    min-width: 2em;
+    min-width: 2.5em;
+    white-space: nowrap;
   }
   .post-content pre .code-line-numbers span {
     display: block;
@@ -119,7 +120,8 @@
     vertical-align: top;
     font-size: inherit;
     line-height: inherit;
-    min-width: 2em;
+    min-width: 2.5em;
+    white-space: nowrap;
   }
   #link-markdown-section pre .code-line-numbers span {
     display: block;

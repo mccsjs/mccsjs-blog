@@ -1,5 +1,6 @@
 // 站点配置（原 api /api/settings 导出，纯静态化后在此维护）
 import avatarImg from '../assets/img/ico.jpg';
+import faviconImg from '../assets/images/lemon.webp';
 
 export const siteConfig = {
   title: 'mccsjs',
@@ -8,7 +9,7 @@ export const siteConfig = {
   url: 'https://blog.mccsjs.cn',
   description: '一个使用 Astro构建的个人博客',
   // 站点图标（favicon/logo/OG 图共用）：src/assets 图片
-  favicon: 'images/favicon.svg',
+  favicon: faviconImg,
   siteStartDate: '2023-01-22',
   postsPerPage: 9,
   // SEO：站点级 keywords（<meta name="keywords">，可留空）
@@ -31,9 +32,27 @@ export const siteConfig = {
   // 站长资料（首页侧栏资料卡）：avatar 留空则用名称首字母
   author: {
     name: 'mccsjs',
-    bio: '分享技术，记录生活',
+    bio: '记录生活',
     avatar: avatarImg,
+    // 侧栏资料卡社交图标：{ name, url, icon }
+    // icon 支持：内置名 github/wechat/qq/bilibili/email/rss/twitter；
+    // 或本地图片路径 /images/social/xxx.svg；或完整 URL
+    socials: [
+      { name: 'GitHub', url: 'https://github.com/mccsjs', icon: 'line-md:github-twotone' },
+      { name: '微信', url: '#', icon: 'selfhst:wechat' },
+      { name: 'QQ', url: 'https://qm.qq.com/q/OgwOvLXbSc', icon: 'thesvg-color:qq' },
+      { name: 'Bilibili', url: 'https://space.bilibili.com/209190096', icon: 'thesvg-color:bilibili' },
+      { name: '邮箱', url: 'mailto:3505591664@qq.com', icon: 'material-icon-theme:email' },
+    ],
   },
   // 首页 hero 社交图标栏：JSON 数组 [{icon, href}]，icon 为 simpleicons 名或完整 URL；留空则隐藏
   titleIcons: '',
+  // 侧栏公告卡：域名信息（逐行展示，label 后接可点击域名）
+  announcementLinks: [
+    { label: '主域名', url: 'https://blog.seln.cn' },
+    { label: 'vercel', url: 'https://hexo.seln.cn' },
+    { label: '博客1.0(停更)', url: 'https://sych.eu.org' },
+  ],
+  // 侧栏公告卡附加正文（支持简单 HTML），可选；不填则不显示
+  announcement: '',
 } as const;

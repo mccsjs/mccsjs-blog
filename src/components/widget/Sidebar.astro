@@ -1,6 +1,8 @@
 ---
 import { Image } from 'astro:assets';
 import SiteInfoCard from './SiteInfoCard.astro';
+import AnnouncementCard from './AnnouncementCard.astro';
+import SocialIcon from '../common/SocialIcon.astro';
 import { siteConfig } from '../../config/siteConfig';
 
 interface Props {
@@ -11,7 +13,7 @@ interface Props {
   runDays: number;
   visitorCount: number;
   pageViews: number;
-  lastUpdated: string;
+  lastUpdated: number;
 }
 
 const { categories, tags, postCount, totalWords, runDays, visitorCount, pageViews, lastUpdated } = Astro.props;
@@ -19,6 +21,7 @@ const { categories, tags, postCount, totalWords, runDays, visitorCount, pageView
 const author = {
   name: siteConfig.author?.name || siteConfig.title,
   avatar: siteConfig.author?.avatar || '',
+  socials: (siteConfig.author?.socials || []).filter((s) => s.url && s.icon),
 };
 const initials = (author.name || '光').trim().charAt(0);
 ---
@@ -69,11 +72,31 @@ const initials = (author.name || '光').trim().charAt(0);
           <span class="text-xs text-[rgb(var(--fg-soft))] group-hover:text-[rgb(var(--primary))]">分类</span>
         </a>
       </div>
+      {
+        author.socials.length > 0 && (
+          <div class="mt-4 flex flex-wrap items-center justify-center gap-4">
+            {author.socials.map((s) => (
+              <a
+                href={s.url}
+                target={s.url.startsWith('mailto:') || s.url.startsWith('#') ? undefined : '_blank'}
+                rel={s.url.startsWith('mailto:') || s.url.startsWith('#') ? undefined : 'noopener noreferrer'}
+                aria-label={s.name}
+                class="group inline-flex items-center justify-center text-[rgb(var(--fg-soft))] transition-colors hover:text-[rgb(var(--primary))]"
+              >
+                <SocialIcon name={s.name} icon={s.icon} class="h-8 w-8" />
+              </a>
+            ))}
+          </div>
+        )
+      }
     </div>
   </section>
 
-  <!-- 分类卡 -->
-  <section class="overflow-hidden rounded-2xl border border-[rgb(var(--border)/0.5)] bg-[rgb(var(--surface))] shadow-sm">
+  <!-- 公告卡 -->
+  <AnnouncementCard />
+
+  <!-- 分类卡（隐藏，去掉 section 上的 hidden 即显示） -->
+  <section class="hidden overflow-hidden rounded-2xl border border-[rgb(var(--border)/0.5)] bg-[rgb(var(--surface))] shadow-sm">
     <div class="h-1 w-full bg-gradient-to-r from-[rgb(var(--primary))] to-[rgb(var(--primary)/0.45)]"></div>
     <div class="p-5">
       <h4 class="mb-3 flex items-center gap-2 text-base font-bold text-[rgb(var(--fg))]">
@@ -100,8 +123,8 @@ const initials = (author.name || '光').trim().charAt(0);
     </div>
   </section>
 
-  <!-- 标签卡 -->
-  <section class="overflow-hidden rounded-2xl border border-[rgb(var(--border)/0.5)] bg-[rgb(var(--surface))] shadow-sm">
+  <!-- 标签卡（隐藏，去掉 section 上的 hidden 即显示） -->
+  <section class="hidden overflow-hidden rounded-2xl border border-[rgb(var(--border)/0.5)] bg-[rgb(var(--surface))] shadow-sm">
     <div class="h-1 w-full bg-gradient-to-r from-[rgb(var(--primary))] to-[rgb(var(--primary)/0.45)]"></div>
     <div class="p-5">
       <h4 class="mb-3 flex items-center gap-2 text-base font-bold text-[rgb(var(--fg))]">

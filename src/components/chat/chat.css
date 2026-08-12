@@ -219,6 +219,26 @@
   opacity: 0.42;
 }
 
+/* 手机窄屏：标题、留言数、同步状态尽量放在同一行，刷新按钮靠最右 */
+@container (max-width: 480px) {
+  .guestbook-chat__header {
+    gap: var(--space-2);
+  }
+
+  .guestbook-chat__title-row {
+    gap: 0.2rem;
+  }
+
+  .guestbook-chat__title-row h2 {
+    font-size: 1.1rem;
+  }
+
+  .guestbook-chat__title-row > span,
+  .guestbook-chat__status {
+    font-size: 0.68rem;
+  }
+}
+
 /* ---- 主体工作区 ---- */
 .guestbook-chat__workspace {
   position: relative;

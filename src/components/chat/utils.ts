@@ -1,5 +1,6 @@
 // 留言板工具函数：评论树扁平化、合并、头像解析、时间格式化、Markdown 渲染
 import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 import { convertEmojiShortcodes } from './emoji';
 import type { GuestbookMessage, TwikooComment } from './types';
 
@@ -145,14 +146,17 @@ export function validateMessageBody(content: string): string {
   return '';
 }
 
-/** Markdown 转安全展示的 HTML；先把 :key: 表情短码转成图片 */
+/** Markdown 转安全展示的 HTML；先把 :key: 表情短码转成图片，再用 DOMPurify 消毒防 XSS */
 export function renderMessageMarkdown(content: string): string {
   const enriched = convertEmojiShortcodes(content);
   const html = marked.parse(enriched, {
     gfm: true,
     breaks: true,
   }) as string;
-  return html;
+  // 留言板内容来自用户输入并经 Twikoo 存储后回显，必须经 DOMPurify 过滤
+  // （剥离 on* 事件属性、script、javascript: 协议等），否则存储型 XSS
+  if (typeof window === 'undefined') return html;
+  return DOMPurify.sanitize(html, { USE_PROFILES: { html: true } });
 }
 
 /* ===== 图片内嵌工具（base64 ≤128KB，零服务端依赖） ===== */

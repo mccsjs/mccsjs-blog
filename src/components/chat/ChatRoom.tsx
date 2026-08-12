@@ -515,32 +515,30 @@ export default function ChatRoom({ envId }: Props) {
     <section className="guestbook-chat" aria-label="留言板">
       <header className="guestbook-chat__header">
         <div className="guestbook-chat__channel">
-          <div>
-            <div className="guestbook-chat__title-row">
-              <h2>留言板</h2>
-              <span>· {initialLoading ? '--' : totalCount} 条留言</span>
-              <div className="guestbook-chat__sync">
-                <div
-                  className={`guestbook-chat__status${syncError ? ' is-failed' : ''}`}
-                  aria-live="polite"
-                >
-                  <span className={isOffline ? 'is-offline' : ''} />
-                  {formatSyncStatus()} · 30 s
-                </div>
-                <button
-                  className={`guestbook-chat__refresh${syncing ? ' is-syncing' : ''}`}
-                  type="button"
-                  onClick={() => void syncLatest()}
-                  disabled={syncing || initialLoading || isOffline}
-                  aria-label="立即刷新消息"
-                  title="立即刷新"
-                >
-                  <RefreshCw size={17} />
-                </button>
+          <div className="guestbook-chat__title-row">
+            <h2>留言板</h2>
+            <span>· {initialLoading ? '--' : totalCount} 条留言</span>
+            <div className="guestbook-chat__sync">
+              <div
+                className={`guestbook-chat__status${syncError ? ' is-failed' : ''}`}
+                aria-live="polite"
+              >
+                <span className={isOffline ? 'is-offline' : ''} />
+                {formatSyncStatus()} · 30 s
               </div>
             </div>
           </div>
         </div>
+        <button
+          className={`guestbook-chat__refresh${syncing ? ' is-syncing' : ''}`}
+          type="button"
+          onClick={() => void syncLatest()}
+          disabled={syncing || initialLoading || isOffline}
+          aria-label="立即刷新消息"
+          title="立即刷新"
+        >
+          <RefreshCw size={17} />
+        </button>
       </header>
 
       <div

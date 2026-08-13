@@ -33,3 +33,9 @@ _tmp_*
 
 # 删除文件的临时备份（rename 绕过 safe-delete 用）
 .wb-trash/
+
+# 临时测试脚本（点开头或 test- 前缀，勿误提交）
+.test*.mjs
+.diag*.mjs
+test-*.cjs
+*.bak-remove

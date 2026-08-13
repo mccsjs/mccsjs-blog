@@ -25,16 +25,26 @@ const {
 } = Astro.props;
 
 const isLocal = !(src.startsWith('/') || /^https?:/i.test(src) || src.startsWith('data:'));
+const normalized = isLocal ? path.normalize(`../../assets/${src}`).replace(/\\/g, '/') : '';
 let img: ImageMetadata | null = null;
+let svgSrc: string | null = null;
 if (isLocal) {
-  // 动态引用 workaround：import.meta.glob 静态收集，按配置路径匹配
-  const files = import.meta.glob<ImageMetadata>('../../assets/**/*.{png,jpg,jpeg,webp,avif,svg}', {
+  // 光栅图走 astro:assets 优化管线；SVG 用 ?url 静态导入（避免资源管线随机占位符污染增量构建哈希）
+  const rasterFiles = import.meta.glob<ImageMetadata>('../../assets/**/*.{png,jpg,jpeg,webp,avif}', {
     import: 'default',
   });
-  const normalized = path.normalize(`../../assets/${src}`).replace(/\\/g, '/');
-  const file = files[normalized];
-  if (file) img = await file();
-  else console.error(`[ImageWrapper] 图片不存在: ${normalized}`);
+  const svgFiles = import.meta.glob<string>('../../assets/**/*.svg', {
+    import: 'default',
+    query: '?url',
+  });
+  const file = rasterFiles[normalized] ?? svgFiles[normalized];
+  if (file) {
+    const mod = await file();
+    if (typeof mod === 'string') svgSrc = mod;
+    else img = mod;
+  } else {
+    console.error(`[ImageWrapper] 图片不存在: ${normalized}`);
+  }
 }
 ---
 
@@ -48,6 +58,8 @@ if (isLocal) {
     {...(widths ? { widths } : {})}
     {...(sizes ? { sizes } : {})}
   />
+) : svgSrc ? (
+  <img src={svgSrc} alt={alt} class={className} loading={loading} fetchpriority={fetchpriority} />
 ) : (
   <img src={src} alt={alt} class={className} loading={loading} fetchpriority={fetchpriority} />
 )}

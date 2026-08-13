@@ -105,6 +105,11 @@ const hostOf = (u: string) => u.replace(/^https?:\/\//, '');
     );
   }
 
+  // 定位失败回退文案
+  function fallbackWelcomeHtml(): string {
+    return `🎉 欢迎 🎉 ${getTimeGreeting()}`;
+  }
+
   // 腾讯地图 IP 定位（JSONP）
   function fetchIpLocation(): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -137,12 +142,16 @@ const hostOf = (u: string) => u.replace(/^https?:\/\//, '');
     }
     try {
       const data = await fetchIpLocation();
-      if (data.status !== 0 || !data.result) return;
+      if (data.status !== 0 || !data.result) {
+        el.innerHTML = fallbackWelcomeHtml();
+        return;
+      }
       const html = buildWelcomeHtml(data);
       el.innerHTML = html;
       sessionStorage.setItem(CACHE_KEY, html);
     } catch (err) {
       console.error('获取 IP 位置失败:', err);
+      el.innerHTML = fallbackWelcomeHtml();
     }
   }
 

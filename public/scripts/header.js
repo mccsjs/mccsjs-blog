@@ -181,9 +181,21 @@
     if (aggTrigger && aggDropdown) {
       var aggTimer = 0;
 
+      function loadAggIcons() {
+        var imgs = aggDropdown.querySelectorAll('img[data-src]');
+        for (var i = 0; i < imgs.length; i++) {
+          var src = imgs[i].getAttribute('data-src');
+          if (src) {
+            imgs[i].src = src;
+            imgs[i].removeAttribute('data-src');
+          }
+        }
+      }
+
       function openAggDropdown() {
         clearTimeout(aggTimer);
         aggDropdown.classList.add('open');
+        loadAggIcons();
       }
 
       function closeAggDropdown() {

@@ -15,7 +15,7 @@
     "@astrojs/rss": "^4.0.19",
     "@swup/astro": "^1.8.0",
     "@tailwindcss/vite": "^4.3.2",
-    "astro": "^7.2.0",
+    "astro": "^7.2.1",
     "astro-lenis": "^1.0.5",
     "dompurify": "^3.4.13",
     "fonteditor-core": "^2.6.3",

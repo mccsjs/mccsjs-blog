@@ -9,6 +9,10 @@ import { siteConfig } from "./src/config/siteConfig.ts";
 export default defineConfig({
   // 站点 URL：配置优先，其次 SITE_URL 环境变量，最后 localhost
   site: siteConfig.url || process.env.SITE_URL || "http://localhost:4321",
+  // 增量构建
+  experimental: {
+    incrementalBuild: true,
+  },
   // Sätteri 为 Astro 7 默认 Markdown 管线；此处显式启用 Shiki 双主题高亮
   markdown: {
     syntaxHighlight: "shiki",

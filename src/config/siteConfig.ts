@@ -1,12 +1,12 @@
 // 站点配置（原 api /api/settings 导出，纯静态化后在此维护）
 import avatarImg from '../assets/img/ico.jpg';
-import faviconImg from '../assets/images/lemon.webp';
+import faviconImg from '../assets/img/lemon.png';
 
 export const siteConfig = {
   title: 'mccsjs',
   // 站点正式域名，决定全站 canonical/og:url/sitemap/robots 的绝对地址。
   // 留空时回退 SITE_URL 环境变量，两者皆空为 localhost。
-  url: 'https://blog.mccsjs.cn',
+  url: 'https://mccsjs.cn',
   description: '一个使用 Astro构建的个人博客',
   // 站点图标（favicon/logo/OG 图共用）：src/assets 图片
   favicon: faviconImg,
@@ -49,9 +49,10 @@ export const siteConfig = {
   titleIcons: '',
   // 侧栏公告卡：域名信息（逐行展示，label 后接可点击域名）
   announcementLinks: [
-    { label: '主域名', url: 'https://blog.seln.cn' },
-    { label: 'vercel', url: 'https://hexo.seln.cn' },
-    { label: '博客1.0(停更)', url: 'https://sych.eu.org' },
+    { label: '主域名', url: 'https://mccsjs.cn' },
+    // { label: 'vercel', url: 'https://hexo.seln.cn' },
+    { label: '博客1.0', url: 'https://sych.eu.org' },
+    { label: '博客2.0', url: 'https://hexo.seln.cn' },
   ],
   // 侧栏公告卡附加正文（支持简单 HTML），可选；不填则不显示
   announcement: '',

@@ -23,9 +23,13 @@ const toAbsolute = (url?: string) => {
 
 export async function getStaticPaths() {
   const posts = await getAllPosts();
-  return posts.map((post) => ({
-    params: { slug: post.slug },
-  }));
+  const sorted = posts.slice().sort((a, b) => Number(a.createdAt) - Number(b.createdAt));
+  return sorted.map((post, i) => {
+    const prev = i > 0 ? sorted[i - 1] : null;
+    const next = i < sorted.length - 1 ? sorted[i + 1] : null;
+    const key = [post.digest, prev?.digest ?? '', next?.digest ?? ''].join('|');
+    return { params: { slug: post.slug }, cacheKey: key };
+  });
 }
 
 const { slug } = Astro.params;

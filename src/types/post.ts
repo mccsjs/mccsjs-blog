@@ -9,6 +9,7 @@ export interface Post {
   views: number;
   createdAt: string;
   updatedAt: string;
+  digest: string;
   author: Author;
   category: Category;
   tags: Tag[];

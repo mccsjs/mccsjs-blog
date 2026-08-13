@@ -50,9 +50,9 @@ function pageList(cur: number, total: number): (number | '…')[] {
       </div>
     ) : (
       <>
-        <div id="posts-grid" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div id="posts-grid" class="grid min-w-0 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {posts.map((post, i) => (
-            <div class={`post-item${i < PER_PAGE ? '' : ' hidden'}`} data-index={i}>
+            <div class={`post-item min-w-0${i < PER_PAGE ? '' : ' hidden'}`} data-index={i}>
               <PostCard post={post} />
             </div>
           ))}

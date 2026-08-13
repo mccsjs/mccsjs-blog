@@ -64,6 +64,7 @@ function mapPost(entry: CollectionEntry<'posts'>): Post {
     views: 0,
     createdAt,
     updatedAt: createdAt,
+    digest: entry.digest,
     author: { id: '', name: d.zz || siteConfig.adminName || 'admin', email: '', avatar: '' },
     category,
     tags: tagList,

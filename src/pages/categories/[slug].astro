@@ -5,9 +5,15 @@ import { getAllPosts, getCategories } from '../../utils/data';
 
 export async function getStaticPaths() {
   const categories = await getCategories();
-  return categories.map((category) => ({
-    params: { slug: category.slug },
-  }));
+  const allPosts = await getAllPosts();
+  return categories.map((category) => {
+    const digests = allPosts
+      .filter((p) => p.category.slug === category.slug)
+      .map((p) => p.digest)
+      .sort()
+      .join('|');
+    return { params: { slug: category.slug }, cacheKey: digests };
+  });
 }
 
 const { slug } = Astro.params;

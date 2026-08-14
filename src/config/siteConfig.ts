@@ -36,18 +36,17 @@ export const siteConfig = {
 \`\`\`yaml
 name: mccsjs
 url: https://mccsjs.cn/
-description: 第一是我自己！！！
+description: 点一盏灯，等待一个迷路的夜🍁
 avatar: https://mccsjs.cn/img/ico.jpg
-type: 技术支持
 screenshot: https://mccsjs.cn/img/a.jpg
 rss: https://mccsjs.cn/rss.xml
 \`\`\`
 
 \`\`\`yaml
-- 站点名称：mccsjs
+  站点名称：mccsjs
   站点地址：https://mccsjs.cn/
   头像链接：https://mccsjs.cn/img/ico.jpg
-  站点描述：点一盏灯，等一个迷路的夜🍁🍁🍁
+  站点描述：点一盏灯，等待一个迷路的夜🍁
   站点截图：https://mccsjs.cn/img/a.jpg
   RSS: https://mccsjs.cn/rss.xml
 \`\`\`

@@ -585,7 +585,7 @@ export const friendsConfig: FriendConfigItem[] = [
     name: "兔兔の博客",
     url: "https://tutu.pink",
     description: "记录一些有趣的事情丷",
-    avatar: "https://pic.tutu.pink/i/6a397aa3db9dc.png",
+    avatar: "https://tutu.pink/images/logo.png",
     type: "一些好朋友~",
     screenshot: "",
     recommended: false,

@@ -13,11 +13,11 @@ export interface FriendConfigItem {
 export const friendsConfig: FriendConfigItem[] = [
   {
     name: "mccsjs",
-    url: "https://blog.seln.cn/",
+    url: "https://mccsjs.cn/",
     description: "第一是我自己！！！",
-    avatar: "https://blog.seln.cn/img/ico.jpg",
+    avatar: "https://mccsjs.cn/img/ico.jpg",
     type: "技术支持",
-    screenshot: "https://blog.seln.cn/img/a.jpg",
+    screenshot: "https://mccsjs.cn/img/a.jpg",
     recommended: true,
     sort: 1,
   },

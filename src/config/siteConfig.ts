@@ -24,7 +24,34 @@ export const siteConfig = {
   // SEO：每篇文章构建期生成 1200×630 OG 分享图（satori + sharp）
   generateOgImages: true,
   // 友链页 markdown 区块
-  linkMarkdown: '',
+  linkMarkdown: `
+## 添加友链前，确保您符合以下条件
+* 已添加[本博客](https://mccsjs.cn/)的友情链接
+* 网站内容积极向上正能量并符合中华人民共和国法律
+* 网站可以在 1 分钟内加载完成首屏
+***
+
+添加本站：
+
+\`\`\`yaml
+name: mccsjs
+url: https://mccsjs.cn/
+description: 第一是我自己！！！
+avatar: https://mccsjs.cn/img/ico.jpg
+type: 技术支持
+screenshot: https://mccsjs.cn/img/a.jpg
+rss: https://mccsjs.cn/rss.xml
+\`\`\`
+
+\`\`\`yaml
+- 站点名称：mccsjs
+  站点地址：https://mccsjs.cn/
+  头像链接：https://mccsjs.cn/img/ico.jpg
+  站点描述：点一盏灯，等一个迷路的夜🍁🍁🍁
+  站点截图：https://mccsjs.cn/img/a.jpg
+  RSS: https://mccsjs.cn/rss.xml
+\`\`\`
+`,
   // hero（src/assets/images）
   heroImage: 'images/hero.webp',
   // 管理员（关于页标识）

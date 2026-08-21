@@ -203,6 +203,15 @@
 /* 按钮圆角 */
 .tk-row.actions button.el-button { border-radius: 12px !important; }
 
+/* Twikoo 表情面板层级修复：避免被下方评论卡片（含 hover 的 transform 层叠上下文）覆盖 */
+.tk-submit .OwO {
+  position: relative;
+  z-index: 60;
+}
+.tk-submit .OwO-body {
+  z-index: 61;
+}
+
 /* 加载圆圈居中 */
 #tcomment .circular,
 #twikoo .circular {

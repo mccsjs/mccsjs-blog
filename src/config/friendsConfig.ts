@@ -662,6 +662,16 @@ export const friendsConfig: FriendConfigItem[] = [
     sort: 64,
   },
   {
+    name: "星空驿站",
+    url: "https://baiyangmu.xyz",
+    description: "一座漂浮在深空中的小小驿站",
+    avatar: "https://baiyangmu.xyz/static/favicon-96x96.png",
+    type: "一些好朋友~",
+    screenshot: "",
+    recommended: false,
+    sort: 65,
+  },
+  {
     name: "Heithon's blog",
     url: "http://heithon",
     description: "不停的给自己加上杠杆，总有一天能撬动地球",

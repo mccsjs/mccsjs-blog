@@ -67,11 +67,14 @@
         var cls;
         var txt;
         if (item.reachable) {
-          cls = 'bg-green-500/90 text-white';
-          txt = item.latency != null && item.latency > 0 ? '可达 ' + item.latency.toFixed(2) + 's' : '可达';
+          // 测速胶囊：3 秒内绿、3 秒后黄，显示延迟秒数
+          var lat = item.latency != null && item.latency > 0 ? item.latency : 0;
+          cls = lat < 3 ? 'bg-green-500/90 text-white' : 'bg-yellow-400/90 text-yellow-900';
+          txt = lat > 0 ? lat.toFixed(2) + 's' : '可达';
         } else {
+          // 不可达：红色 + 感叹号
           cls = 'bg-red-500/90 text-white';
-          txt = '不可达' + (item.unreachable_days ? ' ' + item.unreachable_days + '天' : '');
+          txt = '❗ 不可达';
         }
         el.style.display = '';
         el.className = 'absolute top-1 left-1 flex items-center gap-0.5 rounded-full px-1 py-px text-[9px] font-medium shadow-sm ' + cls;

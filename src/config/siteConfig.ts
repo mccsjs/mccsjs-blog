@@ -23,6 +23,8 @@ export const siteConfig = {
 	],
   // SEO：每篇文章构建期生成 1200×630 OG 分享图（satori + sharp）
   generateOgImages: true,
+  // 友链检测 / 朋友圈数据源（Friend-Circle-Lite）
+  friendCircleApi: 'https://fc.mccsjs.cn/',
   // 友链页 markdown 区块
   linkMarkdown: `
 ## 添加友链前，确保您符合以下条件

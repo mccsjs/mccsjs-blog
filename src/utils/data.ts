@@ -188,6 +188,7 @@ export function getSiteSettings(): SiteSettings {
     heroVideo: siteConfig.heroVideo,
     commentProvider: commentConfig.provider,
     commentEmojiCdn: commentConfig.emojiCdn,
+    friendCircleApi: siteConfig.friendCircleApi,
     linkMarkdown: siteConfig.linkMarkdown,
     showMotto: footerConfig.showMotto,
     mottoTitle: footerConfig.mottoTitle,

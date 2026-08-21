@@ -12,8 +12,6 @@ interface FriendItem {
   description: string;
   avatar: string;
   screenshot?: string;
-  accessible: number;
-  latency: number;
 }
 
 interface FriendGroup {
@@ -23,6 +21,8 @@ interface FriendGroup {
 
 const settings = getSiteSettings();
 const linkMarkdown = settings.linkMarkdown || '';
+// 友链检测数据源（Friend-Circle-Lite），供常驻脚本读 link.json 填充胶囊
+const fcApi = settings.friendCircleApi || 'https://fc.mccsjs.cn/';
 
 // 本地友链数据按类型分组
 const allFriends = getFriends();
@@ -41,8 +41,6 @@ for (const f of allFriends) {
     description: f.description,
     avatar: f.avatar,
     screenshot: f.screenshot,
-    accessible: f.accessible,
-    latency: f.latency,
   });
 }
 
@@ -104,23 +102,8 @@ if (linkMarkdown) {
                         <div class="flex h-full w-full items-center justify-center text-xs text-[rgb(var(--fg-muted))] dark:text-[rgb(var(--fg-muted))]">暂无截图</div>
                       )}
                       <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                      {friend.latency > 0 || friend.accessible === 1 ? (
-                    <div class="absolute top-1 left-1 flex items-center gap-0.5 rounded-full px-1 py-px text-[9px] font-medium shadow-sm"
-                      class:list={[
-                        friend.accessible === 1
-                          ? 'bg-red-500/90 text-white'
-                          : friend.latency <= 4000
-                            ? 'bg-green-500/90 text-white'
-                            : 'bg-yellow-400/90 text-yellow-900'
-                      ]}
-                    >
-                      {friend.accessible === 0 ? (
-                        <span>{(friend.latency / 1000).toFixed(2)}s</span>
-                      ) : (
-                        <span>不可用</span>
-                      )}
-                        </div>
-                      ) : null}
+                      {/* 友链检测胶囊：由常驻脚本 friend-circle.js 拉 link.json 填充（可达+延迟 / 不可达+N天） */}
+                      <div class="absolute top-1 left-1" data-friend-pill data-name={friend.name} data-url={friend.url}></div>
                     </div>
                     <div class="flex items-start gap-2.5 py-1 px-2 h-[54px]">
                       <div class="h-9 w-9 shrink-0 -ml-1 overflow-hidden rounded-full border border-[rgb(var(--card-border))] bg-[rgb(var(--bg-soft))] dark:border-[rgb(var(--card-border))] dark:bg-gray-800">
@@ -168,6 +151,8 @@ if (linkMarkdown) {
       <TwikooComments />
     </div>
   </section>
+  {/* 友链检测数据源配置（friend-circle.js 读取） */}
+  <div id="fc-link-config" data-api={fcApi} hidden></div>
   <style>
     /* 友链截图：默认 opacity-0，全局懒加载脚本标记 is-loaded 后淡入。
        淡入逻辑统一由 BaseLayout 全局脚本处理（兼容 Swup 客户端导航）。 */

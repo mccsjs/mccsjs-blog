@@ -8,7 +8,7 @@
 
   var API_DEFAULT = 'https://fc.mccsjs.cn/';
   var TTL = 5 * 60 * 1000; // 数据缓存 5 分钟
-  var PAGE_SIZE = 24; // 朋友圈每页数量
+  var PAGE_SIZE = 15; // 朋友圈每页数量
   var cache = {};
 
   function apiBase() {

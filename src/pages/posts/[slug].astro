@@ -82,7 +82,13 @@ const wordCount = post
   : 0;
 
 // 渲染 Markdown（Sätteri + Shiki）；旧文章若是纯 HTML 则原样输出
-const looksLikeHtml = (s: string) => /^\s*</.test(s) && /<\/[a-z]+>/i.test(s);
+// 仅当“几乎全是 HTML”才原样输出：以 < 开头且不含明显 Markdown 块语法（标题/代码块/列表），
+// 否则走 Markdown 渲染（内嵌的 <details>/<img> 等原生 HTML 会被正常保留）
+const looksLikeHtml = (s: string) => {
+  if (!/^\s*</.test(s)) return false;
+  if (/^#{1,6}\s/m.test(s) || /```/.test(s) || /^\s*[-*+]\s/m.test(s)) return false;
+  return /<\/[a-z]+>/i.test(s);
+};
 
 const rendered = post
   ? looksLikeHtml(post.content)

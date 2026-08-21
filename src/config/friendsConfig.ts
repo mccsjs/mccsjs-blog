@@ -616,7 +616,7 @@ export const friendsConfig: FriendConfigItem[] = [
     url: "https://jerry-nis.top",
     description: "Enjoy life",
     avatar: "https://img.jerry-nis.top/d8703c5c-4c4a-49cc-bd94-3363c9eda2d8.png",
-    type: "一些好朋友~",
+    type: "已失联",
     screenshot: "",
     recommended: false,
     sort: 60,

@@ -5,7 +5,7 @@ import { registerInit } from './registry.js';
     if (window.__twikooLoading) { setTimeout(function() { loadTwikooScript(callback); }, 200); return; }
     window.__twikooLoading = true;
     var script = document.createElement('script');
-    script.src = 'https://s4.zstatic.net/npm/twikoo@1.7.15/dist/twikoo.min.js';
+    script.src = 'https://s4.zstatic.net/npm/twikoo@1.7.19/dist/twikoo.min.js';
     script.onload = function() { callback(); };
     script.onerror = function() {
       window.__twikooLoading = false;
@@ -19,7 +19,7 @@ import { registerInit } from './registry.js';
   function initTwikooComments() {
     var el = document.getElementById('tcomment');
     if (!el) return; // 当前页面没有评论区
-    var envId = el.getAttribute('data-twikoo-env-id') || 'https://twikoo.seln.cn';
+    var envId = el.getAttribute('data-twikoo-env-id') || 'https://twikoo.mccsjs.cn';
 
     // 清理旧实例和容器
     if (typeof twikoo !== 'undefined') {

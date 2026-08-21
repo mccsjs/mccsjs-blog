@@ -74,7 +74,7 @@
         } else {
           // 不可达：红色 + 感叹号
           cls = 'bg-red-500/90 text-white';
-          txt = '❗ 不可达';
+          txt = '❗';
         }
         el.style.display = '';
         el.className = 'absolute top-1 left-1 flex items-center gap-0.5 rounded-full px-1 py-px text-[9px] font-medium shadow-sm ' + cls;

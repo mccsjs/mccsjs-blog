@@ -613,10 +613,10 @@ export const friendsConfig: FriendConfigItem[] = [
   },
   {
     name: "JerryLife",
-    url: "https://jerry-nis.top",
+    url: "https://www.jerrynis.com/",
     description: "Enjoy life",
     avatar: "https://img.jerry-nis.top/d8703c5c-4c4a-49cc-bd94-3363c9eda2d8.png",
-    type: "已失联",
+    type: "一些好朋友~",
     screenshot: "",
     recommended: false,
     sort: 60,

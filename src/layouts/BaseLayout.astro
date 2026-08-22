@@ -61,6 +61,36 @@ const effectiveFontFamily = fontFamily
   : fontUrl
     ? "'CustomFont'"
     : '';
+
+// JSON-LD 结构化数据（WebSite + Person）：全站注入，供搜索引擎与 AI 代理解析站点身份
+const authorAvatarSrc =
+  typeof siteConfig.author?.avatar === 'object' && siteConfig.author.avatar
+    ? siteConfig.author.avatar.src
+    : undefined;
+const schemaData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': `${siteConfig.url}/#website`,
+      url: `${siteConfig.url}/`,
+      name: siteConfig.title,
+      description: siteConfig.description,
+      inLanguage: 'zh-CN',
+    },
+    {
+      '@type': 'Person',
+      '@id': `${siteConfig.url}/#person`,
+      name: siteConfig.author?.name || siteConfig.title,
+      url: `${siteConfig.url}/`,
+      description: siteConfig.author?.bio || undefined,
+      ...(authorAvatarSrc ? { image: new URL(authorAvatarSrc, siteConfig.url).href } : {}),
+      ...(siteConfig.author?.socials?.length
+        ? { sameAs: siteConfig.author.socials.filter((s) => /^https?:\/\//.test(s.url)).map((s) => s.url) }
+        : {}),
+    },
+  ],
+};
 ---
 <html lang="zh-CN" style="color-scheme: light dark;">
   <head>
@@ -90,6 +120,7 @@ const effectiveFontFamily = fontFamily
     <link rel="sitemap" href="/sitemap.xml" />
     <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.xml" />
     <title>{title}</title>
+    <script type="application/ld+json" set:html={JSON.stringify(schemaData)}></script>
     <script is:inline>
       // 隐私防护（Tracking Prevention / 隐私扩展）可能拦截 localStorage。
       // 探测一次；若被拦则降级为内存实现，避免每个访问点都打印 blocked 日志。

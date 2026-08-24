@@ -33,11 +33,12 @@
 
   // 根据当前页实时生成完整分页条 HTML（保证切页时页码与省略号同步刷新）
   function buildPagerHTML(cur, total) {
-    var prevDisabled = cur <= 1;
-    var nextDisabled = cur >= total;
-    var prevCls = BASE_BTN + BTN_DEFAULT + (prevDisabled ? ' ' + BTN_DISABLED : '');
-    var nextCls = BASE_BTN + BTN_DEFAULT + (nextDisabled ? ' ' + BTN_DISABLED : '');
-    var html = '<button type="button" data-nav="prev" class="' + escAttr(prevCls) + '"' + (prevDisabled ? ' disabled' : '') + '>上一页</button>';
+    var prevHidden = cur <= 1;
+    var nextHidden = cur >= total;
+    var html = '';
+    if (!prevHidden) {
+      html += '<button type="button" data-nav="prev" class="' + escAttr(BASE_BTN + BTN_DEFAULT) + '">上一页</button>';
+    }
     var pages = pageList(cur, total);
     for (var i = 0; i < pages.length; i++) {
       var p = pages[i];
@@ -48,7 +49,9 @@
         html += '<button type="button" data-page="' + p + '" class="' + escAttr(cls) + '">' + p + '</button>';
       }
     }
-    html += '<button type="button" data-nav="next" class="' + escAttr(nextCls) + '"' + (nextDisabled ? ' disabled' : '') + '>下一页</button>';
+    if (!nextHidden) {
+      html += '<button type="button" data-nav="next" class="' + escAttr(BASE_BTN + BTN_DEFAULT) + '">下一页</button>';
+    }
     return html;
   }
 

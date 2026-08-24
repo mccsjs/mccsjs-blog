@@ -235,4 +235,7 @@ const serializedTotalPages = JSON.stringify(totalPages);
   nextBtn.addEventListener('click', () => {
     if (currentPage < totalPages) renderPage(currentPage + 1);
   });
+
+  // 初始化：SSR 全量渲染（无 JS 也可见），加载后立即切到第 1 页
+  renderPage(1);
 </script>

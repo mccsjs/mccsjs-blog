@@ -2,11 +2,10 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import TabNav from '../components/layout/TabNav.astro';
 import type { Post } from '../types';
-import { getAllPosts, getSiteSettings } from '../utils/data';
+import { getAllPosts } from '../utils/data';
 
-const settings = getSiteSettings();
-const postsPerPage = Math.min(100, Math.max(1, Number(settings.postsPerPage) || 10));
-const PER_PAGE = postsPerPage;
+// 归档每页固定 10 篇，超过自动分页
+const PER_PAGE = 10;
 
 const posts: Post[] = await getAllPosts();
 let error: string | null = null;

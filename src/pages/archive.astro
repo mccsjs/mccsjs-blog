@@ -24,6 +24,16 @@ const grouped = sorted.reduce<Record<string, Post[]>>((acc, post) => {
 
 const years = Object.keys(grouped).sort((a, b) => +b - +a);
 
+// 首屏 SSR 只渲染第 1 页，避免 JS 初始化全量替换造成闪烁
+const pagedPosts = sorted.slice(0, PER_PAGE);
+const pagedGrouped = pagedPosts.reduce<Record<string, Post[]>>((acc, post) => {
+  const year = new Date(+post.createdAt * 1000).getFullYear().toString();
+  if (!acc[year]) acc[year] = [];
+  acc[year].push(post);
+  return acc;
+}, {});
+const pagedYears = Object.keys(pagedGrouped).sort((a, b) => +b - +a);
+
 const formatMonthDay = (date: string) =>
   new Date(+date * 1000).toLocaleDateString('zh-CN', {
     month: '2-digit',
@@ -68,7 +78,7 @@ const serializedTotalPages = JSON.stringify(totalPages);
           <div class="absolute left-4 top-0 bottom-0 w-px bg-gray-200 sm:left-6 dark:bg-gray-700"></div>
 
           <div class="space-y-12">
-            {years.map((year) => (
+            {pagedYears.map((year) => (
               <section class="relative">
                 <div class="flex items-center gap-4 mb-6">
                   <div class="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-yellow-400 text-sm font-bold text-white shadow-sm sm:h-10 sm:w-10 dark:bg-yellow-500">
@@ -76,12 +86,12 @@ const serializedTotalPages = JSON.stringify(totalPages);
                   </div>
                   <h2 class="text-2xl font-bold text-[rgb(var(--fg))] dark:text-[rgb(var(--fg))]">{year}</h2>
                   <span class="text-sm text-[rgb(var(--fg-muted))] dark:text-[rgb(var(--fg-muted))]">
-                    {grouped[year].length} 篇
+                    {pagedGrouped[year].length} 篇
                   </span>
                 </div>
 
                 <div class="ml-12 space-y-3 sm:ml-16">
-                  {grouped[year].map((post) => (
+                  {pagedGrouped[year].map((post) => (
                     <a
                       href={`/posts/${post.slug}`}
                       class="group flex items-start gap-4 rounded-xl border border-[rgb(var(--card-border))] bg-[rgb(var(--card-bg))] p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-[rgb(var(--card-border))] dark:bg-[rgb(var(--card-bg))]"
@@ -172,7 +182,7 @@ const serializedTotalPages = JSON.stringify(totalPages);
 
     const years = Object.keys(grouped).sort((a, b) => +b - +a);
 
-    let html = '<div class="absolute left-4 top-0 bottom-0 w-px bg-gray-200 dark:bg-gray-700 sm:left-6" />';
+    let html = '<div class="absolute left-4 top-0 bottom-0 w-px bg-gray-200 dark:bg-gray-700 sm:left-6"></div>';
     html += '<div class="space-y-12">';
 
     for (const year of years) {
@@ -236,6 +246,6 @@ const serializedTotalPages = JSON.stringify(totalPages);
     if (currentPage < totalPages) renderPage(currentPage + 1);
   });
 
-  // 初始化：SSR 全量渲染（无 JS 也可见），加载后立即切到第 1 页
+  // 初始化：同步分页按钮状态与页码信息
   renderPage(1);
 </script>

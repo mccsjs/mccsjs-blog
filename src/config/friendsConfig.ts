@@ -573,9 +573,9 @@ export const friendsConfig: FriendConfigItem[] = [
   },
   {
     name: "楠枝小笺",
-    url: "https://www.nannax.top",
+    url: "https://www.nanzhiy.cn",
     description: "安安静静地存在，就已经很好啦",
-    avatar: "https://www.nannax.top/upload/avatar.jpg",
+    avatar: "https://www.nanzhiy.cn/upload/avatar.jpg",
     type: "一些好朋友~",
     screenshot: "",
     recommended: false,

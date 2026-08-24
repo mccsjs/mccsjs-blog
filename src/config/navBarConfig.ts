@@ -69,8 +69,7 @@ export const navBarConfig: { nav: NavItemConfig[]; group: GroupMenuConfig[] } = 
       children: [
         { id: 'ms-home', label: '个人主页', href: 'https://seln.cn/', icon: 'https://hexo.seln.cn/img/lemon.png', target: '_blank' },
         { id: 'ms-blog', label: '博客', href: 'https://mccsjs.cn/', icon: 'https://mccsjs.cn/img/ico.jpg', target: '_blank' },
-        { id: 'ms-linkcheck', label: '友链检测', href: 'https://link.350559.xyz/', icon: 'https://mccsjs.cn/img/lemon.webp', target: '_blank' },
-        { id: 'ms-linkcircle', label: '友链朋友圈', href: 'https://fc.350559.xyz/', icon: 'https://fc.350559.xyz/favicon.ico', target: '_blank' },
+        { id: 'ms-linkcheck', label: '友链检测', href: 'https://fc.mccsjs.cn/', icon: 'https://fc.mccsjs.cn/favicon.ico', target: '_blank' },
       ],
     },
     {

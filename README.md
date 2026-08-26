@@ -1,4 +1,13 @@
 # mccsjsblog
+本项目全部代码由 **TRAE Work CN** 生成，模型使用 **DeepSeek V4 Pro** + **Kimi 2.6**，后续由 **WorkBuddy + Hy3** 维护。
+
+项目中部分样式与思路参考自：
+
+- [MmzMing 的博客](https://tblog.mmzhiku.xyz/)
+- [LiuShen's Blog - 清羽飞扬](https://blog.liushen.fun/)
+- [mccsjs](https://hexo.seln.cn/)
+- [Fomalhaut🥝](https://www.fomal.cc/)
+- [Butterfly](https://butterfly.js.org/)
 
 基于 [Astro](https://astro.build) 的**纯静态**博客。文章以 Markdown 书写，构建期生成静态 HTML，通过 Swup 实现 SPA 式无刷新翻页；评论与留言板接入 Twikoo，统计接入 Vercount，可部署到 GitHub Pages 等任意静态托管。
 

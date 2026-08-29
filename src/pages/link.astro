@@ -12,6 +12,7 @@ interface FriendItem {
   description: string;
   avatar: string;
   screenshot?: string;
+  speedtest?: boolean;
 }
 
 interface FriendGroup {
@@ -41,6 +42,7 @@ for (const f of allFriends) {
     description: f.description,
     avatar: f.avatar,
     screenshot: f.screenshot,
+    speedtest: f.speedtest,
   });
 }
 
@@ -102,8 +104,12 @@ if (linkMarkdown) {
                         <div class="flex h-full w-full items-center justify-center text-xs text-[rgb(var(--fg-muted))] dark:text-[rgb(var(--fg-muted))]">暂无截图</div>
                       )}
                       <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                      {/* 友链检测胶囊：由常驻脚本 friend-circle.js 拉 link.json 填充（可达+延迟 / 不可达+N天） */}
-                      <div class="absolute top-1 left-1" data-friend-pill data-name={friend.name} data-url={friend.url}></div>
+                      {/* 友链检测胶囊：speedtest:false 显示绿色"在线"静态胶囊；其余由 friend-circle.js 拉 link.json 填充 */}
+                      {friend.speedtest === false ? (
+                        <div class="absolute top-1 left-1 flex items-center gap-0.5 rounded-full bg-green-500/90 px-1 py-px text-[9px] font-medium text-white shadow-sm">在线</div>
+                      ) : (
+                        <div class="absolute top-1 left-1" data-friend-pill data-name={friend.name} data-url={friend.url}></div>
+                      )}
                     </div>
                     <div class="flex items-start gap-2.5 py-1 px-2 h-[54px]">
                       <div class="h-9 w-9 shrink-0 -ml-1 overflow-hidden rounded-full border border-[rgb(var(--card-border))] bg-[rgb(var(--bg-soft))] dark:border-[rgb(var(--card-border))] dark:bg-gray-800">

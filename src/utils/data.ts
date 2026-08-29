@@ -21,6 +21,7 @@ export interface FriendItem {
   latency: number;
   type?: string;
   recommended?: boolean;
+  speedtest?: boolean;
 }
 
 // 随机封面：seed 哈希 → 第一个 API + seed 参数（同文同图，客户端失败时按序切换）
@@ -118,6 +119,7 @@ export function getFriends(): FriendItem[] {
     latency: 0,
     type: f.type,
     recommended: f.recommended,
+    speedtest: f.speedtest,
   }));
 }
 

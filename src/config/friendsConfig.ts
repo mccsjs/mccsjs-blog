@@ -7,6 +7,7 @@ export interface FriendConfigItem {
   type: string;
   screenshot: string;
   recommended: boolean;
+  speedtest?: boolean;
   sort: number;
 }
 
@@ -347,7 +348,7 @@ export const friendsConfig: FriendConfigItem[] = [
     description: "经世致用 自强不息",
     avatar: "http://p2.music.126.net/x55FPD2xWTqmMIFjDKXogw==/109951163513084093.jpg?param=130y130",
     type: "一些好朋友~",
-    screenshot: "",
+    screenshot: "https://i.seln.cn/file/picui/1787969664447__3B6B7902-139B-4FA9-9E28-46C928CC1664_.webp",
     recommended: false,
     sort: 32,
   },
@@ -479,6 +480,7 @@ export const friendsConfig: FriendConfigItem[] = [
     type: "一些好朋友~",
     screenshot: "https://i.seln.cn/file/picui/1787293001734__D88E2FD1-E8F6-452B-9F02-7CD38D340A83_.webp",
     recommended: false,
+    speedtest: false,
     sort: 45,
   },
   {
@@ -589,6 +591,7 @@ export const friendsConfig: FriendConfigItem[] = [
     type: "一些好朋友~",
     screenshot: "",
     recommended: false,
+    speedtest: false,
     sort: 57,
   },
   {
@@ -655,7 +658,7 @@ export const friendsConfig: FriendConfigItem[] = [
     name: "xiaodaidai",
     url: "https://xiaodaidai.site",
     description: "星凝眉上字，潮敛贝中音。",
-    avatar: "https://xiaodaidai.site/assets/picture/%E5%A4%B4%E5%83%8F%E8%83%8C%E9%9D%A2.jpeg",
+    avatar: "https://static.xiaodaidai.site/assets/picture/%E5%A4%B4%E5%83%8F%E8%83%8C%E9%9D%A2.jpeg",
     type: "一些好朋友~",
     screenshot: "",
     recommended: false,
@@ -760,5 +763,15 @@ export const friendsConfig: FriendConfigItem[] = [
     screenshot: "",
     recommended: false,
     sort: 73,
+  },
+  {
+    name: "左沐の手册",
+    url: "https://azuma.mstzuomu.space",
+    description: "热爱是拯救无趣人生的唯一途径",
+    avatar: "https://tu.mstzuomu.space/file/头像/1786942479049_azumahead.jpg",
+    type: "一些好朋友~",
+    screenshot: "",
+    recommended: false,
+    sort: 74,
   },
 ];

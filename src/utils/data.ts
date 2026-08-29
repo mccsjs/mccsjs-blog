@@ -73,10 +73,16 @@ function mapPost(entry: CollectionEntry<'posts'>): Post {
 }
 
 export async function getAllPosts(): Promise<Post[]> {
-  const entries = await getCollection('posts', ({ data }) => !data.cg);
+  const entries = await getCollection('posts', ({ data }) => !data.cg && !data.hide);
   const posts = entries.map(mapPost);
   posts.sort((a, b) => Number(b.createdAt) - Number(a.createdAt));
   return posts;
+}
+
+// 路由用：包含 hide 文章（可直达链接），仅排除 cg 草稿
+export async function getAllPostsForRoutes(): Promise<Post[]> {
+  const entries = await getCollection('posts', ({ data }) => !data.cg);
+  return entries.map(mapPost);
 }
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {

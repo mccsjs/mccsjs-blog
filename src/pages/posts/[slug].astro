@@ -4,7 +4,7 @@ import TwikooComments from '../../components/comment/TwikooComments.astro';
 import CopyrightCard from '../../components/common/CopyrightCard.astro';
 import type { MarkdownHeading } from 'astro';
 import type { Post } from '../../types';
-import { getPostBySlug, getAllPosts, getSiteSettings } from '../../utils/data';
+import { getPostBySlug, getAllPosts, getAllPostsForRoutes, getSiteSettings } from '../../utils/data';
 import { renderMarkdown } from '../../utils/markdown';
 import { siteConfig } from '../../config/siteConfig';
 
@@ -22,7 +22,7 @@ const toAbsolute = (url?: string) => {
 };
 
 export async function getStaticPaths() {
-  const posts = await getAllPosts();
+  const posts = await getAllPostsForRoutes();
   const sorted = posts.slice().sort((a, b) => Number(a.createdAt) - Number(b.createdAt));
   return sorted.map((post, i) => {
     const prev = i > 0 ? sorted[i - 1] : null;

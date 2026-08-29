@@ -4,7 +4,7 @@ import PostCard from '../components/layout/PostCard.astro';
 import Sidebar from '../components/widget/Sidebar.astro';
 import ImageWrapper from '../components/common/ImageWrapper.astro';
 import type { Post } from '../types';
-import { getAllPosts, getSiteSettings, getCategories, getTags } from '../utils/data';
+import { getAllPosts, getAllPostsForRoutes, getSiteSettings, getCategories, getTags } from '../utils/data';
 import { siteConfig } from '../config/siteConfig';
 // hero 图静态引用：提供 video poster 的构建后 URL
 import heroImg from '../assets/images/hero.webp';
@@ -32,6 +32,8 @@ try {
 
 
 const posts: Post[] = await getAllPosts();
+// 统计口径：包含 hide 隐藏文章（列表不显示但计数保留）
+const allPosts: Post[] = await getAllPostsForRoutes();
 let error: string | null = null;
 
 // 公开访客统计（纯静态改由 Vercount 客户端填充，构建期传 0）
@@ -43,8 +45,8 @@ function countWords(md: string): number {
   const words = (md || '').match(/[A-Za-z0-9_]+/g) || [];
   return chinese.length + words.length;
 }
-const postCount = posts.length;
-const totalWords = posts.reduce((sum, p) => sum + countWords(p.content || ''), 0);
+const postCount = allPosts.length;
+const totalWords = allPosts.reduce((sum, p) => sum + countWords(p.content || ''), 0);
 
 // 运行时间：自建站日期至今的天数（未配置建站日期时显示 —）
 const runDays = siteStartDate

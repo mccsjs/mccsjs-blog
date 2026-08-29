@@ -13,6 +13,7 @@ const posts = defineCollection({
     fm: z.string().default(''),
     zz: z.string().default(''),
     cg: z.boolean().default(false),
+    hide: z.boolean().default(false),
   }),
 });
 

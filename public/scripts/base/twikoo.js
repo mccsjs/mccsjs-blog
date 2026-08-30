@@ -5,7 +5,7 @@ import { registerInit } from './registry.js';
     if (window.__twikooLoading) { setTimeout(function() { loadTwikooScript(callback); }, 200); return; }
     window.__twikooLoading = true;
     var script = document.createElement('script');
-    script.src = 'https://s4.zstatic.net/npm/twikoo@1.7.19/dist/twikoo.min.js';
+    script.src = 'https://s4.zstatic.net/npm/twikoo@1.7.20/dist/twikoo.min.js';
     script.onload = function() { callback(); };
     script.onerror = function() {
       window.__twikooLoading = false;

@@ -538,7 +538,7 @@ export const friendsConfig: FriendConfigItem[] = [
     url: "https://www.zsso.cn",
     description: "天生我材必有用，千金散尽还复来",
     avatar: "https://file.zsso.cn/userAvatar/ZSSO11781011904472445.jpg",
-    type: "已失联",
+    type: "一些好朋友~",
     screenshot: "",
     recommended: false,
     sort: 52,

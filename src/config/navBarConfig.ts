@@ -77,9 +77,9 @@ export const navBarConfig: { nav: NavItemConfig[]; group: GroupMenuConfig[] } = 
       label: '友情链接',
       children: [
         { id: 'fr-ayeez', label: '阿叶Ayeez', href: 'https://blog.ayeez.cn', icon: 'https://qiniu.ayeez.cn/avatar.jpg', target: '_blank' },
-        { id: 'fr-yuyu', label: '裕裕裕', href: 'https://yu-blog.top/', icon: 'https://yu-blog.top/img/avatar.jpg', target: '_blank' },
-        { id: 'fr-zy', label: 'ZY知识库', href: 'https://blog.pljzy.top/', icon: 'https://blog.pljzy.top/_astro/logo.BxIxyJV1_Z19cEQW.webp', target: '_blank' },
-        { id: 'fr-tangshimei', label: 'TangShiMei', href: 'https://blog.224418.xyz/', icon: 'https://blog.224418.xyz/img/favicon.ico', target: '_blank' },
+        { id: 'fr-yuyu', label: '裕裕裕', href: 'https://yu-blog.top/', icon: '/friends/yuyu.webp', target: '_blank' },
+        { id: 'fr-zy', label: 'ZY知识库', href: 'https://blog.pljzy.top/', icon: '/friends/zy.webp', target: '_blank' },
+        { id: 'fr-tangshimei', label: 'TangShiMei', href: 'https://blog.224418.xyz/', icon: '/friends/tangshimei.webp', target: '_blank' },
       ],
     },
   ],

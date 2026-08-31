@@ -155,9 +155,21 @@ const schemaData = {
       })();
     </script>
     <link rel="icon" href={siteConfig.favicon.src} />
-    {/* Vercount 站点统计 */}
+    {/* Vercount 站点统计：空闲时加载，避免首屏竞争 */}
     <link rel="preconnect" href="https://vercount.one" crossorigin />
-    <script async src="https://events.vercount.one/js"></script>
+    <script>
+      (function () {
+        function loadVc() {
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://events.vercount.one/js';
+          document.head.appendChild(s);
+        }
+        if ('requestIdleCallback' in window) window.requestIdleCallback(loadVc, { timeout: 3000 });
+        else if ('requestAnimationFrame' in window) window.requestAnimationFrame(loadVc);
+        else window.addEventListener('load', loadVc);
+      })();
+    </script>
     {fontUrl && isFontFile && (
       <>
         <link rel="preload" href={fontUrl} as="font" type={fontMimeType[fontFormat]} crossorigin />
@@ -241,7 +253,7 @@ const schemaData = {
         document.addEventListener('swup:page-view', syncPageShell);
         document.addEventListener('astro:page-load', syncPageShell);
 
-        // Vercount 整页加载只扫描一次；Swup 切页后新 DOM 需重跑脚本才能填充 busuanzi id
+        // Vercount 无手动刷新 API，Swup 切页后必须重插 script 填充新 DOM 统计
         function reloadVercount() {
           var s = document.createElement('script');
           s.async = true;
@@ -254,6 +266,9 @@ const schemaData = {
     </script>
 
     <script type="module" src={`/scripts/base/entry.js?v=${import.meta.env.DEV ? Date.now() : '3'}`}></script>
+
+    {/* Fancybox 按需加载：点击图库图片时才动态拉取 css/js（首屏不下载） */}
+    <script src="/scripts/base/fancybox.js?v=1" defer></script>
 
     {/* 全站图片优化：懒加载 + 异步解码 + 加载完成淡入。
         首屏关键图（fetchpriority=high 的 Hero / 标记 data-no-lazy 的导航图标）不淡入，保护 LCP。 */}
@@ -430,15 +445,38 @@ const schemaData = {
           f();
           initStars();
         }, false);
-        function loop() {
-          if (document.documentElement.classList.contains('dark')) {
+        // 星空动画：仅深色+可见时运行，浅色/隐藏/reduced-motion 停止
+        var rafId = 0;
+        var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+        function tick() {
+          if (document.documentElement.classList.contains('dark') && !document.hidden) {
             u();
-          } else if (h) {
-            h.clearRect(0, 0, n, e);
+            rafId = window.requestAnimationFrame(tick);
+          } else {
+            rafId = 0;
           }
-          window.requestAnimationFrame(loop);
         }
-        loop();
+        function startStars() {
+          if (!rafId) rafId = window.requestAnimationFrame(tick);
+        }
+        function stopStars() {
+          if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
+          if (h) h.clearRect(0, 0, n, e);
+        }
+        if (reducedMotion.matches) {
+          if (h) h.clearRect(0, 0, n, e);
+        } else {
+          var themeWatcher = new MutationObserver(function () {
+            if (document.documentElement.classList.contains('dark') && !document.hidden) startStars();
+            else stopStars();
+          });
+          themeWatcher.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+          document.addEventListener('visibilitychange', function () {
+            if (document.hidden) stopStars();
+            else if (document.documentElement.classList.contains('dark')) startStars();
+          });
+          if (document.documentElement.classList.contains('dark')) startStars();
+        }
       })();
     </script>
   </body>

@@ -775,4 +775,14 @@ export const friendsConfig: FriendConfigItem[] = [
     recommended: false,
     sort: 74,
   },
+  {
+    name: "UpXuu",
+    url: "https://upxuu.com",
+    description: "逐光而上",
+    avatar: "https://upxuu.com/images/me.jpg",
+    type: "一些好朋友~",
+    screenshot: "",
+    recommended: false,
+    sort: 75,
+  },
 ];

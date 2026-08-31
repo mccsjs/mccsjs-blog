@@ -14,8 +14,6 @@ export interface SiteSettings {
   heroType: string;
   heroImage: string;
   heroVideo: string;
-  commentProvider?: string;
-  commentEmojiCdn?: string;
   // 友链检测 / 朋友圈数据源地址
   friendCircleApi?: string;
   linkMarkdown?: string;

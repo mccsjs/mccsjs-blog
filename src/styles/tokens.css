@@ -5,7 +5,8 @@
 /* 自定义字体 */
 @font-face {
   font-family: 'BlogFont';
-  src: url('/font/b.woff2') format('woff2');
+  /* b.woff2 保留为完整母版；前台仅下载按本站文案裁出的子集。 */
+  src: url('/font/b.subset.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;

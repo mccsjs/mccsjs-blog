@@ -40,7 +40,14 @@ const formatMonthDay = (date: string) =>
     day: '2-digit',
   });
 
-const serializedPosts = JSON.stringify(sorted);
+// 分页脚本只需要这些索引字段；不要把每篇文章的完整 Markdown 一起塞进首屏 HTML。
+const serializedPosts = JSON.stringify(sorted.map((post) => ({
+  slug: post.slug,
+  title: post.title,
+  createdAt: post.createdAt,
+  category: post.category.name,
+  tags: post.tags.map((tag) => tag.name),
+})));
 const serializedTotalPages = JSON.stringify(totalPages);
 ---
 
@@ -74,6 +81,14 @@ const serializedTotalPages = JSON.stringify(totalPages);
       </div>
     ) : (
       <div id="archive-root">
+        <!-- 分页数据放在当前页面容器中，由常驻入口在 Swup 切页后读取。 -->
+        <div
+          id="archive-data"
+          data-posts={serializedPosts}
+          data-total-pages={totalPages}
+          data-per-page={PER_PAGE}
+          hidden
+        ></div>
         <div id="archive-content" class="relative">
           <div class="absolute left-4 top-0 bottom-0 w-px bg-gray-200 sm:left-6 dark:bg-gray-700"></div>
 
@@ -146,7 +161,10 @@ const serializedTotalPages = JSON.stringify(totalPages);
   }
 </BaseLayout>
 
-<script define:vars={{ serializedPosts, serializedTotalPages, serializedPerPage: JSON.stringify(PER_PAGE) }}>
+<!-- Swup 切换到归档页时也要重新绑定分页按钮事件。 -->
+<script data-swup-reload-script define:vars={{ serializedPosts, serializedTotalPages, serializedPerPage: JSON.stringify(PER_PAGE) }}>
+  const archiveRoot = document.getElementById('archive-root');
+  if (archiveRoot) archiveRoot.dataset.archiveInlineReady = '1';
   const posts = JSON.parse(serializedPosts || '[]');
   const totalPages = Number(serializedTotalPages) || 1;
   const perPage = Number(serializedPerPage) || 10;
@@ -166,6 +184,15 @@ const serializedTotalPages = JSON.stringify(totalPages);
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');
     return `${month}-${day}`;
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
   }
 
   function renderPage(page) {
@@ -203,7 +230,7 @@ const serializedTotalPages = JSON.stringify(totalPages);
       for (const post of grouped[year]) {
         html += `
           <a
-            href="/posts/${post.slug}"
+            href="/posts/${escapeHtml(post.slug)}"
             class="group flex items-start gap-4 rounded-xl border border-[rgb(var(--card-border))] bg-[rgb(var(--card-bg))] p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-[rgb(var(--card-border))] dark:bg-[rgb(var(--card-bg))]"
           >
             <time class="shrink-0 pt-0.5 text-sm font-medium text-[rgb(var(--fg-muted))] dark:text-[rgb(var(--fg-muted))]">
@@ -211,13 +238,13 @@ const serializedTotalPages = JSON.stringify(totalPages);
             </time>
             <div class="min-w-0 flex-1">
               <h3 class="truncate text-base font-semibold text-[rgb(var(--fg))] group-hover:text-yellow-600 dark:text-[rgb(var(--fg))] dark:group-hover:text-yellow-400">
-                ${post.title}
+                ${escapeHtml(post.title)}
               </h3>
               <div class="mt-1 flex items-center gap-2 text-xs text-[rgb(var(--fg-muted))] dark:text-[rgb(var(--fg-muted))]">
                 <span class="rounded-full bg-yellow-50 px-2 py-0.5 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">
-                  ${post.category.name}
+                  ${escapeHtml(post.category)}
                 </span>
-                ${post.tags.length > 0 ? `<span class="truncate">${post.tags.map((t) => `#${t.name}`).join(' ')}</span>` : ''}
+                ${post.tags.length > 0 ? `<span class="truncate">${post.tags.map((tag) => `#${escapeHtml(tag)}`).join(' ')}</span>` : ''}
               </div>
             </div>
           </a>

@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "astro dev --port 4321",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "font:subset": "node scripts/subset-font.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-satteri": "^0.3.8",

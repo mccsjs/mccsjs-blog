@@ -39,6 +39,11 @@ function pickCoverApi(seed: string): string {
   return appendSeedParam(randomCoverImage.apis[0], getSeedHash(seed));
 }
 
+function toUnixSeconds(value: string, fallback: string): string {
+  const timestamp = new Date(value).getTime();
+  return Number.isFinite(timestamp) ? String(Math.floor(timestamp / 1000)) : fallback;
+}
+
 function mapPost(entry: CollectionEntry<'posts'>): Post {
   const d = entry.data;
   const slug = d.slug || entry.id;
@@ -54,6 +59,7 @@ function mapPost(entry: CollectionEntry<'posts'>): Post {
     return { id: name, name, slug: name };
   });
   const createdAt = String(Math.floor(new Date(d.date).getTime() / 1000));
+  const updatedAt = d.updated ? toUnixSeconds(d.updated, createdAt) : createdAt;
   return {
     id: entry.id,
     slug,
@@ -64,7 +70,7 @@ function mapPost(entry: CollectionEntry<'posts'>): Post {
     published: !d.cg,
     views: 0,
     createdAt,
-    updatedAt: createdAt,
+    updatedAt,
     digest: entry.digest,
     author: { id: '', name: d.zz || siteConfig.adminName || 'admin', email: '', avatar: '' },
     category,
@@ -194,8 +200,6 @@ export function getSiteSettings(): SiteSettings {
     heroType: siteConfig.heroType,
     heroImage: siteConfig.heroImage,
     heroVideo: siteConfig.heroVideo,
-    commentProvider: commentConfig.provider,
-    commentEmojiCdn: commentConfig.emojiCdn,
     friendCircleApi: siteConfig.friendCircleApi,
     linkMarkdown: siteConfig.linkMarkdown,
     showMotto: footerConfig.showMotto,

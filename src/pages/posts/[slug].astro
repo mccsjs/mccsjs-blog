@@ -9,11 +9,8 @@ import { renderMarkdown } from '../../utils/markdown';
 import { siteConfig } from '../../config/siteConfig';
 
 const settings = getSiteSettings();
-const twikooEnvId = settings.twikooEnvId;
 const siteTitle = settings.siteTitle || 'My Blog';
 const siteLogo = settings.siteLogo || '';
-const commentProvider = settings.commentProvider;
-const commentEmojiCdn = settings.commentEmojiCdn || '';
 
 // 将相对路径转成绝对 URL（供 JSON-LD 的 image / publisher.logo 使用）
 const toAbsolute = (url?: string) => {
@@ -157,7 +154,9 @@ const jsonLd = post ? {
   '@type': 'BlogPosting',
   headline: post.title,
   description: cleanDescription(post.excerpt || post.content),
-  image: toAbsolute(post.coverImage) || (siteLogo ? toAbsolute(siteConfig.favicon.src) : undefined),
+  image: siteConfig.generateOgImages
+    ? `${Astro.url.origin}/og/${post.slug}.png`
+    : (toAbsolute(post.coverImage) || (siteLogo ? toAbsolute(siteConfig.favicon.src) : undefined)),
   datePublished: new Date(+post.createdAt * 1000).toISOString(),
   dateModified: post.updatedAt ? new Date(+post.updatedAt * 1000).toISOString() : undefined,
   inLanguage: 'zh-CN',
@@ -249,7 +248,6 @@ const tocHtmlStr = tocTree.length > 0 ? '<ol class="toc-list">' + renderTocOl(to
   postCategory={post?.category?.name}
   showToc={tocTree.length > 0}
   ogType="article"
-  ogImage={post?.coverImage}
 >
   {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
   {post && (

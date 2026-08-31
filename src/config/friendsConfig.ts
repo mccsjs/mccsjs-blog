@@ -420,6 +420,7 @@ export const friendsConfig: FriendConfigItem[] = [
     type: "一些好朋友~",
     screenshot: "https://pic.seln.cn/file/picui/yNNg5tVh.png",
     recommended: false,
+    speedtest: false,
     sort: 39,
   },
   {

@@ -15,6 +15,7 @@ backend_backup_*/
 backend/test-*.js
 backend/scripts/*.mjs
 scripts/*.mjs
+!scripts/subset-font.mjs
 *.db
 *.tar
 .qoder/

@@ -77,6 +77,7 @@ pnpm preview    # 本地预览构建产物
   | `title` | 标题 | 必填 |
   | `slug` | 路径 | 可选，默认取文件名 |
   | `date` | 日期 | 必填 |
+  | `updated` | 最后更新 | 可选，修改旧文章时用于 sitemap 和结构化数据 |
   | `fl` | 分类 | 可选，从文章自动聚合，无需手写配置 |
   | `tags` | 标签 | 数组，自动聚合 |
   | `zy` | 摘要 | 可选 |
@@ -88,6 +89,7 @@ pnpm preview    # 本地预览构建产物
 
 - **站点配置**：`src/config/` 下的 `siteConfig.ts`、`commentConfig.ts`、`friendsConfig.ts`、`navBarConfig.ts`、`footerConfig.ts`、`messageConfig.ts`、`fmImageConfig.ts`。
 - **表情包**：`public/owo.json`（OwO 格式）。
+- **字体子集**：完整母版保留在 `public/font/b.woff2`，前台使用 `public/font/b.subset.woff2`。新增或修改站点文案、文章后运行 `pnpm font:subset` 重新生成子集。
 - **统一数据出口**：`src/utils/data.ts`（`getPosts` / `getFriends` / `getCategories` / `getTags` 等）。
 
 ## 部署（GitHub Pages）

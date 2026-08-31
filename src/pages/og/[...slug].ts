@@ -25,16 +25,18 @@ export const getStaticPaths: GetStaticPaths = async () => {
   }));
 };
 
-// 字体缓存：使用本地 public/font 下的字体（转 ttf），无需外网
+// 字体缓存：优先使用面向站点文案生成的子集；完整母版 b.woff2 始终保留作回退。
 let fontCache: { regular: Buffer | null; bold: Buffer | null } | null = null;
 async function getFonts() {
   if (fontCache) return fontCache;
   const out = { regular: null as Buffer | null, bold: null as Buffer | null };
   try {
-    const ttf = await woff2ToTtf(fs.readFileSync('./public/font/b.woff2'));
+    const subsetPath = './public/font/b.subset.woff2';
+    const fontPath = fs.existsSync(subsetPath) ? subsetPath : './public/font/b.woff2';
+    const ttf = await woff2ToTtf(fs.readFileSync(fontPath));
     out.regular = ttf;
     out.bold = ttf; // 同一字体兼作粗体，避免依赖 Google Fonts
-    console.log('[OG] 使用本地字体 public/font/b.woff2（已转 ttf）');
+    console.log(`[OG] 使用本地字体 ${fontPath}（已转 ttf）`);
   } catch (e) {
     console.warn('[OG] 本地字体转换失败，OG 图中文字体缺失：', (e as Error).message);
   }

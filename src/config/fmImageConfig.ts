@@ -1,7 +1,5 @@
 // 文章封面配置（对应 frontmatter 的 fm 字段）
 export const fmImageConfig = {
-  // 是否在文章详情页显示封面图
-  enableInPost: true,
   randomCoverImage: {
     // 随机封面开关：fm 未配置时自动从 API 随机
     enable: true,

@@ -4,9 +4,31 @@
 // 首屏与每次 Swup 切页（astro:page-load）时统一调用 runInits()。
 import { runInits } from './registry.js';
 import './tabnav.js';        // TabNav 样式注入（自管理，不走 registry）
-import './codeblocks.js';    // 友链页代码块
-import './twikoo.js';        // Twikoo 评论区
-import './post.js';          // 文章页：代码块工具栏 / 灯箱 / 阅读进度 / TOC
+
+// 页面功能按需加载：这些模块此前每页都会下载，即使首页并没有评论、文章代码块、
+// 友链检测或列表分页。模块首次加载后会被浏览器缓存；后续 Swup 切页只复用其初始化器。
+let initGeneration = 0;
+async function initializePage() {
+  const generation = ++initGeneration;
+  const loads = [];
+  if (document.querySelector('.post-content')) loads.push(import('./post.js'));
+  if (document.querySelector('#link-markdown-section')) loads.push(import('./codeblocks.js'));
+  if (document.querySelector('#tcomment')) loads.push(import('./twikoo.js'));
+  if (document.querySelector('#posts-pagination')) loads.push(import('./pagination.js'));
+  if (document.querySelector('#fc-root, #fc-link-config')) loads.push(import('./friend-circle.js'));
+  let archiveModule = null;
+  if (document.querySelector('#archive-root')) {
+    loads.push(import('./archive.js').then(function (module) { archiveModule = module; }));
+  }
+
+  // 单个可选功能加载失败不应阻止其它已注册的页面功能初始化。
+  await Promise.allSettled(loads);
+  if (generation !== initGeneration) return;
+  runInits();
+  if (archiveModule && typeof archiveModule.initArchive === 'function') {
+    archiveModule.initArchive();
+  }
+}
 
 // ===== 页面切换过渡（进度条 + is-page-transitioning） =====
 let progressTimeout1 = null;
@@ -57,8 +79,9 @@ function setup() {
   });
 
   window.swup.hooks.on('page:view', function () {
-    runInits();
-    document.dispatchEvent(new CustomEvent('swup:page-view'));
+    void initializePage().then(function () {
+      document.dispatchEvent(new CustomEvent('swup:page-view'));
+    });
   });
 }
 
@@ -68,8 +91,8 @@ function resetScrollAndNav() {
   if (nav) nav.classList.remove('scrolled');
 }
 
-// 首次执行（模块此时已加载完成，各功能 init 均已注册）
-runInits();
+// 首次执行：按当前页面需要加载模块，再运行已注册的初始化器。
+void initializePage();
 
 if (window.swup && window.swup.hooks) {
   setup();
@@ -79,5 +102,5 @@ if (window.swup && window.swup.hooks) {
 
 document.addEventListener('astro:page-load', function () {
   resetScrollAndNav();
-  runInits();
+  void initializePage();
 });

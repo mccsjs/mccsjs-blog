@@ -253,11 +253,7 @@ const schemaData = {
       })();
     </script>
 
-    <script type="module" src={`/scripts/base/entry.js?v=${import.meta.env.DEV ? Date.now() : '2'}`}></script>
-    {/* 分页交互：document 委托，SWUP 切页后依然有效（页面私有 script 会被 SWUP 注入后不执行） */}
-    <script defer src="/scripts/base/pagination.js"></script>
-    {/* 朋友圈 / 友链检测：常驻脚本，监听 SWUP 切页事件，跨切页渲染 all.json / link.json */}
-    <script defer src="/scripts/base/friend-circle.js"></script>
+    <script type="module" src={`/scripts/base/entry.js?v=${import.meta.env.DEV ? Date.now() : '3'}`}></script>
 
     {/* 全站图片优化：懒加载 + 异步解码 + 加载完成淡入。
         首屏关键图（fetchpriority=high 的 Hero / 标记 data-no-lazy 的导航图标）不淡入，保护 LCP。 */}

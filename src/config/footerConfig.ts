@@ -18,6 +18,5 @@ export const footerConfig = {
     { title: '本站已公安网站备案', href: 'https://beian.mps.gov.cn/#/query/webSearch?code=32083002000282', img: blueImg },
     { title: '本站已加入萌ICP，萌ICP备20230187号', href: 'https://icp.gov.moe/?keyword=20230187', img: moeImg },
     { title: '本站已加入茶ICP，茶ICP备2025090177号', href: 'https://icp.redcha.cn/beian/ICP-2025090177.html', img: 'https://img.shields.io/badge/%E8%8C%B6ICP%E5%A4%87-2025090177%E5%8F%B7-blue?style=flat' },
-    { title: '本站已加入博友圈', href: 'https://www.boyouquan.com/certificates/hexo.seln.cn', img: 'https://www.boyouquan.com/assets/images/sites/logo/planet-shuttle.svg' },
   ]),
 };

@@ -11,12 +11,12 @@
     "font:subset": "node scripts/subset-font.mjs"
   },
   "dependencies": {
-    "@astrojs/markdown-satteri": "^0.3.8",
-    "@astrojs/react": "^6.0.4",
+    "@astrojs/markdown-satteri": "^0.4.0",
+    "@astrojs/react": "^6.0.5",
     "@astrojs/rss": "^4.0.19",
     "@swup/astro": "^1.8.0",
     "@tailwindcss/vite": "^4.3.2",
-    "astro": "^7.2.9",
+    "astro": "^7.3.1",
     "astro-lenis": "^1.0.5",
     "dompurify": "^3.4.13",
     "fonteditor-core": "^2.6.3",

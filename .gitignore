@@ -20,6 +20,7 @@ scripts/*.mjs
 *.tar
 .qoder/
 .workbuddy/
+.workbuddy-ai/
 .git.backup/
 *.md.bak
 *.png.bak

@@ -13,7 +13,8 @@ const settings = getSiteSettings();
 const siteTitle = settings.siteTitle;
 const siteDescription = settings.siteDescription;
 const heroType = settings.heroType || 'image';
-const heroImage = settings.heroImage || 'images/hero.webp';
+const heroImage = settings.heroImage || 'images/1.webp';
+const heroImageMobile = settings.heroImageMobile || '';
 const heroVideo = settings.heroVideo || '';
 const siteStartDate = settings.siteStartDate || '';
 
@@ -60,15 +61,25 @@ const latestPosts = posts.slice(0, 6);
 ---
 
 <BaseLayout wide description={siteTitle + ' — ' + siteDescription}>
-  <section class="relative mx-auto max-w-[1200px] overflow-hidden rounded-3xl text-center sm:py-24 px-4">
+  <section class="home-hero relative flex items-center justify-center overflow-hidden text-center">
     <ImageWrapper
       src={heroImage}
       alt=""
-      class="absolute inset-0 h-full w-full object-cover"
+      class="absolute inset-0 h-full w-full object-cover max-md:hidden"
       fetchpriority="high"
       loading="eager"
       aria-hidden="true"
     />
+    {heroImageMobile && (
+      <ImageWrapper
+        src={heroImageMobile}
+        alt=""
+        class="absolute inset-0 h-full w-full object-cover md:hidden"
+        fetchpriority="high"
+        loading="eager"
+        aria-hidden="true"
+      />
+    )}
     {(heroType === 'video' && heroVideo) && (
       <video
         class="hero-video absolute inset-0 h-full w-full object-cover"
@@ -84,6 +95,11 @@ const latestPosts = posts.slice(0, 6);
       </video>
     )}
     <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/60"></div>
+    <a href="#home-posts" id="scroll-down-arrow" aria-label="下滑查看文章" class="absolute bottom-7 left-1/2 z-10 -translate-x-1/2 text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.45)] transition-opacity hover:opacity-80">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="h-9 w-9">
+        <path d="m6 9 6 6 6-6"></path>
+      </svg>
+    </a>
     <div class="relative px-6 py-16">
       <h1 class="neon-text text-3xl sm:text-5xl font-extrabold tracking-tight text-white drop-shadow-lg">
         {siteTitle}
@@ -113,7 +129,7 @@ const latestPosts = posts.slice(0, 6);
     </div>
   </section>
 
-  <section class="mx-auto mt-16 max-w-[1200px] px-4">
+  <section id="home-posts" class="mx-auto mt-16 max-w-[1200px] px-4 scroll-mt-24">
     <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_26%]">
       <!-- 左栏：最新文章 -->
       <div>
@@ -165,6 +181,15 @@ const latestPosts = posts.slice(0, 6);
 
 <script is:inline data-swup-reload-script>
   (function () {
+    // 下滑箭头：拦截锚点，平滑滚动到文章列表
+    var arrow = document.getElementById('scroll-down-arrow');
+    if (arrow) {
+      arrow.addEventListener('click', function (e) {
+        e.preventDefault();
+        var target = document.getElementById('home-posts');
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+      });
+    }
     // 代次机制：每次脚本运行时递增，旧实例的回调发现代次不匹配就自动退出
     window.__twGen = (window.__twGen || 0) + 1;
     var myGen = window.__twGen;
@@ -278,7 +303,36 @@ const latestPosts = posts.slice(0, 6);
   })();
 </script>
 
+<style>
+  /* 全屏壁纸首屏：突破容器留白与顶部内边距，占满一屏 */
+  .home-hero {
+    width: 100vw;
+    max-width: none;
+    margin-left: calc(50% - 50vw);
+    margin-top: -6rem;
+    height: 100svh;
+  }
+  @media (min-width: 768px) {
+    .home-hero { margin-top: -7rem; }
+  }
+  /* 下滑箭头跳动 */
+  #scroll-down-arrow svg {
+    animation: arrow-bounce 2s ease-in-out infinite;
+  }
+  @keyframes arrow-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(10px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #scroll-down-arrow svg { animation: none; }
+  }
+</style>
+
 <style is:global>
+  /* 首页全屏壁纸：解除容器横向裁切（页面级溢出由 html/body 兜底） */
+  main#swup-container {
+    overflow-x: visible;
+  }
   /* 霓虹灯文字效果 */
   @keyframes light_10px {
     0%, 100% {

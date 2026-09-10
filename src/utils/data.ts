@@ -199,6 +199,7 @@ export function getSiteSettings(): SiteSettings {
     backgroundImage: siteConfig.backgroundImage,
     heroType: siteConfig.heroType,
     heroImage: siteConfig.heroImage,
+    heroImageMobile: siteConfig.heroImageMobile,
     heroVideo: siteConfig.heroVideo,
     friendCircleApi: siteConfig.friendCircleApi,
     linkMarkdown: siteConfig.linkMarkdown,

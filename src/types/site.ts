@@ -13,6 +13,7 @@ export interface SiteSettings {
   backgroundImage: string;
   heroType: string;
   heroImage: string;
+  heroImageMobile?: string;
   heroVideo: string;
   // 友链检测 / 朋友圈数据源地址
   friendCircleApi?: string;

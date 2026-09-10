@@ -209,7 +209,7 @@ const schemaData = {
       <Header siteTitle={settings.siteTitle} siteLogo={settings.siteLogo} favicon={siteConfig.favicon.src} menus={navMenus} aggregateMenus={aggregateMenus} />
       <main id="swup-container" class:list={[
         "transition-swup-main mx-auto w-full flex-1 px-4 pt-24 md:pt-28 md:px-6",
-        flushBottom ? "overflow-x-clip overflow-y-visible pb-0" : "overflow-x-clip pb-12 md:pb-16",
+        flushBottom ? "overflow-x-clip overflow-y-visible pb-0" : isHome ? "pb-12 md:pb-16" : "overflow-x-clip pb-12 md:pb-16",
         fullWidth ? "max-w-none" : wide ? "max-w-[1200px]" : "max-w-5xl"
       ]}>
         {!hideBreadcrumb && (

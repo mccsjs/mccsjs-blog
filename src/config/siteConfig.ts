@@ -54,7 +54,9 @@ rss: https://mccsjs.cn/rss.xml
 \`\`\`
 `,
   // hero（src/assets/images）
-  heroImage: 'images/hero.webp',
+  heroImage: 'images/1.webp',
+  // 移动端 hero 图（竖图），留空则与桌面共用
+  heroImageMobile: 'images/sj.webp',
   // 管理员（关于页标识）
   // 分类与标签：不再手写配置，由文章 frontmatter 自动聚合（见 utils/data.ts 的 getCategories/getTags）
   // 站长资料（首页侧栏资料卡）：avatar 留空则用名称首字母

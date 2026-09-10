@@ -185,6 +185,9 @@ const schemaData = {
       </>
     )}
     {fontUrl && !isFontFile && <link rel="stylesheet" href={fontUrl} />}
+    {/* Umami 统计：首屏由脚本自动上报，Swup 软导航在下方脚本里补报 */}
+    <link rel="preconnect" href="https://cloud.umami.is" crossorigin />
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="cbf8fb8b-0892-435c-ae54-dfd82d73ce5c" is:inline></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <slot name="head" />

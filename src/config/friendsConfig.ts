@@ -785,4 +785,14 @@ export const friendsConfig: FriendConfigItem[] = [
     recommended: false,
     sort: 75,
   },
+  {
+    name: "星宇安全",
+    url: "https://bk.zhaozhiqiang.pw/",
+    description: "网络安全技术分享，记录实战经历，分享学习干货。",
+    avatar: "https://bk.zhaozhiqiang.pw/wp-content/uploads/2026/07/1784847314130_148x148.png",
+    type: "一些好朋友~",
+    screenshot: "https://bk.zhaozhiqiang.pw/wp-content/uploads/2026/09/2026-09-09-140947.png",
+    recommended: false,
+    sort: 76,
+  },
 ];

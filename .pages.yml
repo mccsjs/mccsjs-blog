@@ -1,0 +1,75 @@
+# Pages CMS 配置（app.pagescms.org 按仓库+分支读取）
+media:
+  input: public/img
+  output: /img
+
+content:
+  - name: posts
+    label: 文章
+    type: collection
+    path: src/content/posts
+    subfolders: true
+    view:
+      primary: title
+      sort: date
+      order: desc
+    filename:
+      template: "{primary}.md"
+      field: create
+    fields:
+      - name: title
+        label: 标题
+        type: string
+        required: true
+      - name: slug
+        label: URL 别名
+        type: string
+        pattern: "^[a-z0-9-]*$"
+        hint: 决定文章 URL，小写字母/数字/连字符；留空则按文件名访问
+      - name: date
+        label: 发布时间
+        type: date
+        required: true
+        options:
+          time: true
+          format: yyyy-MM-dd HH:mm:ss
+      - name: updated
+        label: 更新时间
+        type: date
+        options:
+          time: true
+          format: yyyy-MM-dd HH:mm:ss
+      - name: fl
+        label: 分类
+        type: string
+        hint: 现有分类：教程 / 教程碎片 / 游戏 / 随笔
+      - name: tags
+        label: 标签
+        type: string
+        list: true
+      - name: zy
+        label: 摘要
+        type: text
+      - name: fm
+        label: 封面图
+        type: image
+      - name: zz
+        label: 作者
+        type: string
+      - name: cg
+        label: 草稿
+        type: boolean
+      - name: hide
+        label: 从列表页隐藏
+        type: boolean
+      - name: body
+        label: 正文
+        type: rich-text
+
+  # 友链是 TS 代码文件，结构化编辑不了，只能当代码改；
+  # 改错一个逗号构建就挂，默认注释掉，确认要开再解开
+  # - name: friends
+  #   label: 友链配置
+  #   type: file
+  #   path: src/config/friendsConfig.ts
+  #   format: code

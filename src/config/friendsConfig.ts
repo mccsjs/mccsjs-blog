@@ -795,4 +795,14 @@ export const friendsConfig: FriendConfigItem[] = [
     recommended: false,
     sort: 76,
   },
+  {
+    name: "叁拾玖",
+    url: "https://www.sanshijiu.cn",
+    description: "无人扶我青云志，我自踏雪至山巅！",
+    avatar: "https://www.sanshijiu.cn/static/avatar/1/1787397803188bebb136a.jpg",
+    type: "一些好朋友~",
+    screenshot: "",
+    recommended: false,
+    sort: 77,
+  },
 ];

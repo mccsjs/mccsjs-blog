@@ -801,7 +801,7 @@ export const friendsConfig: FriendConfigItem[] = [
     description: "无人扶我青云志，我自踏雪至山巅！",
     avatar: "https://www.sanshijiu.cn/static/avatar/1/1787397803188bebb136a.jpg",
     type: "一些好朋友~",
-    screenshot: "",
+    screenshot: "https://i.seln.cn/file/picui/1789907463415__74C0C49E-0DD9-4D9D-9675-8D87BE525B18_.webp",
     recommended: false,
     sort: 77,
   },

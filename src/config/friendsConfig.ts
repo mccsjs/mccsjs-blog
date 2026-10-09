@@ -825,4 +825,14 @@ export const friendsConfig: FriendConfigItem[] = [
     recommended: false,
     sort: 79,
   },
+  {
+    name: "浅小兮の梦",
+    url: "https://zxwlove.xyz/",
+    description: "从相遇的刹那开始就注定了别离！",
+    avatar: "https://zxwlove.cc.cd/img/avatar.jpg",
+    type: "一些好朋友~",
+    screenshot: "",
+    recommended: false,
+    sort: 80,
+  },
 ];

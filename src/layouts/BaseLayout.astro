@@ -12,18 +12,14 @@ interface Props {
   title?: string;
   description?: string;
   wide?: boolean;
-  fullWidth?: boolean;
   postSlug?: string;
   postCategory?: string;
-  hideBreadcrumb?: boolean;
-  // 去主栏底部留白（无页脚页用，避免聊天容器溢出整页滚动）
-  flushBottom?: boolean;
   // SEO
   ogType?: string;
   ogImage?: string;
 }
 
-const { title: rawTitle, description: rawDescription, wide = false, fullWidth = false, postSlug, postCategory, hideBreadcrumb = false, flushBottom = false, ogType = 'website', ogImage } = Astro.props;
+const { title: rawTitle, description: rawDescription, wide = false, postSlug, postCategory, ogType = 'website', ogImage } = Astro.props;
 const isHome = Astro.url.pathname === '/';
 
 const settings: SiteSettings = getSiteSettings();
@@ -212,12 +208,10 @@ const schemaData = {
       <Header siteTitle={settings.siteTitle} siteLogo={settings.siteLogo} favicon={siteConfig.favicon.src} menus={navMenus} aggregateMenus={aggregateMenus} />
       <main id="swup-container" class:list={[
         "transition-swup-main mx-auto w-full flex-1 px-4 pt-24 md:pt-28 md:px-6",
-        flushBottom ? "overflow-x-clip overflow-y-visible pb-0" : isHome ? "pb-12 md:pb-16" : "overflow-x-clip pb-12 md:pb-16",
-        fullWidth ? "max-w-none" : wide ? "max-w-[1200px]" : "max-w-5xl"
+        isHome ? "pb-12 md:pb-16" : "overflow-x-clip pb-12 md:pb-16",
+        wide ? "max-w-[1200px]" : "max-w-5xl"
       ]}>
-        {!hideBreadcrumb && (
-          <Breadcrumb title={rawTitle} postSlug={postSlug} postCategory={postCategory} menus={navMenus} />
-        )}
+        <Breadcrumb title={rawTitle} postSlug={postSlug} postCategory={postCategory} menus={navMenus} />
         <slot />
       </main>
       <Footer
@@ -238,25 +232,9 @@ const schemaData = {
     <FloatingBar />
     <div id="progress-bar"></div>
 
-    {/* 页脚/悬浮栏按页显隐：Footer/FloatingBar 位于 Swup 容器外，切页不重渲染，
-        这里监听每次切页事件按路径控制显隐（/comments/ 隐藏）。 */}
+    {/* Vercount 无手动刷新 API，Swup 切页后必须重插 script 填充新 DOM 统计 */}
     <script is:inline>
       (function () {
-        function isCommentsPage() {
-          return location.pathname.replace(/\/+$/, '') === '/comments';
-        }
-        function syncPageShell() {
-          var isComments = isCommentsPage();
-          var footer = document.querySelector('.site-footer');
-          var bar = document.getElementById('floating-bar');
-          if (footer) footer.style.display = isComments ? 'none' : '';
-          if (bar) bar.style.display = isComments ? 'none' : '';
-        }
-        syncPageShell();
-        document.addEventListener('swup:page-view', syncPageShell);
-        document.addEventListener('astro:page-load', syncPageShell);
-
-        // Vercount 无手动刷新 API，Swup 切页后必须重插 script 填充新 DOM 统计
         function reloadVercount() {
           var s = document.createElement('script');
           s.async = true;

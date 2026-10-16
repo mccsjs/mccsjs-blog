@@ -1,35 +1,20 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ChatRoom from '../components/chat/ChatRoom';
-import { getSiteSettings } from '../utils/data';
-
-const settings = getSiteSettings();
-const envId = settings.twikooEnvId;
+import TwikooComments from '../components/comment/TwikooComments.astro';
 ---
 
-<BaseLayout title="留言板" description="在这里给我留言，畅所欲言～" hideBreadcrumb fullWidth flushBottom>
-  <div class="page-comments">
-    <ChatRoom client:load="react" envId={envId} />
-  </div>
+<BaseLayout title="留言板" description="留言板 — 有任何问题或想法，欢迎在此留言">
+  <!-- 页面标题区 -->
+  <section class="mb-10 text-center">
+    <div class="mb-4 text-5xl">💬</div>
+    <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">留言板</h1>
+    <p class="mt-3 text-[rgb(var(--fg-soft))] dark:text-[rgb(var(--fg-muted))]">
+      有任何问题或想法，欢迎在此留言
+    </p>
+  </section>
+
+  <!-- 评论区 -->
+  <section id="comments" class="rounded-2xl border border-[rgb(var(--card-border))] bg-[rgb(var(--card-bg))] p-6 shadow-sm dark:border-[rgb(var(--card-border))] dark:bg-[rgb(var(--card-bg))]">
+    <TwikooComments />
+  </section>
 </BaseLayout>
-
-<style>
-  .page-comments {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    max-width: 1400px;
-    margin-inline: auto;
-    margin-top: -1.5rem;
-    height: calc(100dvh - 6rem);
-    min-height: 82vh;
-    overflow: hidden;
-  }
-
-  .page-comments :global(.guestbook-chat) {
-    flex: 1 1 auto;
-    min-height: 0;
-    height: 100%;
-    max-width: none;
-  }
-</style>

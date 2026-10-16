@@ -16,7 +16,6 @@
 ## 技术栈
 
 - **Astro 7** — 静态站点生成（SSG），`output: "static"`
-- **React 19** — 仅留言板（`/comments`）等交互组件使用，经 `@astrojs/react` 集成
 - **Swup**（`@swup/astro`）— SPA 式页面过渡
 - **Tailwind CSS 4**（Vite 插件）— 样式
 - **Astro Markdown + Shiki 双主题** — 文章渲染与代码高亮（`@astrojs/markdown-satteri`）
@@ -24,7 +23,7 @@
 - **Twikoo** — 第三方评论 + 留言板
 - **Vercount** — 站点 PV / UV 统计
 - **satori + sharp** — 文章 OG 分享图生成
-- **iconify-icon / lucide-react** — 图标
+- **iconify-icon** — 图标
 
 ## 功能特性
 
@@ -43,7 +42,6 @@
 ├── public/                 # 静态资源、全局脚本、表情包 owo.json
 ├── src/
 │   ├── components/
-│   │   ├── chat/           # 留言板（React 组件 + Twikoo 客户端 + 表情）
 │   │   ├── comment/        # 评论区（TwikooComments.astro）
 │   │   ├── common/         # 通用组件（ImageWrapper / CopyrightCard）
 │   │   ├── layout/         # 页面骨架（Header / Footer / Breadcrumb / PostCard / FloatingBar …）
@@ -87,7 +85,7 @@ pnpm preview    # 本地预览构建产物
 
   > 分类 / 标签不再手写配置，新增时只需在文章里写 `fl:` / `tags:`，即自动生成对应页面。
 
-- **站点配置**：`src/config/` 下的 `siteConfig.ts`、`commentConfig.ts`、`friendsConfig.ts`、`navBarConfig.ts`、`footerConfig.ts`、`messageConfig.ts`、`fmImageConfig.ts`。
+- **站点配置**：`src/config/` 下的 `siteConfig.ts`、`commentConfig.ts`、`friendsConfig.ts`、`navBarConfig.ts`、`footerConfig.ts`、`fmImageConfig.ts`。
 - **表情包**：`public/owo.json`（OwO 格式）。
 - **字体子集**：完整母版保留在 `public/font/b.woff2`，前台使用 `public/font/b.subset.woff2`。新增或修改站点文案、文章后运行 `pnpm font:subset` 重新生成子集。
 - **统一数据出口**：`src/utils/data.ts`（`getPosts` / `getFriends` / `getCategories` / `getTags` 等）。

@@ -1,6 +1,5 @@
 // @ts-check
 import swup from "@swup/astro";
-import react from "@astrojs/react";
 import lenis from "astro-lenis";
 import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
@@ -43,11 +42,7 @@ export default defineConfig({
       reloadScripts: { optin: true },
       resolveUrl: (url) => url,
       animateHistoryBrowsing: false,
-      // 留言板是重 React 应用，Swup 切页时 Astro island 不会重新 hydrate（reloadScripts optin
-      // 不重载 astro-island 定义脚本，customElements 未注册 → 永远停在骨架）。走整页导航。
-      ignore: ["/comments"],
     }),
-    react(),
     lenis(),
   ],
   vite: {

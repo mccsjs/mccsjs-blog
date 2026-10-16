@@ -5,7 +5,7 @@ import { registerInit } from './registry.js';
     if (window.__twikooLoading) { setTimeout(function() { loadTwikooScript(callback); }, 200); return; }
     window.__twikooLoading = true;
     var script = document.createElement('script');
-    script.src = 'https://s4.zstatic.net/npm/twikoo@1.7.20/dist/twikoo.min.js';
+    script.src = 'https://registry.npmmirror.com/twikoo/2.0.15/files/dist/twikoo.min.js';
     script.onload = function() { callback(); };
     script.onerror = function() {
       window.__twikooLoading = false;
@@ -31,7 +31,7 @@ import { registerInit } from './registry.js';
     // 如果 Twikoo 已经加载过，强制重新加载脚本，避免 Swup 切换 head 后 Twikoo 注入的 CSS 丢失
     if (typeof twikoo !== 'undefined') {
       delete window.twikoo;
-      var oldScript = document.querySelector('script[src*="twikoo@"]');
+      var oldScript = document.querySelector('script[src*="twikoo"]');
       if (oldScript) oldScript.parentNode.removeChild(oldScript);
       window.__twikooLoading = false;
     }

@@ -836,4 +836,14 @@ export const friendsConfig: FriendConfigItem[] = [
     recommended: false,
     sort: 80,
   },
+  {
+    name: "Alexander",
+    url: "https://lanerc.me",
+    description: "记录代码、折腾与生活",
+    avatar: "https://lanerc.me/avatar.png",
+    type: "一些好朋友~",
+    screenshot: "https://lanerc.me/screenshot.png",
+    recommended: false,
+    sort: 81,
+  },
 ];

@@ -846,4 +846,14 @@ export const friendsConfig: FriendConfigItem[] = [
     recommended: false,
     sort: 81,
   },
+  {
+    name: "冷汐的杂货铺",
+    url: "https://lengxiqwq.com",
+    description: "你好谢谢小笼包再见",
+    avatar: "https://lengxiqwq.com/avatar.jpg",
+    type: "一些好朋友~",
+    screenshot: "https://lengxiqwq.com/screenshot.jpg",
+    recommended: false,
+    sort: 82,
+  },
 ];
